@@ -1,5 +1,11 @@
 {
   "name": "Save that Clip",
   "version": "1.0.0",
-  "manifest_version": 3
+  "manifest_version": 3,
+  "content_scripts": [
+    {
+      "js": ["content.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }
