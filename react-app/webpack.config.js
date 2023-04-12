@@ -21,7 +21,7 @@ module.exports = {
   },
   output: {
     path: extensionFolder,
-    filename: 'content-script.js',
+    filename: 'popup-script.js',
   },
   resolve: {
     extensions: ['.js', '.ts', '.tsx'],
