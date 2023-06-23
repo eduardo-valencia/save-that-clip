@@ -22,9 +22,10 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build-preview": "react-scripts build",
-    "build": "webpack",
+    "star": "react-scripts start",
+    "build": "react-scripts build",
+    "build-extension": "webpack",
+    "serve": "npx serve -s build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

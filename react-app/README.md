@@ -29,6 +29,14 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
+### `npm run build-extension`
+
+Adds the extension into the extension's build folder so that we can load it into Chrome. Please note that the extension's build folder differs from the React App's build folder.
+
+### `npm run serve`
+
+Serves the built application.
+
 ### `npm run eject`
 
 **Note: this is a one-way operation. Once you `eject`, you can’t go back!**
