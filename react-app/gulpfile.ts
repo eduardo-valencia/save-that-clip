@@ -2,6 +2,7 @@ import gulp from 'gulp'
 import webpack from 'webpack-stream'
 import open from 'open'
 import { Configuration } from 'webpack'
+import { ChildProcess } from 'child_process'
 
 import webpackConfig from './webpack.config'
 
@@ -10,8 +11,8 @@ import webpackConfig from './webpack.config'
  * https://chrome.google.com/webstore/detail/extensions-reloader/fimgfedafeadlieiabdeeaodndnlbhid
  * for this to work.
  */
-const reloadExtension = () => {
-  open('http://reload.extensions')
+const reloadExtension = (): Promise<ChildProcess> => {
+  return open('http://reload.extensions')
 }
 
 /**
