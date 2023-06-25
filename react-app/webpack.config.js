@@ -1,10 +1,12 @@
 const path = require('path')
+const dotenv = require('dotenv')
 
+dotenv.config()
 const extensionFolder = path.resolve(__dirname, '..', 'extension')
 
 module.exports = {
   entry: './src/index.tsx',
-  mode: 'production',
+  mode: process.env.NODE_ENV || 'production',
   module: {
     rules: [
       {
