@@ -7,6 +7,7 @@ const extensionFolder = path.resolve(__dirname, '..', 'extension')
 module.exports = {
   entry: './src/index.tsx',
   mode: process.env.NODE_ENV || 'production',
+  devtool: false,
   module: {
     rules: [
       {
