@@ -3,3 +3,4 @@ extension/131.popup-script.js
 extension/popup-script.js
 extension/node_modules_web-vitals_dist_web-vitals_js.popup-script.js
 react-app/.env
+**/node_modules
