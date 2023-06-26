@@ -1,18 +1,33 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosInstance, AxiosResponse } from "axios";
 import _ from "lodash";
 
 export type SeriesName = string | null;
 
 type ElementMatch = Element | null;
 
+interface Options {
+  httpRepo?: AxiosInstance;
+}
+
 export class SeriesInfoService {
-  private httpRepo = axios;
+  private httpRepo;
+
+  constructor(options: Options = {}) {
+    this.httpRepo = options.httpRepo || axios;
+  }
+
+  private handleInvalidName = (metadata: string): never => {
+    console.error("parsed metadata", metadata);
+    throw new Error("Failed to get the name from the parsed metadata.");
+  };
 
   // todo: make this throw an error if it cannot find it so we know why it fails
   // if it ever fails
   private parseJsonStringAndGetTitle = (metadata: string): SeriesName => {
     const parsedMetadata: unknown = JSON.parse(metadata);
-    return _.get(parsedMetadata, "name", null);
+    const name: unknown = _.get(parsedMetadata, "name");
+    if (typeof name !== "string") return this.handleInvalidName(metadata);
+    return name;
   };
 
   // todo: handle possibility of this throwing an error because it might not be HTML
