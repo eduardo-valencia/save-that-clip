@@ -1,21 +1,21 @@
-import express, { Express } from 'express'
-import { RequestHandler, createProxyMiddleware } from 'http-proxy-middleware'
+import express, { Express, Request, Response } from 'express'
 import cors from 'cors'
+import axios, { AxiosResponse } from 'axios'
 
 const app: Express = express()
 
 app.use(cors())
 
-// todo: fix this not working
-const proxyMiddleware: RequestHandler = createProxyMiddleware({
-  target: 'https://www.netflix.com',
-  changeOrigin: true,
-  followRedirects: true,
-})
+const proxyToNetflix = async (req: Request, res: Response): Promise<void> => {
+  const netflixUrl: string = `http://netflix.com${req.path}`
+  const { data, status }: AxiosResponse = await axios.get(netflixUrl)
+  res.status(status).send(data)
+}
 
-app.use('*', proxyMiddleware)
+app.get('*', proxyToNetflix)
 
-const port: number = (process.env.PORT as number | undefined) || 5000
+const portWithType = process.env.PORT as number | undefined
+const port: number = portWithType || 5000
 
 const handleServerStart = (): void => {
   console.log(`Started server on http://localhost:${port}`)
