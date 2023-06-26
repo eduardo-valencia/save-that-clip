@@ -17,5 +17,5 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", ".eslintrc.js", "gulpfile.ts"]
+  "include": ["src", ".eslintrc.js", "gulpfile.ts", "../common"]
 }
