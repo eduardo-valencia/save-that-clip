@@ -21,7 +21,6 @@
     "src",
     ".eslintrc.js",
     "gulpfile.ts",
-    "babel.config.js",
     "../common",
     "jest.config.ts"
   ]
