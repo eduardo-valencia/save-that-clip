@@ -1,10 +1,10 @@
-import { SeriesInfo, SeriesInfoService } from "./SeriesInfo.service";
+import { SeriesName, SeriesInfoService } from "./SeriesInfo.service";
 
 const service = new SeriesInfoService();
 
 it("Returns the series's name", async () => {
   const episode = "https://www.netflix.com/watch/81091396";
-  const info: SeriesInfo = await service.getSeriesInfo(episode);
+  const info: SeriesName = await service.getSeriesName(episode);
   expect(info).toEqual({ name: "Demon Slayer: Kimetsu no Yaiba" });
 });
 
