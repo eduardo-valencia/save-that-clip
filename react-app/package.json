@@ -27,6 +27,7 @@
     "build-extension": "webpack",
     "serve": "npx serve -s build",
     "test": "jest",
+    "test:watch": "npm run test -- --watch",
     "eject": "react-scripts eject"
   },
   "browserslist": {
