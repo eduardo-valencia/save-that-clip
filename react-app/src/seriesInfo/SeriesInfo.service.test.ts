@@ -4,6 +4,7 @@ import config from "../config";
 
 describe("When Axios returns Netflix's HTML", () => {
   let service: SeriesInfoService;
+  let spiedGet: jest.SpiedFunction<AxiosInstance["get"]>;
   const episodeName = "Demon Slayer: Kimetsu no Yaiba";
   const episodeUrl = "http://netflix.com/watch/81091396";
 
@@ -15,33 +16,27 @@ describe("When Axios returns Netflix's HTML", () => {
     `;
   };
 
-  type Html = string;
-
   const getMockedResponseInfo = () => {
     type MockedResponseData = Pick<AxiosResponse, "status" | "data">;
-    const html: Html = getMockedHtml();
+    const html: string = getMockedHtml();
     return { status: 200, data: html } as MockedResponseData as AxiosResponse;
   };
 
   const convertNetflixUrlToApiUrl = (): string => {
-    const netflixUrl = new URL(episodeUrl);
-    const apiUrl = new URL(config.apiUrl);
-    netflixUrl.host = apiUrl.host;
-    return netflixUrl.toString();
-  };
-
-  const sendResponse: AxiosInstance["get"] = async <Data, Response>(
-    url: string
-    // eslint-disable-next-line @typescript-eslint/require-await
-  ): Promise<Response> => {
-    const convertedUrl: string = convertNetflixUrlToApiUrl();
-    if (url !== convertedUrl) throw new Error("Url is invalid");
-    return getMockedResponseInfo();
+    const netflixUrlInstance = new URL(episodeUrl);
+    /**
+     * We must use URL class instead of simply replacing the text in the
+     * episode's URL because the config's apiUrl might have a trailing slash.
+     */
+    const apiUrlInstance = new URL(config.apiUrl);
+    netflixUrlInstance.host = apiUrlInstance.host;
+    return netflixUrlInstance.toString();
   };
 
   const mockResponseOfGetMethod = (axiosInstance: AxiosInstance): void => {
-    const spiedGet = jest.spyOn(axiosInstance, "get");
-    spiedGet.mockImplementation(sendResponse);
+    spiedGet = jest.spyOn(axiosInstance, "get");
+    const response: AxiosResponse = getMockedResponseInfo();
+    spiedGet.mockResolvedValue(response);
   };
 
   const mockAxios = (): AxiosInstance => {
@@ -57,6 +52,15 @@ describe("When Axios returns Netflix's HTML", () => {
   it("Returns the series's name", async () => {
     const info: SeriesName = await service.getSeriesName(episodeUrl);
     expect(info).toEqual(episodeName);
+  });
+
+  /**
+   * Otherwise, we'll run into CORS issues.
+   */
+  it("Requests our API instead of Netflix", () => {
+    const expectedUrl: string = convertNetflixUrlToApiUrl();
+    const [url] = spiedGet.mock.lastCall;
+    expect(url).toEqual(expectedUrl);
   });
 });
 
