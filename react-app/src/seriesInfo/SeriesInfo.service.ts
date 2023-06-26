@@ -40,6 +40,7 @@ export class SeriesInfoService {
 
   public getSeriesName = async (episodeUrl: string): Promise<SeriesName> => {
     const response: AxiosResponse = await this.httpRepo.get(episodeUrl);
+    console.log("response.data", response.data);
     if (typeof response.data !== "string") this.handleNonStringResponseData();
     return this.getTitleFromHtml(response.data as string);
   };
