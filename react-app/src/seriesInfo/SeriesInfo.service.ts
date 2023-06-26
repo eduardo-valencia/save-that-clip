@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import _ from "lodash";
 
-export type SeriesName = string | null;
+export type SeriesName = string;
 
 type ElementMatch = Element | null;
 
@@ -21,8 +21,6 @@ export class SeriesInfoService {
     throw new Error("Failed to get the name from the parsed metadata.");
   };
 
-  // todo: make this throw an error if it cannot find it so we know why it fails
-  // if it ever fails
   private parseJsonStringAndGetTitle = (metadata: string): SeriesName => {
     const parsedMetadata: unknown = JSON.parse(metadata);
     const name: unknown = _.get(parsedMetadata, "name");
@@ -30,7 +28,6 @@ export class SeriesInfoService {
     return name;
   };
 
-  // todo: handle possibility of this throwing an error because it might not be HTML
   private parseHtml = (html: string): Document => {
     const parser = new DOMParser();
     return parser.parseFromString(html, "text/html");
@@ -41,10 +38,16 @@ export class SeriesInfoService {
     return document.querySelector('script[type="application/ld+json"]');
   };
 
+  private handleMissingMetadataElement = (): never => {
+    throw new Error(
+      "Could not find the element with the episode metadata in the HTML."
+    );
+  };
+
   private getTitleFromHtml = (html: string): SeriesName => {
     const metadataElement: ElementMatch =
       this.parseHtmlAndFindMetadataElement(html);
-    if (!metadataElement) return null;
+    if (!metadataElement) return this.handleMissingMetadataElement();
     // Because the inner HTML is the JSON metadata
     return this.parseJsonStringAndGetTitle(metadataElement.innerHTML);
   };
@@ -53,9 +56,12 @@ export class SeriesInfoService {
     throw new Error("Response data is not a string.");
   };
 
+  /**
+   * ! Important
+   * This throws an error when it cannot find the series' name.
+   */
   public getSeriesName = async (episodeUrl: string): Promise<SeriesName> => {
     const response: AxiosResponse = await this.httpRepo.get(episodeUrl);
-    console.log("response.data", response.data);
     if (typeof response.data !== "string") this.handleNonStringResponseData();
     return this.getTitleFromHtml(response.data as string);
   };

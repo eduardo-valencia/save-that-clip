@@ -42,6 +42,10 @@ describe("When Axios returns Netflix's HTML", () => {
   });
 });
 
-it.todo(
-  "Throws an error when it cannot parse the series' info from an episode's URL."
-);
+it.todo("Throws an error when it cannot get the name from the HTML");
+
+it.todo("Throws an error when it cannot parse the metadata's JSON");
+
+it.todo("Throws an error when it cannot parse the HTML");
+
+it.todo("Throws an error when the request fails");
