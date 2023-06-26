@@ -22,6 +22,7 @@
     ".eslintrc.js",
     "gulpfile.ts",
     "babel.config.js",
-    "../common"
+    "../common",
+    "jest.config.ts"
   ]
 }
