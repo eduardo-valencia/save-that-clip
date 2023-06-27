@@ -1,4 +1,6 @@
-type Query = (typeof chrome.tabs)["query"];
+type ChromeTabs = typeof chrome.tabs;
+
+type Query = ChromeTabs["query"];
 
 type QueryParameters = Parameters<Query>;
 
@@ -10,5 +12,7 @@ export abstract class TabsRepoAbstraction {
   /**
    * We do not allow the URL because that requires more permissions.
    */
-  abstract query: (queryInfo: Omit<QueryInfo, "url">) => ReturnType<Query>;
+  abstract query: (
+    queryInfo: Omit<QueryInfo, "url">
+  ) => Promise<chrome.tabs.Tab[]>;
 }
