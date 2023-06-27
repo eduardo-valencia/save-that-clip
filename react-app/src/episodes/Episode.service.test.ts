@@ -2,11 +2,15 @@
  * ! Important
  *
  * We reset mocks after each test.
+ *
+ * * Notes
+ *
+ * - An "episode tab" is an active tab with a Netflix episode.
  */
 
+import _ from "lodash";
 import {
   EpisodeTime,
-  Message,
   MessageToSetEpisodeTime,
   Messages,
   PossibleEpisodeTime,
@@ -33,6 +37,7 @@ const {
   findTimeOf1stEpisodeTab,
   findOneEpisodeTab,
   sendMessageToSetEpisodeTime,
+  findOneEpisodeTabByUrl,
 } = new EpisodeService({
   tabsRepo,
 });
@@ -42,11 +47,16 @@ const {
  */
 type Tab = chrome.tabs.Tab;
 
+const generateTabId = (): number => {
+  const idString = _.uniqueId();
+  return parseInt(idString);
+};
+
 const generateEpisodeTab = () => {
   const tab: Pick<Tab, "url" | "active" | "id"> = {
     url: "http://netflix.com/watch/81091396",
     active: true,
-    id: 100,
+    id: generateTabId(),
   };
   return tab as Tab;
 };
@@ -144,7 +154,7 @@ describe("sendMessageToSetEpisodeTime", () => {
       await sendMessageToSetEpisodeTime(timeMs);
     });
 
-    it("Sends a message", async () => {
+    it("Sends a message", () => {
       const message: MessageToSetEpisodeTime = getMessage();
       expect(tabsRepo.sendMessage).toHaveBeenCalledWith(tab.id, message);
     });
@@ -157,9 +167,31 @@ describe("sendMessageToSetEpisodeTime", () => {
   });
 });
 
-// todo: determine if we need to test this directly, or if we can do so indirectly
 describe("findOneEpisodeTabByUrl", () => {
-  it.todo("Returns a tab when a tab has the episode's URL and is active");
+  describe("Even when there are multiple episode tabs", () => {
+    let tabToFind: Tab;
 
-  it.todo("Queries with the correct args");
+    const generateTabWithOtherUrl = (): Tab => {
+      const tab: Tab = generateEpisodeTab();
+      tab.url = "http://example.com";
+      return tab;
+    };
+
+    const getTabs = (): Tab[] => {
+      tabToFind = generateEpisodeTab();
+      const tabWithOtherUrl: Tab = generateTabWithOtherUrl();
+      return [tabWithOtherUrl, tabToFind];
+    };
+
+    beforeAll(() => {
+      const tabs: Tab[] = getTabs();
+      tabsRepo.query.mockResolvedValue(tabs);
+    });
+
+    it("Returns the episode tab with the URL", async () => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const tab: PossibleTab = await findOneEpisodeTabByUrl(tabToFind.url!);
+      expect(tab).toEqual(tabToFind);
+    });
+  });
 });

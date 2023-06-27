@@ -1,3 +1,4 @@
+import _ from "lodash";
 import {
   Message,
   MessageToSetEpisodeTime,
@@ -23,42 +24,43 @@ export class EpisodeService {
     this.tabsRepo = tabsRepo || new TabsRepo();
   }
 
+  private getActiveTabs = (): Promise<Tab[]> => {
+    return this.tabsRepo.query({ active: true });
+  };
+
   /**
    * We will use this to determine if an episode is currently playing so we know
    * whether to open a new tab with the episode or to change the current
    * episode's time.
    */
-  private findOneEpisodeTabByUrl = (
+  public findOneEpisodeTabByUrl = async (
     url: Bookmark["episodeUrl"]
   ): Promise<PossibleTab> => {
-    return new Promise((resolve) => resolve(null));
+    const tabs: Tab[] = await this.getActiveTabs();
+    const tabWithUrl: Tab | undefined = _.find(tabs, { url });
+    return tabWithUrl || null;
   };
 
-  private getIfTabHasEpisodeUrl = ({ url }: Tab): boolean => {
+  private getIfTabHasUrlLikeEpisode = ({ url }: Tab): boolean => {
     if (!url) return false;
     const episodeUrlPattern = /.+\/watch\/\d+/;
     const match: RegExpMatchArray | null = url.match(episodeUrlPattern);
     return !!match;
   };
 
-  private findTabWithEpisodeUrl = (tabs: Tab[]): Tab | undefined => {
-    return tabs.find(this.getIfTabHasEpisodeUrl);
+  private findTabWithUrlLikeEpisode = (tabs: Tab[]): Tab | undefined => {
+    return tabs.find(this.getIfTabHasUrlLikeEpisode);
   };
 
   /**
    * We will use this to get the tab's ID. Then, we'll send a message to that
    * tab asking for the episode info. We also need this to determine if we
    * should enable the "Add Bookmark" button.
-   *
-   * Plan:
-   * - Get all active tabs.
-   * - Filter them by a URL that looks like an episode URL. Note that we
-   *   shouldn't filter it in the "query" method.
-   * - Return first one.
    */
   public findOneEpisodeTab = async (): Promise<PossibleTab> => {
-    const tabs: Tab[] = await this.tabsRepo.query({ active: true });
-    const withEpisodeUrl: Tab | undefined = this.findTabWithEpisodeUrl(tabs);
+    const tabs: Tab[] = await this.getActiveTabs();
+    const withEpisodeUrl: Tab | undefined =
+      this.findTabWithUrlLikeEpisode(tabs);
     return withEpisodeUrl || null;
   };
 
