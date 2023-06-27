@@ -1,5 +1,6 @@
 import {
   Message,
+  MessageToSetEpisodeTime,
   Messages,
   PossibleEpisodeTime,
 } from "../../../common/messages";
@@ -61,6 +62,20 @@ export class EpisodeService {
     return withEpisodeUrl || null;
   };
 
+  private handleMissingTab = (): never => {
+    throw new Error("No tab with a Netflix episode was found.");
+  };
+
+  private sendMessageToEpisodeTab = async (
+    message: Message
+  ): Promise<unknown> => {
+    const episodeTab: PossibleTab = await this.findOneEpisodeTab();
+    if (!episodeTab) return this.handleMissingTab();
+    const { sendMessage } = this.tabsRepo;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return sendMessage(episodeTab.id!, message);
+  };
+
   private sendMessageToGetEpisodeTime = async (
     episodeTab: Tab
   ): Promise<PossibleEpisodeTime> => {
@@ -69,10 +84,6 @@ export class EpisodeService {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const time: unknown = await sendMessage(episodeTab.id!, data);
     return time as PossibleEpisodeTime;
-  };
-
-  private handleMissingTab = (): never => {
-    throw new Error("No tab with a Netflix episode was found.");
   };
 
   /**
@@ -84,5 +95,18 @@ export class EpisodeService {
     const episodeTab: PossibleTab = await this.findOneEpisodeTab();
     if (!episodeTab) return this.handleMissingTab();
     return this.sendMessageToGetEpisodeTime(episodeTab);
+  };
+
+  private getMessageToSetTime = (
+    timeMs: MessageToSetEpisodeTime["timeMs"]
+  ): MessageToSetEpisodeTime => {
+    return { type: Messages.setEpisodeTime, timeMs };
+  };
+
+  public sendMessageToSetEpisodeTime = async (
+    timeMs: MessageToSetEpisodeTime["timeMs"]
+  ): Promise<void> => {
+    const message: MessageToSetEpisodeTime = this.getMessageToSetTime(timeMs);
+    await this.sendMessageToEpisodeTab(message);
   };
 }

@@ -4,8 +4,13 @@
  * We reset mocks after each test.
  */
 
-import { EpisodeTime, PossibleEpisodeTime } from "../../../common/messages";
-import { TabsRepo } from "../tabs/Tabs.repo";
+import {
+  EpisodeTime,
+  Message,
+  MessageToSetEpisodeTime,
+  Messages,
+  PossibleEpisodeTime,
+} from "../../../common/messages";
 import { TabsRepoAbstraction } from "../tabs/Tabs.repo-abstraction";
 import { EpisodeService, PossibleTab } from "./Episode.service";
 
@@ -24,7 +29,11 @@ class CustomTabsRepo extends TabsRepoAbstraction {
  * Repos and services
  */
 const tabsRepo = new CustomTabsRepo();
-const { findTimeOf1stEpisodeTab, findOneEpisodeTab } = new EpisodeService({
+const {
+  findTimeOf1stEpisodeTab,
+  findOneEpisodeTab,
+  sendMessageToSetEpisodeTime,
+} = new EpisodeService({
   tabsRepo,
 });
 
@@ -34,9 +43,10 @@ const { findTimeOf1stEpisodeTab, findOneEpisodeTab } = new EpisodeService({
 type Tab = chrome.tabs.Tab;
 
 const generateEpisodeTab = () => {
-  const tab: Pick<Tab, "url" | "active"> = {
+  const tab: Pick<Tab, "url" | "active" | "id"> = {
     url: "http://netflix.com/watch/81091396",
     active: true,
+    id: 100,
   };
   return tab as Tab;
 };
@@ -45,6 +55,11 @@ const mockTabWithEpisode = (): Tab => {
   const tab: Tab = generateEpisodeTab();
   tabsRepo.query.mockResolvedValue([tab]);
   return tab;
+};
+
+const mockNoTabs = (): void => {
+  // We pretend that there are no tabs
+  tabsRepo.query.mockResolvedValue([]);
 };
 
 afterEach(() => {
@@ -109,15 +124,37 @@ describe("findTimeOf1stEpisodeTab", () => {
   });
 
   it("Throws an error when we try returning the time when there is no Netflix tab open", async () => {
-    // We pretend that there are no tabs
-    tabsRepo.query.mockResolvedValue([]);
+    mockNoTabs();
     const promise: Promise<PossibleEpisodeTime> = findTimeOf1stEpisodeTab();
     await expect(promise).rejects.toBeTruthy();
   });
 });
 
 describe("sendMessageToSetEpisodeTime", () => {
-  it.todo("Sends a message");
+  describe("After calling it when there is an episode tab", () => {
+    let tab: Tab;
+    const timeMs: MessageToSetEpisodeTime["timeMs"] = 1000;
+
+    const getMessage = (): MessageToSetEpisodeTime => {
+      return { type: Messages.setEpisodeTime, timeMs: 1000 };
+    };
+
+    beforeAll(async () => {
+      tab = mockTabWithEpisode();
+      await sendMessageToSetEpisodeTime(timeMs);
+    });
+
+    it("Sends a message", async () => {
+      const message: MessageToSetEpisodeTime = getMessage();
+      expect(tabsRepo.sendMessage).toHaveBeenCalledWith(tab.id, message);
+    });
+  });
+
+  it("Throws an error when it cannot find an episode tab", async () => {
+    mockNoTabs();
+    const promise: Promise<void> = sendMessageToSetEpisodeTime(1000);
+    await expect(promise).rejects.toBeTruthy();
+  });
 });
 
 // todo: determine if we need to test this directly, or if we can do so indirectly
