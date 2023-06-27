@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import _ from "lodash";
+import config from "../config";
 
 export type SeriesName = string;
 
@@ -8,6 +9,8 @@ type ElementMatch = Element | null;
 interface Options {
   httpRepo?: AxiosInstance;
 }
+
+type EpisodeUrl = string;
 
 export class SeriesInfoService {
   private httpRepo;
@@ -56,12 +59,36 @@ export class SeriesInfoService {
     throw new Error("Response data is not a string.");
   };
 
+  private joinPathNameOfApiAndEpisodeUrls = (
+    apiUrl: URL,
+    episodeUrl: URL
+  ): string => {
+    if (apiUrl.pathname === "/") return episodeUrl.pathname;
+    return `${apiUrl.pathname}${episodeUrl.pathname}`;
+  };
+
+  /**
+   * We must make a request to our API because it will forward the request to
+   * Netflix. This is necessary to avoid running into CORS issues.
+   */
+  private convertNetflixUrlToApiUrl = (
+    episodeUrlString: EpisodeUrl
+  ): string => {
+    const apiUrl = new URL(config.apiUrl);
+    const episodeUrl = new URL(episodeUrlString);
+    apiUrl.pathname = this.joinPathNameOfApiAndEpisodeUrls(apiUrl, episodeUrl);
+    return apiUrl.toString();
+  };
+
   /**
    * ! Important
    * This throws an error when it cannot find the series' name.
    */
-  public getSeriesName = async (episodeUrl: string): Promise<SeriesName> => {
-    const response: AxiosResponse = await this.httpRepo.get(episodeUrl);
+  public getSeriesName = async (
+    episodeUrl: EpisodeUrl
+  ): Promise<SeriesName> => {
+    const convertedUrl: string = this.convertNetflixUrlToApiUrl(episodeUrl);
+    const response: AxiosResponse = await this.httpRepo.get(convertedUrl);
     if (typeof response.data !== "string") this.handleNonStringResponseData();
     return this.getTitleFromHtml(response.data as string);
   };

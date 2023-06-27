@@ -1,12 +1,13 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { SeriesName, SeriesInfoService } from "./SeriesInfo.service";
-import config from "../config";
+import config, { Config } from "../config";
 
 describe("When Axios returns Netflix's HTML", () => {
   let service: SeriesInfoService;
   let spiedGet: jest.SpiedFunction<AxiosInstance["get"]>;
   const episodeName = "Demon Slayer: Kimetsu no Yaiba";
-  const episodeUrl = "http://netflix.com/watch/81091396";
+  const episodeHref = "/watch/81091396";
+  const episodeUrl = `http://netflix.com${episodeHref}`;
 
   const getMockedHtml = (): string => {
     return `
@@ -22,17 +23,6 @@ describe("When Axios returns Netflix's HTML", () => {
     return { status: 200, data: html } as MockedResponseData as AxiosResponse;
   };
 
-  const convertNetflixUrlToApiUrl = (): string => {
-    const netflixUrlInstance = new URL(episodeUrl);
-    /**
-     * We must use URL class instead of simply replacing the text in the
-     * episode's URL because the config's apiUrl might have a trailing slash.
-     */
-    const apiUrlInstance = new URL(config.apiUrl);
-    netflixUrlInstance.host = apiUrlInstance.host;
-    return netflixUrlInstance.toString();
-  };
-
   const mockResponseOfGetMethod = (axiosInstance: AxiosInstance): void => {
     spiedGet = jest.spyOn(axiosInstance, "get");
     const response: AxiosResponse = getMockedResponseInfo();
@@ -45,22 +35,66 @@ describe("When Axios returns Netflix's HTML", () => {
     return axiosInstance;
   };
 
+  const getRequestedUrl = (): string => {
+    const [url] = spiedGet.mock.lastCall;
+    return url;
+  };
+
+  const getNameForEpisode = (): Promise<SeriesName> => {
+    return service.getSeriesName(episodeUrl);
+  };
+
+  type ExpectedHref = string;
+
+  const validateRequestedUrl = (expectedHref: ExpectedHref): void => {
+    const url: string = getRequestedUrl();
+    const { host, protocol } = new URL(config.apiUrl);
+    expect(url).toEqual(`${protocol}//${host}${expectedHref}`);
+  };
+
+  interface OptionsToTestRequestedUrl {
+    apiUrlOfConfig: Config["apiUrl"];
+    expectedHref: ExpectedHref;
+  }
+
+  const setApiUrlAndGetSeriesInfoAndTestRequestedUrl = async ({
+    apiUrlOfConfig,
+    expectedHref,
+  }: OptionsToTestRequestedUrl): Promise<void> => {
+    config.apiUrl = apiUrlOfConfig;
+    await getNameForEpisode();
+    validateRequestedUrl(expectedHref);
+  };
+
   beforeAll(() => {
     service = new SeriesInfoService({ httpRepo: mockAxios() });
   });
 
   it("Returns the series's name", async () => {
-    const info: SeriesName = await service.getSeriesName(episodeUrl);
+    const info: SeriesName = await getNameForEpisode();
     expect(info).toEqual(episodeName);
   });
 
-  /**
-   * Otherwise, we'll run into CORS issues.
-   */
-  it("Requests our API instead of Netflix", () => {
-    const expectedUrl: string = convertNetflixUrlToApiUrl();
-    const [url] = spiedGet.mock.lastCall;
-    expect(url).toEqual(expectedUrl);
+  it("Requests our API instead of Netflix", async () => {
+    await setApiUrlAndGetSeriesInfoAndTestRequestedUrl({
+      apiUrlOfConfig: "http://localhost:5000",
+      expectedHref: episodeHref,
+    });
+  });
+
+  it("Uses the correct URL to request our API when its URL has a trailing slash", async () => {
+    await setApiUrlAndGetSeriesInfoAndTestRequestedUrl({
+      apiUrlOfConfig: "http://localhost:5000/",
+      expectedHref: episodeHref,
+    });
+  });
+
+  it("Requests the API with the correct URL when the API's URL has extra fragments", async () => {
+    const hrefOfApiUrl = "/api";
+    await setApiUrlAndGetSeriesInfoAndTestRequestedUrl({
+      apiUrlOfConfig: `http://localhost:5000${hrefOfApiUrl}`,
+      expectedHref: `${hrefOfApiUrl}${episodeHref}`,
+    });
   });
 });
 

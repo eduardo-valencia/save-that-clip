@@ -10,7 +10,7 @@ const getAndValidateApiUrl = (): string => {
   return API_URL;
 };
 
-interface Config {
+export interface Config {
   apiUrl: string;
 }
 
