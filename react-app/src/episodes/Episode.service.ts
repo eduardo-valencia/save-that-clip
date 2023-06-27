@@ -1,4 +1,8 @@
-import { PossibleEpisodeTime } from "../../../common/messages";
+import {
+  Message,
+  Messages,
+  PossibleEpisodeTime,
+} from "../../../common/messages";
 import { Bookmark } from "../bookmarks/Bookmarks.service";
 import { TabsRepo } from "../tabs/Tabs.repo";
 import { TabsRepoAbstraction } from "../tabs/Tabs.repo-abstraction";
@@ -57,7 +61,28 @@ export class EpisodeService {
     return withEpisodeUrl || null;
   };
 
+  private sendMessageToGetEpisodeTime = async (
+    episodeTab: Tab
+  ): Promise<PossibleEpisodeTime> => {
+    const data: Message = { type: Messages.getEpisodeTime };
+    const { sendMessage } = this.tabsRepo;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const time: unknown = await sendMessage(episodeTab.id!, data);
+    return time as PossibleEpisodeTime;
+  };
+
+  private handleMissingTab = (): never => {
+    throw new Error("No tab with a Netflix episode was found.");
+  };
+
+  /**
+   * We must throw an error when a tab was not found because we would only call
+   * this method when attempting to create a bookmark, and we expect a Netflix
+   * tab to be open already.
+   */
   public findTimeOf1stEpisodeTab = async (): Promise<PossibleEpisodeTime> => {
-    return new Promise((resolve) => resolve(null));
+    const episodeTab: PossibleTab = await this.findOneEpisodeTab();
+    if (!episodeTab) return this.handleMissingTab();
+    return this.sendMessageToGetEpisodeTime(episodeTab);
   };
 }

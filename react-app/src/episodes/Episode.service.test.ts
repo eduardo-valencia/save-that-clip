@@ -90,20 +90,13 @@ describe("findOneEpisodeTab", () => {
 });
 
 describe("findTimeOf1stEpisodeTab", () => {
-  /**
-   * - Mock the repo to return one active Netflix tab that has an episode's URL.
-   *   We might need to refactor this because we'll likely need this
-   *   functionality for sendMessageToSetEpisodeTime.
-   * - Mock the messaging functionality to respond with the episode's time
-   */
-  // todo: handle possibility of them having multiple active episode tabs
+  const mockedEpisodeTime: EpisodeTime = 1000;
+
+  const mockTimeResponse = (): void => {
+    tabsRepo.sendMessage.mockResolvedValue(mockedEpisodeTime);
+  };
+
   describe("When the content script responds with the time", () => {
-    const episodeTime: EpisodeTime = 1000;
-
-    const mockTimeResponse = (): void => {
-      tabsRepo.sendMessage.mockResolvedValue(episodeTime);
-    };
-
     beforeAll(() => {
       mockTabWithEpisode();
       mockTimeResponse();
@@ -111,18 +104,16 @@ describe("findTimeOf1stEpisodeTab", () => {
 
     it("Returns the episode's time", async () => {
       const time: PossibleEpisodeTime = await findTimeOf1stEpisodeTab();
-      expect(time).toEqual(episodeTime);
+      expect(time).toEqual(mockedEpisodeTime);
     });
   });
 
-  /**
-   * We must throw an error because we would only call this method when
-   * attempting to create a bookmark, and we expect a Netflix tab to be open
-   * already.
-   */
-  it.todo(
-    "Throws an error when we try returning the time when there is no Netflix tab open"
-  );
+  it("Throws an error when we try returning the time when there is no Netflix tab open", async () => {
+    // We pretend that there are no tabs
+    tabsRepo.query.mockResolvedValue([]);
+    const promise: Promise<PossibleEpisodeTime> = findTimeOf1stEpisodeTab();
+    await expect(promise).rejects.toBeTruthy();
+  });
 });
 
 describe("sendMessageToSetEpisodeTime", () => {

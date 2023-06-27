@@ -1,3 +1,5 @@
+import { Message } from "../../../common/messages";
+
 type ChromeTabs = typeof chrome.tabs;
 
 type Query = ChromeTabs["query"];
@@ -7,7 +9,7 @@ type QueryParameters = Parameters<Query>;
 type QueryInfo = QueryParameters["0"];
 
 export abstract class TabsRepoAbstraction {
-  abstract sendMessage: (tabId: number, message: unknown) => Promise<unknown>;
+  abstract sendMessage: (tabId: number, message: Message) => Promise<unknown>;
 
   /**
    * We do not allow the URL because that requires more permissions.
