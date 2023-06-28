@@ -10,7 +10,7 @@ import { FieldsToCreateBookmark as CreationFields } from "./Bookmarks.repo-abstr
 import { Bookmark } from "./Bookmarks.service";
 import _ from "lodash";
 
-const { create, destroy, list } = new BookmarksRepo();
+const { create, list } = new BookmarksRepo();
 
 const generateUniqueBookmark = async (): Promise<CreationFields> => {
   const bookmark: CreationFields = { episodeUrl: _.uniqueId() };
@@ -18,23 +18,20 @@ const generateUniqueBookmark = async (): Promise<CreationFields> => {
   return bookmark;
 };
 
-// const getExpectedBookmarkStructure = () => {
-
-// }
-
-const expectToFindBookmark = (
+const findAndValidateBookmark = (
   creationFields: CreationFields,
   bookmarks: Bookmark[]
 ): void => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const bookmark = expect.objectContaining(creationFields);
-  expect(bookmarks).toContainEqual(bookmark);
+  const bookmark = _.find(bookmarks, creationFields) as Bookmark | undefined;
+  expect(bookmark).toBeTruthy();
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  expect(bookmark!.id).toBeTruthy();
 };
 
 const createBookmarkAndExpectToFindIt = async (): Promise<void> => {
   const creationFields: CreationFields = await generateUniqueBookmark();
   const bookmarks: Bookmark[] = await list();
-  expectToFindBookmark(creationFields, bookmarks);
+  findAndValidateBookmark(creationFields, bookmarks);
 };
 
 describe("create", () => {
@@ -43,18 +40,8 @@ describe("create", () => {
   });
 });
 
-// todo: remove find method because that should go in service. use list method
-// instead.
-// todo: test that bookmarks have IDs
 describe("list", () => {
-  it("Lists bookmark", async () => {
+  it("Lists bookmarks", async () => {
     await createBookmarkAndExpectToFindIt();
-  });
-});
-
-// todo: consider testing this through the service.
-describe("destroy", () => {
-  describe("After creating a bookmark", () => {
-    it.todo("Removes a bookmark");
   });
 });
