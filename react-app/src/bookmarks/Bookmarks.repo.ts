@@ -43,7 +43,7 @@ export class BookmarksRepo extends BookmarksRepoAbstraction {
     key: keyof StoredItems
   ): Bookmark[] => {
     const id = key as string;
-    const bookmarkFields = storedValue as RepoFieldsToCreateBookmark;
+    const bookmarkFields = storedValue as FieldsToStore;
     const bookmark: Bookmark = { ...bookmarkFields, id };
     return [...bookmarks, bookmark];
   };
