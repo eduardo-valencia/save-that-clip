@@ -4,4 +4,6 @@ export class TabsRepo extends TabsRepoAbstraction {
   public sendMessage = chrome.tabs.sendMessage;
 
   public query = chrome.tabs.query;
+
+  public create = chrome.tabs.create;
 }

@@ -9,4 +9,6 @@ export class MockedTabsRepo extends TabsRepoAbstraction {
     jest.fn();
 
   public query: jest.MockedFn<TabsRepoAbstraction["query"]> = jest.fn();
+
+  public create: jest.MockedFn<TabsRepoAbstraction["create"]> = jest.fn();
 }

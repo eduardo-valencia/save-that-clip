@@ -17,6 +17,7 @@ jest.mock("../chrome.service", () => {
 });
 
 /* eslint-disable import/first */
+import _ from "lodash";
 import { EpisodeService, EpisodeTabAndTime } from "../episodes/Episode.service";
 import {
   SeriesInfoService,
@@ -29,7 +30,6 @@ import {
   BookmarksService,
   FieldsToCreateBookmark as CreationFields,
 } from "./Bookmarks.service";
-import _ from "lodash";
 
 /**
  * * Services & their mocks
@@ -53,7 +53,7 @@ const spiedGetSeriesName = jest.spyOn(seriesInfoService, "findSeriesName");
 // Other
 const { generateEpisodeTab } = new TabsFactory();
 
-const { create, find, destroy } = new BookmarksService({
+const { create, find, destroy, open } = new BookmarksService({
   episodeService,
   seriesInfoService,
 });
@@ -136,6 +136,10 @@ describe("create / find", () => {
   });
 });
 
+describe("create", () => {
+  it("Returns the bookmark", async () => {});
+});
+
 describe("find", () => {
   let generatedBookmark: CreationFields;
 
@@ -191,5 +195,62 @@ describe("destroy", () => {
       const bookmarks: Bookmark[] = await findBookmarksWithCreationFields();
       expect(bookmarks).toHaveLength(0);
     });
+  });
+});
+
+/**
+ * Plan:
+ *
+ * - Mock the services like we did before.
+ */
+describe("open", () => {
+  /**
+   * - Also mock the tabs repo's method to create a new tab.
+   * - Create a unique bookmark.
+   * - Call the method.
+   */
+  describe("When the bookmark is not already open", () => {
+    let creationFields: CreationFields;
+
+    const mockCreatingTab = (): void => {
+      const tab: chrome.tabs.Tab = generateEpisodeTab();
+      tabsRepo.create.mockResolvedValue(tab);
+    };
+
+    beforeAll(async () => {
+      mockCreatingTab();
+      mockTimeAndSeriesName();
+      creationFields = await generateUniqueBookmark();
+      // await open()
+    });
+
+    /**
+     * - Expect a new tab to have been created with "active" set to "true" and
+     *   with the correct URL.
+     */
+    it.todo("Opens a new tab with the bookmark");
+  });
+
+  /**
+   * - Mock the EpisodeService.sendMessageToSetEpisodeTime to resolve to nothing.
+   * - Create a unique bookmark.
+   * - Call the method.
+   */
+  describe("When the bookmark is open", () => {
+    /**
+     * - Find the bookmark using the creation fields so we can get its time.
+     * - Expect sendMessageToSetEpisodeTime to have been called with the correct
+     *   time.
+     */
+    it.todo("Sets the video's time to the bookmark's time");
+  });
+
+  // Note: These cases are less important since they're unlikely to happen.
+  describe("When an unrelated tab is open", () => {
+    it.todo("Does not send a message to that tab");
+  });
+
+  describe("When there are multiple tabs open for the same bookmark", () => {
+    it.todo("Does not crash");
   });
 });

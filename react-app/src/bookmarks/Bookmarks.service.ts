@@ -73,4 +73,6 @@ export class BookmarksService {
   public destroy = async (id: Bookmark["id"]): Promise<void> => {
     await this.repo.destroy(id);
   };
+
+  public open = async (id: Bookmark["id"]): Promise<void> => {};
 }

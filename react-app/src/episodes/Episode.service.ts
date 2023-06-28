@@ -23,6 +23,9 @@ export interface EpisodeTabAndTime {
   time: EpisodeTime;
 }
 
+/**
+ * This service allows us to interact with an episode tab.
+ */
 export class EpisodeService {
   private tabsRepo: TabsRepoAbstraction;
 
