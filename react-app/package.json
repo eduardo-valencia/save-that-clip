@@ -21,6 +21,7 @@
     "react-router-dom": "^6.10.0",
     "react-scripts": "5.0.1",
     "typescript": "^4.9.5",
+    "uuid": "^9.0.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -48,6 +49,7 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/gulp": "^4.0.11",
     "@types/lodash": "^4.14.195",
+    "@types/uuid": "^9.0.2",
     "@types/webpack-stream": "^3.2.12",
     "@typescript-eslint/eslint-plugin": "^5.60.0",
     "@typescript-eslint/parser": "^5.60.0",
