@@ -41,7 +41,7 @@ describe("When Axios returns Netflix's HTML", () => {
   };
 
   const getNameForEpisode = (): Promise<SeriesName> => {
-    return service.getSeriesName(episodeUrl);
+    return service.findSeriesName(episodeUrl);
   };
 
   type ExpectedHref = string;

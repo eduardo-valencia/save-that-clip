@@ -12,6 +12,8 @@ interface Options {
 
 type EpisodeUrl = string;
 
+export type PossibleSeriesName = SeriesName | null;
+
 export class SeriesInfoService {
   private httpRepo;
 
@@ -84,12 +86,27 @@ export class SeriesInfoService {
    * ! Important
    * This throws an error when it cannot find the series' name.
    */
-  public getSeriesName = async (
+  private getSeriesName = async (
     episodeUrl: EpisodeUrl
   ): Promise<SeriesName> => {
     const convertedUrl: string = this.convertNetflixUrlToApiUrl(episodeUrl);
     const response: AxiosResponse = await this.httpRepo.get(convertedUrl);
     if (typeof response.data !== "string") this.handleNonStringResponseData();
     return this.getTitleFromHtml(response.data as string);
+  };
+
+  private handleErrorGettingSeriesName = (error: unknown): null => {
+    console.error(error);
+    return null;
+  };
+
+  public findSeriesName = async (
+    episodeUrl: EpisodeUrl
+  ): Promise<PossibleSeriesName> => {
+    try {
+      return await this.getSeriesName(episodeUrl);
+    } catch (error) {
+      return this.handleErrorGettingSeriesName(error);
+    }
   };
 }

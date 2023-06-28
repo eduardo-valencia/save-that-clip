@@ -15,7 +15,7 @@ const episodeService = new EpisodeService();
 const spiedGetTime = jest.spyOn(episodeService, "getTimeOf1stEpisodeTab");
 
 const seriesInfoService = new SeriesInfoService();
-const spiedGetSeriesName = jest.spyOn(seriesInfoService, "getSeriesName");
+const spiedGetSeriesName = jest.spyOn(seriesInfoService, "findSeriesName");
 
 /**
  * * General plan:
@@ -63,6 +63,7 @@ describe("create", () => {
 describe("find", () => {
   it.todo("Lists bookmarks when not providing any fields");
 
+  // todo: create two bookmarks with different names to test this
   it.todo("Filters bookmarks by their fields");
 });
 
