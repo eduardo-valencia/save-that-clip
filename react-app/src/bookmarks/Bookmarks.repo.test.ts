@@ -18,7 +18,6 @@ const generateBookmarkFields = (): CreationFields => {
   return {
     episodeUrl: _.uniqueId(),
     name: "test",
-    type: "bookmark",
     seriesName: "test",
     timeMs: 100,
   };

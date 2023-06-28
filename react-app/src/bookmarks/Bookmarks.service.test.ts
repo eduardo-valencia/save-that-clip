@@ -1,7 +1,13 @@
 /**
  * ! Important
+ *
  * We are mocking certain methods and services. Please see below and the
  * service definitions for more info.
+ *
+ * * Notes
+ *
+ * - Multiple tests are creating bookmarks here, so do not assume that the
+ *   bookmarks list is empty by default.
  */
 
 import { getMockedChromeService } from "./storageMock";
@@ -19,7 +25,11 @@ import {
 import { MockedTabsRepo } from "../tabs/MockedTabs.repo";
 import { TabsFactory } from "../tabs/Tabs.factory";
 import { Bookmark } from "./Bookmarks.repo-abstraction";
-import { BookmarksService, FieldsToCreateBookmark } from "./Bookmarks.service";
+import {
+  BookmarksService,
+  FieldsToCreateBookmark as CreationFields,
+} from "./Bookmarks.service";
+import _ from "lodash";
 
 /**
  * * Services & their mocks
@@ -49,13 +59,6 @@ const { create, find } = new BookmarksService({
 });
 
 /**
- * * General plan:
- *
- * - Mock the episode service so we can mock the time.
- * - Mock the series info service so we can mock the series' name.
- */
-
-/**
  * * Other test utils.
  */
 
@@ -78,6 +81,12 @@ const mockTimeAndSeriesName = (): MockedInfo => {
   return info;
 };
 
+const generateUniqueBookmark = async (): Promise<CreationFields> => {
+  const creationFields: CreationFields = { name: _.uniqueId() };
+  await create(creationFields);
+  return creationFields;
+};
+
 describe("create / find", () => {
   /**
    * Plan:
@@ -89,8 +98,7 @@ describe("create / find", () => {
    */
   describe("After creating one", () => {
     let mockedInfo: MockedInfo;
-
-    const creationFields: FieldsToCreateBookmark = { name: "test" };
+    let creationFields: CreationFields;
 
     const getExpectedFields = (): Partial<Bookmark> => {
       return {
@@ -104,6 +112,7 @@ describe("create / find", () => {
 
     beforeAll(async () => {
       mockedInfo = mockTimeAndSeriesName();
+      creationFields = await generateUniqueBookmark();
       await create(creationFields);
     });
 
@@ -125,16 +134,45 @@ describe("create / find", () => {
 });
 
 describe("find", () => {
+  let generatedBookmark: CreationFields;
+
+  beforeAll(async () => {
+    // Otherwise, generating a bookmark might not work.
+    mockTimeAndSeriesName();
+    /**
+     * We make a bookmark because most tests require one.
+     */
+    generatedBookmark = await generateUniqueBookmark();
+  });
+
+  it("Returns all bookmarks when providing empty fields", async () => {
+    const bookmarks: Bookmark[] = await find({});
+    expect(bookmarks.length).toBeGreaterThanOrEqual(1);
+  });
+
   /**
    * Plan:
    * - Define a method to generate a unique bookmark. it should return the
    *   cration fields.
    * - Call it twice.
    * - Find the first bookmark using its first creation fields.
-   * - Expect it to be returned with the first creation fields.
+   * - Expect the returned value to have one bookmark.
+   * - Expect the bookmark to match the creation fields.
    */
-  // todo: create two bookmarks with different names to test this
-  it.todo("Filters bookmarks by their fields");
+  describe("When filtering bookmarks by their fields", () => {
+    beforeAll(async () => {
+      /**
+       * We make another bookmark so we can test it returns the correct one.
+       */
+      await generateUniqueBookmark();
+    });
+
+    it("Returns only the correct bookmarks", async () => {
+      const bookmarks: Bookmark[] = await find(generatedBookmark);
+      expect(bookmarks).toHaveLength(1);
+      expect(bookmarks[0]).toMatchObject(generatedBookmark);
+    });
+  });
 });
 
 describe("destroy", () => {

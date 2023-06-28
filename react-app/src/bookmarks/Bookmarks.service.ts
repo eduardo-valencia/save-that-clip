@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { EpisodeService, EpisodeTabAndTime } from "../episodes/Episode.service";
 import {
   PossibleSeriesName,
@@ -63,7 +64,9 @@ export class BookmarksService {
     await this.repo.create(repoFields);
   };
 
-  public find = async (): Promise<Bookmark[]> => {
-    return this.repo.list();
+  public find = async (fields?: Partial<Bookmark>): Promise<Bookmark[]> => {
+    const bookmarks: Bookmark[] = await this.repo.list();
+    if (!fields) return bookmarks;
+    return _.filter(bookmarks, fields);
   };
 }
