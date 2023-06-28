@@ -87,7 +87,7 @@ describe("create / find", () => {
    * - Define a method to get the expected fields.
    * - Expect the bookmark to have the expected fields.
    */
-  describe("After calling it", () => {
+  describe("After creating one", () => {
     let mockedInfo: MockedInfo;
 
     const creationFields: FieldsToCreateBookmark = { name: "test" };
@@ -127,7 +127,11 @@ describe("create / find", () => {
 describe("find", () => {
   /**
    * Plan:
-   * -
+   * - Define a method to generate a unique bookmark. it should return the
+   *   cration fields.
+   * - Call it twice.
+   * - Find the first bookmark using its first creation fields.
+   * - Expect it to be returned with the first creation fields.
    */
   // todo: create two bookmarks with different names to test this
   it.todo("Filters bookmarks by their fields");
