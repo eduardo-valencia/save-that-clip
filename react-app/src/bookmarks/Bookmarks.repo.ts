@@ -54,6 +54,6 @@ export class BookmarksRepo extends BookmarksRepoAbstraction {
   };
 
   public destroy = async (id: Bookmark["id"]): Promise<void> => {
-    return new Promise((resolve) => resolve());
+    await this.chrome.storage.local.remove(id);
   };
 }

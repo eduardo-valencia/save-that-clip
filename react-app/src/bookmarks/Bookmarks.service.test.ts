@@ -53,7 +53,7 @@ const spiedGetSeriesName = jest.spyOn(seriesInfoService, "findSeriesName");
 // Other
 const { generateEpisodeTab } = new TabsFactory();
 
-const { create, find } = new BookmarksService({
+const { create, find, destroy } = new BookmarksService({
   episodeService,
   seriesInfoService,
 });
@@ -81,10 +81,21 @@ const mockTimeAndSeriesName = (): MockedInfo => {
   return info;
 };
 
+/**
+ * ! Important
+ *
+ * Make sure to mock the services first. @see mockTimeAndSeriesName
+ */
 const generateUniqueBookmark = async (): Promise<CreationFields> => {
   const creationFields: CreationFields = { name: _.uniqueId() };
   await create(creationFields);
   return creationFields;
+};
+
+const mockServicesAndGenerateUniqueBookmark = (): Promise<CreationFields> => {
+  // Otherwise, generating a bookmark might not work.
+  mockTimeAndSeriesName();
+  return generateUniqueBookmark();
 };
 
 describe("create / find", () => {
@@ -137,12 +148,10 @@ describe("find", () => {
   let generatedBookmark: CreationFields;
 
   beforeAll(async () => {
-    // Otherwise, generating a bookmark might not work.
-    mockTimeAndSeriesName();
     /**
      * We make a bookmark because most tests require one.
      */
-    generatedBookmark = await generateUniqueBookmark();
+    generatedBookmark = await mockServicesAndGenerateUniqueBookmark();
   });
 
   it("Returns all bookmarks when providing empty fields", async () => {
@@ -176,5 +185,28 @@ describe("find", () => {
 });
 
 describe("destroy", () => {
-  it.todo("Removes a bookmark");
+  describe("After destroying a bookmark", () => {
+    let generatedBookmark: CreationFields;
+
+    const findBookmarksWithCreationFields = async (): Promise<Bookmark[]> => {
+      return find(generatedBookmark);
+    };
+
+    const getBookmarkId = async (): Promise<Bookmark["id"]> => {
+      const bookmarks: Bookmark[] = await findBookmarksWithCreationFields();
+      if (bookmarks.length !== 1) throw new Error("Bookmark not found.");
+      return bookmarks[0].id;
+    };
+
+    beforeAll(async () => {
+      generatedBookmark = await mockServicesAndGenerateUniqueBookmark();
+      const id: Bookmark["id"] = await getBookmarkId();
+      await destroy(id);
+    });
+
+    it("Removes it", async () => {
+      const bookmarks: Bookmark[] = await findBookmarksWithCreationFields();
+      expect(bookmarks).toHaveLength(0);
+    });
+  });
 });
