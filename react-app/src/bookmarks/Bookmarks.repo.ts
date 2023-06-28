@@ -1,12 +1,14 @@
 import _ from "lodash";
 import { v4 as uuidv4 } from "uuid";
 import {
+  Bookmark,
   BookmarksRepoAbstraction,
   FieldsToCreateBookmark,
 } from "./Bookmarks.repo-abstraction";
-import { Bookmark } from "./Bookmarks.service";
 import { StoredItems } from "./storageMock";
 import { getChrome } from "../chrome.service";
+
+type FieldsToStore = Omit<Bookmark, "id">;
 
 /**
  * We created a repo for this just in case we decide to switch to a database in
@@ -15,11 +17,18 @@ import { getChrome } from "../chrome.service";
 export class BookmarksRepo extends BookmarksRepoAbstraction {
   private chrome = getChrome();
 
+  private createBookmarkFields = (
+    creationFields: FieldsToCreateBookmark
+  ): FieldsToStore => {
+    return { ...creationFields, type: "bookmark" };
+  };
+
   public create = async (
     creationFields: FieldsToCreateBookmark
   ): Promise<void> => {
     const id: string = uuidv4();
-    await this.chrome.storage.local.set({ [id]: creationFields });
+    const bookmark: FieldsToStore = this.createBookmarkFields(creationFields);
+    await this.chrome.storage.local.set({ [id]: bookmark });
   };
 
   private getStoredItems = async (): Promise<StoredItems> => {

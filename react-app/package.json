@@ -31,7 +31,8 @@
     "serve": "npx serve -s build",
     "test": "jest",
     "test:watch": "npm run test -- --watch",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint-ts": "tsc --noEmit"
   },
   "browserslist": {
     "production": [

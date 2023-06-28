@@ -6,8 +6,10 @@ jest.mock("../chrome.service", () => {
 });
 
 import { BookmarksRepo } from "./Bookmarks.repo";
-import { FieldsToCreateBookmark as CreationFields } from "./Bookmarks.repo-abstraction";
-import { Bookmark } from "./Bookmarks.service";
+import {
+  Bookmark,
+  FieldsToCreateBookmark as CreationFields,
+} from "./Bookmarks.repo-abstraction";
 import _ from "lodash";
 
 const { create, list } = new BookmarksRepo();

@@ -3,5 +3,6 @@
     "activityBar.background": "#500E54",
     "titleBar.activeBackground": "#711476",
     "titleBar.activeForeground": "#FEFCFE"
-  }
+  },
+  "cSpell.words": ["uuidv"]
 }

@@ -5,9 +5,9 @@ import {
   Messages,
   PossibleEpisodeTime,
 } from "../../../common/messages";
-import { Bookmark } from "../bookmarks/Bookmarks.service";
 import { TabsRepo } from "../tabs/Tabs.repo";
 import { TabsRepoAbstraction } from "../tabs/Tabs.repo-abstraction";
+import { Bookmark } from "../bookmarks/Bookmarks.repo-abstraction";
 
 interface Options {
   tabsRepo?: TabsRepoAbstraction;
