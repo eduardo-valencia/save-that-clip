@@ -1,6 +1,6 @@
 import { SeriesName } from "../seriesInfo/SeriesInfo.service";
 
-export type RepoFieldsToCreateBookmark = Omit<Bookmark, "id">;
+export type RepoFieldsToCreateBookmark = Omit<Bookmark, "id" | "type">;
 
 export interface Bookmark {
   /**

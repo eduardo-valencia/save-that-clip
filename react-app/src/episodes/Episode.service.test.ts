@@ -13,29 +13,18 @@ import {
   MessageToSetEpisodeTime,
   Messages,
 } from "../../../common/messages";
-import { TabsRepoAbstraction } from "../tabs/Tabs.repo-abstraction";
 import {
   EpisodeService,
   EpisodeTabAndTime,
   PossibleTab,
 } from "./Episode.service";
 import { TabsFactory } from "../tabs/Tabs.factory";
-
-/**
- * We are mocking this instead of treating this like a real repo. Otherwise,
- * we'd have to add methods to add and delete tabs.
- */
-class CustomTabsRepo extends TabsRepoAbstraction {
-  public sendMessage: jest.MockedFn<TabsRepoAbstraction["sendMessage"]> =
-    jest.fn();
-
-  public query: jest.MockedFn<TabsRepoAbstraction["query"]> = jest.fn();
-}
+import { MockedTabsRepo } from "../tabs/MockedTabs.repo";
 
 /**
  * Repos and services
  */
-const tabsRepo = new CustomTabsRepo();
+const tabsRepo = new MockedTabsRepo();
 const {
   get1stEpisodeTabAndTime: findTimeOf1stEpisodeTab,
   findOneEpisodeTab,

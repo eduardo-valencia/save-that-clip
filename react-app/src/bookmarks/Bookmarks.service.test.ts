@@ -1,33 +1,52 @@
-/* eslint-disable import/first */
-import { EpisodeService, EpisodeTabAndTime } from "../episodes/Episode.service";
-import {
-  SeriesInfoService,
-  SeriesName,
-} from "../seriesInfo/SeriesInfo.service";
-import { TabsFactory } from "../tabs/Tabs.factory";
-import { Bookmark } from "./Bookmarks.repo-abstraction";
-import { BookmarksService, FieldsToCreateBookmark } from "./Bookmarks.service";
+/**
+ * ! Important
+ * We are mocking certain methods and services. Please see below and the
+ * service definitions for more info.
+ */
+
 import { getMockedChromeService } from "./storageMock";
 
 jest.mock("../chrome.service", () => {
   return getMockedChromeService();
 });
 
+/* eslint-disable import/first */
+import { EpisodeService, EpisodeTabAndTime } from "../episodes/Episode.service";
+import {
+  SeriesInfoService,
+  SeriesName,
+} from "../seriesInfo/SeriesInfo.service";
+import { MockedTabsRepo } from "../tabs/MockedTabs.repo";
+import { TabsFactory } from "../tabs/Tabs.factory";
+import { Bookmark } from "./Bookmarks.repo-abstraction";
+import { BookmarksService, FieldsToCreateBookmark } from "./Bookmarks.service";
+
 /**
- * Services & their mocks
+ * * Services & their mocks
  */
-const episodeService = new EpisodeService();
+// ! This is mocked.
+const tabsRepo = new MockedTabsRepo();
+
+// Episode service
+const episodeService = new EpisodeService({ tabsRepo });
+
 const spiedGetTabAndTime = jest.spyOn(
   episodeService,
   "get1stEpisodeTabAndTime"
 );
 
+// Series info
 const seriesInfoService = new SeriesInfoService();
+
 const spiedGetSeriesName = jest.spyOn(seriesInfoService, "findSeriesName");
 
+// Other
 const { generateEpisodeTab } = new TabsFactory();
 
-const { create, find } = new BookmarksService();
+const { create, find } = new BookmarksService({
+  episodeService,
+  seriesInfoService,
+});
 
 /**
  * * General plan:
@@ -37,7 +56,7 @@ const { create, find } = new BookmarksService();
  */
 
 /**
- * Other test utils.
+ * * Other test utils.
  */
 
 interface MockedInfo {
