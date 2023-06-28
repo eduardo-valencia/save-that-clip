@@ -11,7 +11,7 @@ export interface Bookmark {
   id: string;
   name: string;
   episodeUrl: string;
-  seriesName: SeriesName;
+  seriesName: SeriesName | null;
   timeMs: number;
 }
 

@@ -21,8 +21,8 @@ export type PossibleTab = Tab | null;
 export class EpisodeService {
   private tabsRepo: TabsRepoAbstraction;
 
-  constructor({ tabsRepo }: Options) {
-    this.tabsRepo = tabsRepo || new TabsRepo();
+  constructor(options?: Options) {
+    this.tabsRepo = options?.tabsRepo || new TabsRepo();
   }
 
   private getActiveTabs = (): Promise<Tab[]> => {
