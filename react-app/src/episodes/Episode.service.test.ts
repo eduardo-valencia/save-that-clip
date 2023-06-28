@@ -34,7 +34,7 @@ class CustomTabsRepo extends TabsRepoAbstraction {
  */
 const tabsRepo = new CustomTabsRepo();
 const {
-  findTimeOf1stEpisodeTab,
+  getTimeOf1stEpisodeTab: findTimeOf1stEpisodeTab,
   findOneEpisodeTab,
   sendMessageToSetEpisodeTime,
   findOneEpisodeTabByUrl,
@@ -114,14 +114,19 @@ describe("findOneEpisodeTab", () => {
   });
 });
 
-describe("findTimeOf1stEpisodeTab", () => {
-  const mockedEpisodeTime: EpisodeTime = 1000;
-
-  const mockTimeResponse = (): void => {
-    tabsRepo.sendMessage.mockResolvedValue(mockedEpisodeTime);
+describe("getTimeOf1stEpisodeTab", () => {
+  const callMethodAndExpectError = async (): Promise<void> => {
+    const promise: Promise<PossibleEpisodeTime> = findTimeOf1stEpisodeTab();
+    await expect(promise).rejects.toBeTruthy();
   };
 
   describe("When the content script responds with the time", () => {
+    const mockedEpisodeTime: EpisodeTime = 1000;
+
+    const mockTimeResponse = (): void => {
+      tabsRepo.sendMessage.mockResolvedValue(mockedEpisodeTime);
+    };
+
     beforeAll(() => {
       mockTabWithEpisode();
       mockTimeResponse();
@@ -133,10 +138,15 @@ describe("findTimeOf1stEpisodeTab", () => {
     });
   });
 
+  it("Throws an error when the content script does not respond with a time", async () => {
+    mockTabWithEpisode();
+    tabsRepo.sendMessage.mockResolvedValue(null);
+    await callMethodAndExpectError();
+  });
+
   it("Throws an error when we try returning the time when there is no Netflix tab open", async () => {
     mockNoTabs();
-    const promise: Promise<PossibleEpisodeTime> = findTimeOf1stEpisodeTab();
-    await expect(promise).rejects.toBeTruthy();
+    await callMethodAndExpectError();
   });
 });
 

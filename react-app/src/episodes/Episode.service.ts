@@ -1,9 +1,10 @@
 import _ from "lodash";
 import {
+  EpisodeTime,
   Message,
   MessageToSetEpisodeTime,
   Messages,
-  PossibleEpisodeTime,
+  PossibleEpisodeTime as PossibleTime,
 } from "../../../common/messages";
 import { TabsRepo } from "../tabs/Tabs.repo";
 import { TabsRepoAbstraction } from "../tabs/Tabs.repo-abstraction";
@@ -78,14 +79,22 @@ export class EpisodeService {
     return sendMessage(episodeTab.id!, message);
   };
 
-  private sendMessageToGetEpisodeTime = async (
+  private sendMessageToGetTime = async (
     episodeTab: Tab
-  ): Promise<PossibleEpisodeTime> => {
+  ): Promise<PossibleTime> => {
     const data: Message = { type: Messages.getEpisodeTime };
     const { sendMessage } = this.tabsRepo;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const time: unknown = await sendMessage(episodeTab.id!, data);
-    return time as PossibleEpisodeTime;
+    return time as PossibleTime;
+  };
+
+  private findAndValidateEpisodeTime = async (
+    episodeTab: Tab
+  ): Promise<EpisodeTime> => {
+    const time: PossibleTime = await this.sendMessageToGetTime(episodeTab);
+    if (!time) throw new Error("Failed to get the episode's time.");
+    return time;
   };
 
   /**
@@ -93,10 +102,10 @@ export class EpisodeService {
    * this method when attempting to create a bookmark, and we expect a Netflix
    * tab to be open already.
    */
-  public findTimeOf1stEpisodeTab = async (): Promise<PossibleEpisodeTime> => {
+  public getTimeOf1stEpisodeTab = async (): Promise<EpisodeTime> => {
     const episodeTab: PossibleTab = await this.findOneEpisodeTab();
     if (!episodeTab) return this.handleMissingTab();
-    return this.sendMessageToGetEpisodeTime(episodeTab);
+    return this.findAndValidateEpisodeTime(episodeTab);
   };
 
   private getMessageToSetTime = (
