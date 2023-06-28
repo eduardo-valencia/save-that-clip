@@ -99,14 +99,6 @@ const mockServicesAndGenerateUniqueBookmark = (): Promise<CreationFields> => {
 };
 
 describe("create / find", () => {
-  /**
-   * Plan:
-   * - Mock the episode service to return a specific time.
-   * - Mock the series' info service to return a specific series name.
-   * - Call the method to create a bookmark. Call it with only a name.
-   * - Define a method to get the expected fields.
-   * - Expect the bookmark to have the expected fields.
-   */
   describe("After creating one", () => {
     let mockedInfo: MockedInfo;
     let creationFields: CreationFields;
@@ -159,15 +151,6 @@ describe("find", () => {
     expect(bookmarks.length).toBeGreaterThanOrEqual(1);
   });
 
-  /**
-   * Plan:
-   * - Define a method to generate a unique bookmark. it should return the
-   *   cration fields.
-   * - Call it twice.
-   * - Find the first bookmark using its first creation fields.
-   * - Expect the returned value to have one bookmark.
-   * - Expect the bookmark to match the creation fields.
-   */
   describe("When filtering bookmarks by their fields", () => {
     beforeAll(async () => {
       /**
