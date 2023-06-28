@@ -5,23 +5,34 @@ import {
   SeriesInfoService,
   SeriesName,
 } from "../seriesInfo/SeriesInfo.service";
+import { Bookmark } from "./Bookmarks.repo-abstraction";
+import { BookmarksService, FieldsToCreateBookmark } from "./Bookmarks.service";
 import { getMockedChromeService } from "./storageMock";
 
 jest.mock("../chrome.service", () => {
   return getMockedChromeService();
 });
 
+/**
+ * Services & their mocks
+ */
 const episodeService = new EpisodeService();
 const spiedGetTime = jest.spyOn(episodeService, "getTimeOf1stEpisodeTab");
 
 const seriesInfoService = new SeriesInfoService();
 const spiedGetSeriesName = jest.spyOn(seriesInfoService, "findSeriesName");
 
+const { create, find } = new BookmarksService();
+
 /**
  * * General plan:
  *
  * - Mock the episode service so we can mock the time.
  * - Mock the series info service so we can mock the series' name.
+ */
+
+/**
+ * Other test utils.
  */
 
 interface MockedInfo {
@@ -46,11 +57,25 @@ describe("create", () => {
    * - Expect the bookmark to have the expected fields.
    */
   describe("After calling it", () => {
-    beforeAll(async () => {
-      mockTimeAndSeriesName();
-    });
+    let mockedInfo: MockedInfo;
+    let bookmarks: Bookmark[];
 
-    it.todo("Creates a bookmark");
+    const creationFields: FieldsToCreateBookmark = { name: "test" };
+
+    const getExpectedFields = (): Partial<Bookmark> => {
+      // todo: Include the episode's URL here
+      return {
+        ...creationFields,
+        timeMs: mockedInfo.time,
+        seriesName: mockedInfo.seriesName,
+      };
+    };
+
+    beforeAll(async () => {
+      mockedInfo = mockTimeAndSeriesName();
+      await create(creationFields);
+      bookmarks = await find();
+    });
 
     it.todo("Creates a bookmark with the provided fields");
 

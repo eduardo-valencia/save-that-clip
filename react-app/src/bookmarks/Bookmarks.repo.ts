@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import {
   Bookmark,
   BookmarksRepoAbstraction,
-  FieldsToCreateBookmark,
+  RepoFieldsToCreateBookmark,
 } from "./Bookmarks.repo-abstraction";
 import { StoredItems } from "./storageMock";
 import { getChrome } from "../chrome.service";
@@ -18,13 +18,13 @@ export class BookmarksRepo extends BookmarksRepoAbstraction {
   private chrome = getChrome();
 
   private createBookmarkFields = (
-    creationFields: FieldsToCreateBookmark
+    creationFields: RepoFieldsToCreateBookmark
   ): FieldsToStore => {
     return { ...creationFields, type: "bookmark" };
   };
 
   public create = async (
-    creationFields: FieldsToCreateBookmark
+    creationFields: RepoFieldsToCreateBookmark
   ): Promise<void> => {
     const id: string = uuidv4();
     const bookmark: FieldsToStore = this.createBookmarkFields(creationFields);
@@ -43,7 +43,7 @@ export class BookmarksRepo extends BookmarksRepoAbstraction {
     key: keyof StoredItems
   ): Bookmark[] => {
     const id = key as string;
-    const bookmarkFields = storedValue as FieldsToCreateBookmark;
+    const bookmarkFields = storedValue as RepoFieldsToCreateBookmark;
     const bookmark: Bookmark = { ...bookmarkFields, id };
     return [...bookmarks, bookmark];
   };

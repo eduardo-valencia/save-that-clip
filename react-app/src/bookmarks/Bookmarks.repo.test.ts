@@ -8,7 +8,7 @@ jest.mock("../chrome.service", () => {
 import { BookmarksRepo } from "./Bookmarks.repo";
 import {
   Bookmark,
-  FieldsToCreateBookmark as CreationFields,
+  RepoFieldsToCreateBookmark as CreationFields,
 } from "./Bookmarks.repo-abstraction";
 import _ from "lodash";
 

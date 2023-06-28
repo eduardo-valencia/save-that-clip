@@ -1,6 +1,6 @@
 import { SeriesName } from "../seriesInfo/SeriesInfo.service";
 
-export type FieldsToCreateBookmark = Omit<Bookmark, "id">;
+export type RepoFieldsToCreateBookmark = Omit<Bookmark, "id">;
 
 export interface Bookmark {
   /**
@@ -21,7 +21,7 @@ export abstract class BookmarksRepoAbstraction {
    * generate their own IDs. If we switched to a database in the future, it
    * probably wouldn't accept an ID.
    */
-  abstract create: (fields: FieldsToCreateBookmark) => Promise<void>;
+  abstract create: (fields: RepoFieldsToCreateBookmark) => Promise<void>;
 
   abstract list: () => Promise<Bookmark[]>;
 
