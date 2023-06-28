@@ -1,13 +1,18 @@
+import { SeriesName } from "../seriesInfo/SeriesInfo.service";
+
 export type FieldsToCreateBookmark = Omit<Bookmark, "id">;
 
 export interface Bookmark {
-  episodeUrl: string;
-  id: string;
   /**
    * We add a type so that we can easily distinguish between bookmarks and other
    * stored items in case we decide to store other types of items in the future.
    */
   type: "bookmark";
+  id: string;
+  name: string;
+  episodeUrl: string;
+  seriesName: SeriesName;
+  timeMs: number;
 }
 
 export abstract class BookmarksRepoAbstraction {
