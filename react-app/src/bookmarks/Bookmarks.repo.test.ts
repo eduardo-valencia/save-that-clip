@@ -14,8 +14,18 @@ import _ from "lodash";
 
 const { create, list } = new BookmarksRepo();
 
+const generateBookmarkFields = (): CreationFields => {
+  return {
+    episodeUrl: _.uniqueId(),
+    name: "test",
+    type: "bookmark",
+    seriesName: "test",
+    timeMs: 100,
+  };
+};
+
 const generateUniqueBookmark = async (): Promise<CreationFields> => {
-  const bookmark: CreationFields = { episodeUrl: _.uniqueId() };
+  const bookmark: CreationFields = generateBookmarkFields();
   await create(bookmark);
   return bookmark;
 };

@@ -18,6 +18,11 @@ type Tab = chrome.tabs.Tab;
 
 export type PossibleTab = Tab | null;
 
+export interface EpisodeTabAndTime {
+  tab: Tab;
+  time: EpisodeTime;
+}
+
 export class EpisodeService {
   private tabsRepo: TabsRepoAbstraction;
 
@@ -102,10 +107,11 @@ export class EpisodeService {
    * this method when attempting to create a bookmark, and we expect a Netflix
    * tab to be open already.
    */
-  public getTimeOf1stEpisodeTab = async (): Promise<EpisodeTime> => {
+  public get1stEpisodeTabAndTime = async (): Promise<EpisodeTabAndTime> => {
     const episodeTab: PossibleTab = await this.findOneEpisodeTab();
     if (!episodeTab) return this.handleMissingTab();
-    return this.findAndValidateEpisodeTime(episodeTab);
+    const time: EpisodeTime = await this.findAndValidateEpisodeTime(episodeTab);
+    return { time, tab: episodeTab };
   };
 
   private getMessageToSetTime = (

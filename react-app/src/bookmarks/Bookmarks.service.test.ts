@@ -1,10 +1,10 @@
 /* eslint-disable import/first */
-import { EpisodeTime } from "../../../common/messages";
-import { EpisodeService } from "../episodes/Episode.service";
+import { EpisodeService, EpisodeTabAndTime } from "../episodes/Episode.service";
 import {
   SeriesInfoService,
   SeriesName,
 } from "../seriesInfo/SeriesInfo.service";
+import { TabsFactory } from "../tabs/Tabs.factory";
 import { Bookmark } from "./Bookmarks.repo-abstraction";
 import { BookmarksService, FieldsToCreateBookmark } from "./Bookmarks.service";
 import { getMockedChromeService } from "./storageMock";
@@ -17,10 +17,15 @@ jest.mock("../chrome.service", () => {
  * Services & their mocks
  */
 const episodeService = new EpisodeService();
-const spiedGetTime = jest.spyOn(episodeService, "getTimeOf1stEpisodeTab");
+const spiedGetTabAndTime = jest.spyOn(
+  episodeService,
+  "get1stEpisodeTabAndTime"
+);
 
 const seriesInfoService = new SeriesInfoService();
 const spiedGetSeriesName = jest.spyOn(seriesInfoService, "findSeriesName");
+
+const { generateEpisodeTab } = new TabsFactory();
 
 const { create, find } = new BookmarksService();
 
@@ -36,13 +41,20 @@ const { create, find } = new BookmarksService();
  */
 
 interface MockedInfo {
-  time: EpisodeTime;
+  episodeInfo: EpisodeTabAndTime;
   seriesName: SeriesName;
 }
 
+const getMockedInfo = (): MockedInfo => {
+  return {
+    episodeInfo: { time: 1, tab: generateEpisodeTab() },
+    seriesName: "test",
+  };
+};
+
 const mockTimeAndSeriesName = (): MockedInfo => {
-  const info: MockedInfo = { time: 1, seriesName: "test" };
-  spiedGetTime.mockResolvedValue(info.time);
+  const info: MockedInfo = getMockedInfo();
+  spiedGetTabAndTime.mockResolvedValue(info.episodeInfo);
   spiedGetSeriesName.mockResolvedValue(info.seriesName);
   return info;
 };
@@ -58,15 +70,15 @@ describe("create", () => {
    */
   describe("After calling it", () => {
     let mockedInfo: MockedInfo;
-    let bookmarks: Bookmark[];
 
     const creationFields: FieldsToCreateBookmark = { name: "test" };
 
     const getExpectedFields = (): Partial<Bookmark> => {
-      // todo: Include the episode's URL here
       return {
         ...creationFields,
-        timeMs: mockedInfo.time,
+        timeMs: mockedInfo.episodeInfo.time,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        episodeUrl: mockedInfo.episodeInfo.tab.url!,
         seriesName: mockedInfo.seriesName,
       };
     };
@@ -74,14 +86,15 @@ describe("create", () => {
     beforeAll(async () => {
       mockedInfo = mockTimeAndSeriesName();
       await create(creationFields);
-      bookmarks = await find();
     });
 
-    it.todo("Creates a bookmark with the provided fields");
-
-    it.todo("Creates a bookmark with the series's name");
-
-    it.todo("Creates a bookmark with the episode's time");
+    it("Creates a bookmark with the correct fields", async () => {
+      const bookmarks: Bookmark[] = await find();
+      const expectedFields: Partial<Bookmark> = getExpectedFields();
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const objectWithFields = expect.objectContaining(expectedFields);
+      expect(bookmarks).toContainEqual(objectWithFields);
+    });
   });
 });
 

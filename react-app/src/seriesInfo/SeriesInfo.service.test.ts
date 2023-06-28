@@ -1,11 +1,11 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
-import { SeriesName, SeriesInfoService } from "./SeriesInfo.service";
+import { SeriesInfoService, PossibleSeriesName } from "./SeriesInfo.service";
 import config, { Config } from "../config";
 
 describe("When Axios returns Netflix's HTML", () => {
   let service: SeriesInfoService;
   let spiedGet: jest.SpiedFunction<AxiosInstance["get"]>;
-  const episodeName = "Demon Slayer: Kimetsu no Yaiba";
+  const episodeName = "Test";
   const episodeHref = "/watch/81091396";
   const episodeUrl = `http://netflix.com${episodeHref}`;
 
@@ -40,7 +40,7 @@ describe("When Axios returns Netflix's HTML", () => {
     return url;
   };
 
-  const getNameForEpisode = (): Promise<SeriesName> => {
+  const getNameForEpisode = (): Promise<PossibleSeriesName> => {
     return service.findSeriesName(episodeUrl);
   };
 
@@ -71,8 +71,8 @@ describe("When Axios returns Netflix's HTML", () => {
   });
 
   it("Returns the series's name", async () => {
-    const info: SeriesName = await getNameForEpisode();
-    expect(info).toEqual(episodeName);
+    const name: PossibleSeriesName = await getNameForEpisode();
+    expect(name).toEqual(episodeName);
   });
 
   it("Requests our API instead of Netflix", async () => {

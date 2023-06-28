@@ -8,15 +8,18 @@
  * - An "episode tab" is an active tab with a Netflix episode.
  */
 
-import _ from "lodash";
 import {
   EpisodeTime,
   MessageToSetEpisodeTime,
   Messages,
-  PossibleEpisodeTime,
 } from "../../../common/messages";
 import { TabsRepoAbstraction } from "../tabs/Tabs.repo-abstraction";
-import { EpisodeService, PossibleTab } from "./Episode.service";
+import {
+  EpisodeService,
+  EpisodeTabAndTime,
+  PossibleTab,
+} from "./Episode.service";
+import { TabsFactory } from "../tabs/Tabs.factory";
 
 /**
  * We are mocking this instead of treating this like a real repo. Otherwise,
@@ -34,32 +37,17 @@ class CustomTabsRepo extends TabsRepoAbstraction {
  */
 const tabsRepo = new CustomTabsRepo();
 const {
-  getTimeOf1stEpisodeTab: findTimeOf1stEpisodeTab,
+  get1stEpisodeTabAndTime: findTimeOf1stEpisodeTab,
   findOneEpisodeTab,
   sendMessageToSetEpisodeTime,
   findOneEpisodeTabByUrl,
-} = new EpisodeService({
-  tabsRepo,
-});
+} = new EpisodeService({ tabsRepo });
+const { generateEpisodeTab } = new TabsFactory();
 
 /**
  * Other common utils
  */
 type Tab = chrome.tabs.Tab;
-
-const generateTabId = (): number => {
-  const idString = _.uniqueId();
-  return parseInt(idString);
-};
-
-const generateEpisodeTab = () => {
-  const tab: Pick<Tab, "url" | "active" | "id"> = {
-    url: "http://netflix.com/watch/81091396",
-    active: true,
-    id: generateTabId(),
-  };
-  return tab as Tab;
-};
 
 const mockTabWithEpisode = (): Tab => {
   const tab: Tab = generateEpisodeTab();
@@ -116,7 +104,7 @@ describe("findOneEpisodeTab", () => {
 
 describe("getTimeOf1stEpisodeTab", () => {
   const callMethodAndExpectError = async (): Promise<void> => {
-    const promise: Promise<PossibleEpisodeTime> = findTimeOf1stEpisodeTab();
+    const promise: Promise<EpisodeTabAndTime> = findTimeOf1stEpisodeTab();
     await expect(promise).rejects.toBeTruthy();
   };
 
@@ -133,7 +121,7 @@ describe("getTimeOf1stEpisodeTab", () => {
     });
 
     it("Returns the episode's time", async () => {
-      const time: PossibleEpisodeTime = await findTimeOf1stEpisodeTab();
+      const { time }: EpisodeTabAndTime = await findTimeOf1stEpisodeTab();
       expect(time).toEqual(mockedEpisodeTime);
     });
   });
