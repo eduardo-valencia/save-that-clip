@@ -1,72 +1,58 @@
 /* eslint-disable import/first */
-import { StoredItems, getMockedChromeService } from "./storageMock";
+import { getMockedChromeService } from "./storageMock";
 
 jest.mock("../chrome.service", () => {
   return getMockedChromeService();
 });
 
 import { BookmarksRepo } from "./Bookmarks.repo";
-import { FieldsToCreateBookmark } from "./Bookmarks.repo-abstraction";
+import { FieldsToCreateBookmark as CreationFields } from "./Bookmarks.repo-abstraction";
 import { Bookmark } from "./Bookmarks.service";
-import { getChrome } from "../chrome.service";
 import _ from "lodash";
 
-const { create, destroy } = new BookmarksRepo();
-const chrome = getChrome();
+const { create, destroy, list } = new BookmarksRepo();
 
-const generateUniqueBookmark = async (): Promise<FieldsToCreateBookmark> => {
-  const bookmark: FieldsToCreateBookmark = { episodeUrl: _.uniqueId() };
+const generateUniqueBookmark = async (): Promise<CreationFields> => {
+  const bookmark: CreationFields = { episodeUrl: _.uniqueId() };
   await create(bookmark);
   return bookmark;
 };
 
-// const createBookmarkAndExpectToFindIt = async (): Promise<void> => {
+// const getExpectedBookmarkStructure = () => {
 
 // }
 
+const expectToFindBookmark = (
+  creationFields: CreationFields,
+  bookmarks: Bookmark[]
+): void => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const bookmark = expect.objectContaining(creationFields);
+  expect(bookmarks).toContainEqual(bookmark);
+};
+
+const createBookmarkAndExpectToFindIt = async (): Promise<void> => {
+  const creationFields: CreationFields = await generateUniqueBookmark();
+  const bookmarks: Bookmark[] = await list();
+  expectToFindBookmark(creationFields, bookmarks);
+};
+
 describe("create", () => {
-  describe("After adding a bookmark", () => {
-    let bookmark: FieldsToCreateBookmark;
-
-    beforeAll(async () => {
-      bookmark = await generateUniqueBookmark();
-    });
-
-    /**
-     * Plan:
-     *
-     * - Mock chrome.storage.set with jest.fn()
-     * - Mock it to respond with a promise with an empty value
-     *
-     * In the test:
-     *
-     * - Call the method
-     * - Expect chrome.storage.local.set to have been called with an object where
-     *   the key is the ID and the value is the bookmark.
-     *
-     * todo:
-     *
-     * - Consider mocking chrome.storage globally because we could mock that
-     *   instead of mocking the repo when we create the service's tests.
-     *
-     */
-    it("Adds a bookmark to storage", async () => {
-      // We must assert this type because Chrome's types are incorrect.
-      const storageKey = null as unknown as string;
-      const allItems: StoredItems = await chrome.storage.local.get(storageKey);
-      const bookmarks = Object.values(allItems) as Bookmark[];
-      expect(bookmarks).toContainEqual(bookmark);
-    });
+  it("Adds a bookmark to storage", async () => {
+    await createBookmarkAndExpectToFindIt();
   });
 });
 
-// todo: remove find method because that should go in service. use list method instead.
-describe("find", () => {
-  describe("After creating a bookmark", () => {
-    it.todo("Returns a created bookmark");
+// todo: remove find method because that should go in service. use list method
+// instead.
+// todo: test that bookmarks have IDs
+describe("list", () => {
+  it("Lists bookmark", async () => {
+    await createBookmarkAndExpectToFindIt();
   });
 });
 
+// todo: consider testing this through the service.
 describe("destroy", () => {
   describe("After creating a bookmark", () => {
     it.todo("Removes a bookmark");

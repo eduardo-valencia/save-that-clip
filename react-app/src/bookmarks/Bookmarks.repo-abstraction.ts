@@ -2,8 +2,6 @@ import { Bookmark } from "./Bookmarks.service";
 
 export type FieldsToCreateBookmark = Omit<Bookmark, "id">;
 
-export type FieldsToFindBookmark = Partial<Bookmark>;
-
 export abstract class BookmarksRepoAbstraction {
   /**
    * This must generate the ID instead of receiving it because most databases
@@ -12,7 +10,7 @@ export abstract class BookmarksRepoAbstraction {
    */
   abstract create: (fields: FieldsToCreateBookmark) => Promise<void>;
 
-  abstract find: (fields?: FieldsToFindBookmark) => Promise<Bookmark[]>;
+  abstract list: () => Promise<Bookmark[]>;
 
   abstract destroy: (url: Bookmark["episodeUrl"]) => Promise<void>;
 }
