@@ -78,7 +78,7 @@ const mockTimeAndSeriesName = (): MockedInfo => {
   return info;
 };
 
-describe("create", () => {
+describe("create / find", () => {
   /**
    * Plan:
    * - Mock the episode service to return a specific time.
@@ -107,7 +107,14 @@ describe("create", () => {
       await create(creationFields);
     });
 
-    it("Creates a bookmark with the correct fields", async () => {
+    /**
+     * We combined both of these tests because the functionality is the same for
+     * both.
+     */
+    const findTest = "Finds all bookmarks when we don't provide fields";
+    const createTest = "Creates a bookmark with the correct fields";
+
+    it(`${createTest} / ${findTest}`, async () => {
       const bookmarks: Bookmark[] = await find();
       const expectedFields: Partial<Bookmark> = getExpectedFields();
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -118,8 +125,10 @@ describe("create", () => {
 });
 
 describe("find", () => {
-  it.todo("Lists bookmarks when not providing any fields");
-
+  /**
+   * Plan:
+   * -
+   */
   // todo: create two bookmarks with different names to test this
   it.todo("Filters bookmarks by their fields");
 });
