@@ -38,9 +38,11 @@ export class EpisodeService {
   };
 
   /**
-   * We will use this to determine if an episode is currently playing so we know
-   * whether to open a new tab with the episode or to change the current
-   * episode's time.
+   * Implementation notes:
+   *
+   * This won't finding tabs with pending URLs. However, this is fine because a
+   * pending tab would have unloaded content, so we wouldn't be able to change
+   * the episode's time anyways.
    */
   public findOneEpisodeTabByUrl = async (
     url: Bookmark["episodeUrl"]
