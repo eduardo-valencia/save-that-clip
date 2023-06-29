@@ -2,6 +2,12 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Environment Variables
+
+The following environment variables are required unless otherwise specified:
+
+- `REACT_APP_API_URL`: The URL of the API that forwards requests to Netflix.
+
 ## Available Scripts
 
 In the project directory, you can run:
