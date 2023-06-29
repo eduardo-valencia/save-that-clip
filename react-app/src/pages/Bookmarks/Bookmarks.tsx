@@ -1,14 +1,13 @@
 import { useEffect } from "react";
 import { Typography } from "@mui/material";
 import PageContainer from "../../components/PageContainer";
-import { SeriesInfoService } from "../../seriesInfo/SeriesInfo.service";
+import { BookmarksService } from "../../bookmarks/Bookmarks.service";
 
-const service = new SeriesInfoService();
+const bookmarksService = new BookmarksService();
 
 const Bookmarks = () => {
   useEffect(() => {
-    const episode = "http://localhost:5000/watch/81091396";
-    void service.findSeriesName(episode);
+    void bookmarksService.create({ name: "Test" });
   }, []);
 
   return (
