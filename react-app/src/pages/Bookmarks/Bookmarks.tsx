@@ -1,11 +1,11 @@
 import { Typography } from "@mui/material";
-import PageContainer from "../../components/PageContainer";
+import { Layout } from "../../components/Layout";
 
 const Bookmarks = () => {
   return (
-    <PageContainer>
+    <Layout>
       <Typography variant="h1">Bookmarks</Typography>
-    </PageContainer>
+    </Layout>
   );
 };
 

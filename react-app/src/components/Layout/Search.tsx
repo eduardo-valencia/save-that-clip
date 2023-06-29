@@ -1,5 +1,5 @@
 import { ChangeEvent, useContext } from "react";
-import { FormControl, Input, InputAdornment } from "@mui/material";
+import { InputAdornment, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { SearchContext, SearchContextValue } from "../SearchProvider";
 
@@ -18,17 +18,20 @@ export const Search = (): JSX.Element => {
   };
 
   return (
-    <FormControl variant="standard">
-      <Input
-        id="search"
-        value={query}
-        onChange={handleChange}
-        startAdornment={
+    <TextField
+      label="Search"
+      id="search"
+      value={query}
+      onChange={handleChange}
+      InputProps={{
+        startAdornment: (
           <InputAdornment position="start">
             <SearchIcon />
           </InputAdornment>
-        }
-      />
-    </FormControl>
+        ),
+      }}
+      variant="outlined"
+      hiddenLabel
+    />
   );
 };

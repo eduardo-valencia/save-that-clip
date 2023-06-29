@@ -1,11 +1,15 @@
 import { AppBar, BoxProps, Toolbar } from "@mui/material";
+import { Search } from "./Search";
+import PageContainer from "../PageContainer";
 
-export function PageContainer({ sx, ...other }: BoxProps): JSX.Element {
+export function Layout({ sx, ...other }: BoxProps): JSX.Element {
   return (
-    <div>
+    <PageContainer>
       <AppBar>
-        <Toolbar></Toolbar>
+        <Toolbar>
+          <Search />
+        </Toolbar>
       </AppBar>
-    </div>
+    </PageContainer>
   );
 }
