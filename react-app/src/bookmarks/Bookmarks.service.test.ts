@@ -2,7 +2,8 @@
  * ! Important
  *
  * We are mocking certain methods and services. Please see below and the
- * service definitions for more info.
+ * service definitions for more info. Also, please note that we are resetting
+ * and clearing mocks after each test.
  *
  * * Notes
  *
@@ -44,8 +45,6 @@ const spiedGetTabAndTime = jest.spyOn(
   episodeService,
   "get1stEpisodeTabAndTime"
 );
-
-const spiedFind = jest.spyOn(episodeService, "findOneEpisodeTabByUrl");
 
 // Series info
 const seriesInfoService = new SeriesInfoService();
@@ -108,6 +107,14 @@ const mockServicesAndGenerateUniqueBookmark = (): Promise<BookmarkInfo> => {
   return generateUniqueBookmark();
 };
 
+/**
+ * We must reset and clear the mocks to avoid tests interfering with each other.
+ */
+afterEach(() => {
+  jest.resetAllMocks();
+  jest.clearAllMocks();
+});
+
 describe("create / find", () => {
   describe("After creating one", () => {
     let mockedInfo: MockedInfo;
@@ -149,7 +156,7 @@ describe("create / find", () => {
 describe("find", () => {
   let generatedBookmark: CreationFields;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     /**
      * We make a bookmark because most tests require one.
      */
@@ -163,7 +170,7 @@ describe("find", () => {
   });
 
   describe("When filtering bookmarks by their fields", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       /**
        * We make another bookmark so we can test it returns the correct one.
        */
@@ -195,11 +202,6 @@ describe("destroy", () => {
   });
 });
 
-/**
- * Plan:
- *
- * - Mock the services like we did before.
- */
 describe("open", () => {
   const generateAndOpenBookmark = async (): Promise<BookmarkInfo> => {
     const info: BookmarkInfo = await generateUniqueBookmark();
@@ -207,11 +209,6 @@ describe("open", () => {
     return info;
   };
 
-  /**
-   * - Also mock the tabs repo's method to create a new tab.
-   * - Create a unique bookmark.
-   * - Call the method.
-   */
   describe("When the bookmark is not already open", () => {
     let bookmark: Bookmark;
 
@@ -226,10 +223,6 @@ describe("open", () => {
       ({ bookmark } = await generateAndOpenBookmark());
     });
 
-    /**
-     * - Expect a new tab to have been created with "active" set to "true" and
-     *   with the correct URL.
-     */
     it("Opens a new tab with the bookmark", () => {
       expect(tabsRepo.create).toHaveBeenCalledWith({
         active: true,
@@ -238,11 +231,6 @@ describe("open", () => {
     });
   });
 
-  /**
-   * - Mock the EpisodeService.sendMessageToSetEpisodeTime to resolve to nothing.
-   * - Create a unique bookmark.
-   * - Call the method.
-   */
   describe("When the bookmark is open", () => {
     let bookmark: Bookmark;
 
@@ -255,8 +243,8 @@ describe("open", () => {
       spiedSetTime.mockResolvedValue();
     };
 
-    // todo: clear mock
     const mockFindingBookmarkTab = (mockedInfo: MockedInfo): void => {
+      const spiedFind = jest.spyOn(episodeService, "findOneEpisodeTabByUrl");
       spiedFind.mockResolvedValue(mockedInfo.episodeInfo.tab);
     };
 
@@ -271,11 +259,6 @@ describe("open", () => {
       ({ bookmark } = await generateAndOpenBookmark());
     });
 
-    /**
-     * - Find the bookmark using the creation fields so we can get its time.
-     * - Expect sendMessageToSetEpisodeTime to have been called with the correct
-     *   time.
-     */
     it("Sets the video's time to the bookmark's time", () => {
       expect(spiedSetTime).toHaveBeenCalledWith(bookmark.timeMs);
     });
