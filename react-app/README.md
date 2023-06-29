@@ -39,7 +39,7 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 Adds the extension into the extension's build folder so that we can load it into Chrome. Please note that the extension's build folder differs from the React App's build folder.
 
-### `npm run watch`
+### `npx gulp watch`
 
 **Note**: This requires <https://chrome.google.com/webstore/detail/extensions-reloader/fimgfedafeadlieiabdeeaodndnlbhid>.
 
