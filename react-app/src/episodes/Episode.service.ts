@@ -34,7 +34,7 @@ export class EpisodeService {
   }
 
   private getActiveTabs = (): Promise<Tab[]> => {
-    return this.tabsRepo.query({ active: true });
+    return this.tabsRepo.query({ active: true, lastFocusedWindow: true });
   };
 
   /**

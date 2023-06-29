@@ -54,17 +54,29 @@ afterEach(() => {
 });
 
 describe("findOneEpisodeTab", () => {
-  it("Returns a tab", async () => {
-    const mockedTab: Tab = mockTabWithEpisode();
-    const tab: PossibleTab = await findOneEpisodeTab();
-    expect(tab).toEqual(mockedTab);
-  });
+  describe("After calling it", () => {
+    let mockedTab: Tab;
+    let foundTab: PossibleTab;
 
-  // So the extension doesn't need extra permissions
-  it("Queries the tabs repo for active tabs", async () => {
-    mockTabWithEpisode();
-    await findOneEpisodeTab();
-    expect(tabsRepo.query).toBeCalledWith({ active: true });
+    beforeEach(async () => {
+      mockedTab = mockTabWithEpisode();
+      foundTab = await findOneEpisodeTab();
+    });
+
+    it("Returns a tab", () => {
+      expect(foundTab).toEqual(mockedTab);
+    });
+
+    /**
+     * This is important because if we use the wrong query, we'll need extra
+     * permissions.
+     */
+    it("Queries the tabs repo for active tabs", () => {
+      expect(tabsRepo.query).toBeCalledWith({
+        active: true,
+        lastFocusedWindow: true,
+      });
+    });
   });
 
   describe("When it does not have an episode URL", () => {
