@@ -1,9 +1,26 @@
-import { createTheme } from "@mui/material";
+import { CSSObject, Components, createTheme } from "@mui/material";
+
+const getInputPlaceholderStyles = (): CSSObject => {
+  return {
+    "::placeholder": {
+      color: "rgba(0, 0, 0, 0.7)",
+      opacity: 1,
+    },
+  };
+};
+
+const getComponentOverridesForPlaceholder = (): Components["MuiInput"] &
+  Components["MuiInputBase"] => {
+  return { styleOverrides: { input: getInputPlaceholderStyles() } };
+};
 
 export const theme = createTheme({
   palette: {
     primary: {
       main: "#226CE0",
+    },
+    text: {
+      secondary: "rgba(0, 0, 0, 0.9)",
     },
   },
   typography: {
@@ -20,5 +37,9 @@ export const theme = createTheme({
       lineHeight: "normal",
       textTransform: "none",
     },
+  },
+  components: {
+    MuiInput: getComponentOverridesForPlaceholder(),
+    MuiInputBase: getComponentOverridesForPlaceholder(),
   },
 });
