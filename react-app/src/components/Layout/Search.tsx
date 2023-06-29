@@ -20,6 +20,7 @@ export const Search = (): JSX.Element => {
   return (
     <TextField
       label="Search"
+      placeholder="Search"
       id="search"
       value={query}
       onChange={handleChange}
@@ -31,7 +32,6 @@ export const Search = (): JSX.Element => {
         ),
       }}
       variant="outlined"
-      hiddenLabel
     />
   );
 };
