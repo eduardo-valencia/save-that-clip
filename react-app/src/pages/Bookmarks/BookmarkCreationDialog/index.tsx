@@ -1,39 +1,23 @@
-import { AppBar, Dialog, IconButton, Toolbar } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { Dialog } from "@mui/material";
 import { BookmarkCreationDialogInfo } from "../Bookmarks";
 import PageContainer from "../../../components/PageContainer";
+import BookmarkCreationDialogToolbar from "./BookmarkCreationDialogToolbar";
 
 type Props = BookmarkCreationDialogInfo;
+
+export type CloseCreationDialog = () => void;
 
 export const BookmarkCreationDialog = ({
   isOpen,
   setIsOpen,
 }: Props): JSX.Element => {
-  const close = (): void => {
+  const close: CloseCreationDialog = () => {
     setIsOpen(false);
   };
 
   return (
     <Dialog onClose={close} open={isOpen} fullScreen>
-      <AppBar
-        sx={{
-          position: "static",
-          boxShadow: "none",
-          marginBottom: "2.44rem",
-          padding: 0,
-        }}
-        color="transparent"
-      >
-        <Toolbar disableGutters>
-          <PageContainer
-            sx={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
-          >
-            <IconButton edge="end" onClick={close} aria-label="Close">
-              <CloseIcon />
-            </IconButton>
-          </PageContainer>
-        </Toolbar>
-      </AppBar>
+      <BookmarkCreationDialogToolbar close={close} />
       <PageContainer>
         <p>Test</p>
       </PageContainer>
