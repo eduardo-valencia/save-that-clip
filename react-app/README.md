@@ -2,12 +2,6 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Environment Variables
-
-The following environment variables are required unless otherwise specified:
-
-- `REACT_APP_API_URL`: The URL of the API that forwards requests to Netflix.
-
 ## Available Scripts
 
 In the project directory, you can run:
@@ -43,7 +37,7 @@ Adds the extension into the extension's build folder so that we can load it into
 
 **Note**: This requires <https://chrome.google.com/webstore/detail/extensions-reloader/fimgfedafeadlieiabdeeaodndnlbhid>.
 
-Watches the application for changes. When it detects changes, it builds the extension automatically and reloads the extension.
+Watches the application for changes. When it detects changes to the React App's code, it builds the extension automatically and reloads the extension.
 
 ### `npm run serve`
 
