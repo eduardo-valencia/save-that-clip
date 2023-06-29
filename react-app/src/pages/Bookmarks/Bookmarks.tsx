@@ -1,10 +1,13 @@
-import { Typography } from "@mui/material";
 import { Layout } from "../../components/Layout";
+import Header from "../../components/Header";
+import BookmarkCreationButton from "./BookmarkCreationButton";
 
 const Bookmarks = () => {
   return (
     <Layout>
-      <Typography variant="h1">Bookmarks</Typography>
+      <Header title="Bookmarks">
+        <BookmarkCreationButton />
+      </Header>
     </Layout>
   );
 };

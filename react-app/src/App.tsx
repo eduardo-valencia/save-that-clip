@@ -3,6 +3,8 @@ import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import Bookmarks from "./pages/Bookmarks/Bookmarks";
 import ErrorPage from "./pages/ErrorPage";
 import { SearchProvider } from "./components/SearchProvider";
+import { ThemeProvider } from "@mui/material";
+import { theme } from "./theme";
 
 /**
  * We must use a memory router because Chrome extensions don't support browser
@@ -19,7 +21,9 @@ const router = createMemoryRouter([
 function App() {
   return (
     <SearchProvider>
-      <RouterProvider router={router}></RouterProvider>
+      <ThemeProvider theme={theme}>
+        <RouterProvider router={router}></RouterProvider>
+      </ThemeProvider>
     </SearchProvider>
   );
 }
