@@ -1,7 +1,16 @@
 import { Button } from "@mui/material";
 import React from "react";
+import { BookmarkCreationDialogInfo } from "./Bookmarks";
 
-export default function BookmarkCreationButton() {
+type Props = Pick<BookmarkCreationDialogInfo, "setIsOpen">;
+
+export default function BookmarkCreationButton({
+  setIsOpen,
+}: Props): JSX.Element {
+  const open = (): void => {
+    setIsOpen(true);
+  };
+
   return (
     <Button
       variant="contained"
@@ -14,6 +23,7 @@ export default function BookmarkCreationButton() {
         borderRadius: "0.3125rem",
         boxShadow: 0,
       }}
+      onClick={open}
     >
       Add Bookmark
     </Button>
