@@ -229,6 +229,8 @@ describe("open", () => {
         url: bookmark.episodeUrl,
       });
     });
+
+    it.todo("Does not try to update the episode's time");
   });
 
   describe("When the bookmark is open", () => {
@@ -262,6 +264,8 @@ describe("open", () => {
     it("Sets the video's time to the bookmark's time", () => {
       expect(spiedSetTime).toHaveBeenCalledWith(bookmark.timeMs);
     });
+
+    it.todo("Does not create a tab");
   });
 
   // Note: These cases are less important since they're unlikely to happen.
