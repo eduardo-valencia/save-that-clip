@@ -26,6 +26,7 @@ export default function BookmarkNameField({
       value={name}
       InputLabelProps={{ shrink: true }}
       fullWidth
+      required
     ></TextField>
   );
 }
