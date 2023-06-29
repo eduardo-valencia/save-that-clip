@@ -10,6 +10,9 @@ export const theme = createTheme({
     fontFamily: "'Montserrat', sans-serif",
     h1: {
       fontSize: "2.25rem",
+      fontWeight: 600,
+      lineHeight: "2.875rem",
+      letterSpacing: "-0.1rem",
     },
     button: {
       fontSize: "1rem",

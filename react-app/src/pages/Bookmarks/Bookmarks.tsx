@@ -5,7 +5,7 @@ import BookmarkCreationButton from "./BookmarkCreationButton";
 const Bookmarks = () => {
   return (
     <Layout>
-      <Header title="Bookmarks">
+      <Header title="Bookmarks" sx={{ marginBottom: "2.5rem" }}>
         <BookmarkCreationButton />
       </Header>
     </Layout>
