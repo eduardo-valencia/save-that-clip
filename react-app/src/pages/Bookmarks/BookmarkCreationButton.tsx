@@ -1,15 +1,14 @@
 import { Button } from "@mui/material";
-import React from "react";
-import { BookmarkCreationDialogInfo } from "./Bookmarks";
+import React, { useContext } from "react";
+import {
+  BookmarkCreationDialogContext,
+  BookmarkCreationDialogContextValue,
+} from "./BookmarkCreationDialog/BookmarkCreationDialogProvider";
 
-type Props = Pick<BookmarkCreationDialogInfo, "setIsOpen">;
-
-export default function BookmarkCreationButton({
-  setIsOpen,
-}: Props): JSX.Element {
-  const open = (): void => {
-    setIsOpen(true);
-  };
+export default function BookmarkCreationButton(): JSX.Element {
+  const { open }: BookmarkCreationDialogContextValue = useContext(
+    BookmarkCreationDialogContext
+  );
 
   return (
     <Button
