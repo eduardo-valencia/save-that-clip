@@ -45,6 +45,8 @@ const spiedGetTabAndTime = jest.spyOn(
   "get1stEpisodeTabAndTime"
 );
 
+const spiedFind = jest.spyOn(episodeService, "findOneEpisodeTabByUrl");
+
 // Series info
 const seriesInfoService = new SeriesInfoService();
 
@@ -248,19 +250,18 @@ describe("open", () => {
       EpisodeService["sendMessageToSetEpisodeTime"]
     >;
 
-    const mockSettingTime = (): void => {
+    const mockSettingEpisodeTime = (): void => {
       spiedSetTime = jest.spyOn(episodeService, "sendMessageToSetEpisodeTime");
       spiedSetTime.mockResolvedValue();
     };
 
     // todo: clear mock
     const mockFindingBookmarkTab = (mockedInfo: MockedInfo): void => {
-      const spiedFind = jest.spyOn(episodeService, "findOneEpisodeTabByUrl");
       spiedFind.mockResolvedValue(mockedInfo.episodeInfo.tab);
     };
 
     beforeAll(async () => {
-      mockSettingTime();
+      mockSettingEpisodeTime();
       const mockedInfo: MockedInfo = mockTimeAndSeriesName();
       mockFindingBookmarkTab(mockedInfo);
       /**

@@ -101,8 +101,9 @@ export class BookmarksService {
     bookmark: Bookmark,
     tab: PossibleTab
   ): Promise<void> => {
-    await this.tabsRepo.create({ active: true, url: bookmark.episodeUrl });
-    await this.episodeService.sendMessageToSetEpisodeTime(bookmark.timeMs);
+    if (tab)
+      await this.episodeService.sendMessageToSetEpisodeTime(bookmark.timeMs);
+    else await this.tabsRepo.create({ active: true, url: bookmark.episodeUrl });
   };
 
   public open = async (id: Bookmark["id"]): Promise<void> => {
