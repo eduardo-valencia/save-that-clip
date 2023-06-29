@@ -1,10 +1,10 @@
-import gulp from 'gulp'
-import webpack from 'webpack-stream'
-import open from 'open'
-import { Configuration } from 'webpack'
-import { ChildProcess } from 'child_process'
+import gulp from "gulp";
+import webpack from "webpack-stream";
+import open from "open";
+import { Configuration } from "webpack";
+import { ChildProcess } from "child_process";
 
-import webpackConfig from './webpack.config'
+import webpackConfig from "./webpack.config";
 
 /**
  * Must install
@@ -12,20 +12,20 @@ import webpackConfig from './webpack.config'
  * for this to work.
  */
 const reloadExtension = (): Promise<ChildProcess> => {
-  return open('http://reload.extensions')
-}
+  return open("http://reload.extensions");
+};
 
 /**
  * We separate this from the other watcher because it helps with performance.
  */
 const watchWithWebpack = (): NodeJS.ReadWriteStream => {
-  const configWithType = webpackConfig as Configuration
+  const configWithType = webpackConfig as Configuration;
   return gulp
-    .src('./src/index.tsx')
+    .src("./src/index.tsx")
     .pipe(
       webpack({ watch: true, ...configWithType }, undefined, reloadExtension)
     )
-    .pipe(gulp.dest('../extension'))
-}
+    .pipe(gulp.dest("../extension"));
+};
 
-export const watch = watchWithWebpack
+export const watch = watchWithWebpack;

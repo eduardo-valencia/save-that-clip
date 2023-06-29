@@ -1,0 +1,5 @@
+{
+  "flags": {
+    "require": "sucrase/register/ts"
+  }
+}
