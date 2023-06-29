@@ -48,6 +48,8 @@ const spiedGetTabAndTime = jest.spyOn(
 // Series info
 const seriesInfoService = new SeriesInfoService();
 
+// todo: See if we actually have to put these in the global scope, or if we can
+// just put them in mockTimeAndSeriesName
 const spiedGetSeriesName = jest.spyOn(seriesInfoService, "findSeriesName");
 
 // Other
@@ -56,6 +58,7 @@ const { generateEpisodeTab } = new TabsFactory();
 const { create, find, destroy, open } = new BookmarksService({
   episodeService,
   seriesInfoService,
+  tabsRepo,
 });
 
 /**
@@ -81,18 +84,23 @@ const mockTimeAndSeriesName = (): MockedInfo => {
   return info;
 };
 
+interface BookmarkInfo {
+  creationFields: CreationFields;
+  bookmark: Bookmark;
+}
+
 /**
  * ! Important
  *
  * Make sure to mock the services first. @see mockTimeAndSeriesName
  */
-const generateUniqueBookmark = async (): Promise<CreationFields> => {
+const generateUniqueBookmark = async (): Promise<BookmarkInfo> => {
   const creationFields: CreationFields = { name: _.uniqueId() };
-  await create(creationFields);
-  return creationFields;
+  const bookmark: Bookmark = await create(creationFields);
+  return { bookmark, creationFields };
 };
 
-const mockServicesAndGenerateUniqueBookmark = (): Promise<CreationFields> => {
+const mockServicesAndGenerateUniqueBookmark = (): Promise<BookmarkInfo> => {
   // Otherwise, generating a bookmark might not work.
   mockTimeAndSeriesName();
   return generateUniqueBookmark();
@@ -115,7 +123,7 @@ describe("create / find", () => {
 
     beforeAll(async () => {
       mockedInfo = mockTimeAndSeriesName();
-      creationFields = await generateUniqueBookmark();
+      ({ creationFields } = await generateUniqueBookmark());
       await create(creationFields);
     });
 
@@ -136,10 +144,6 @@ describe("create / find", () => {
   });
 });
 
-describe("create", () => {
-  it("Returns the bookmark", async () => {});
-});
-
 describe("find", () => {
   let generatedBookmark: CreationFields;
 
@@ -147,7 +151,8 @@ describe("find", () => {
     /**
      * We make a bookmark because most tests require one.
      */
-    generatedBookmark = await mockServicesAndGenerateUniqueBookmark();
+    ({ bookmark: generatedBookmark } =
+      await mockServicesAndGenerateUniqueBookmark());
   });
 
   it("Returns all bookmarks when providing empty fields", async () => {
@@ -173,26 +178,16 @@ describe("find", () => {
 
 describe("destroy", () => {
   describe("After destroying a bookmark", () => {
-    let generatedBookmark: CreationFields;
-
-    const findBookmarksWithCreationFields = async (): Promise<Bookmark[]> => {
-      return find(generatedBookmark);
-    };
-
-    const getBookmarkId = async (): Promise<Bookmark["id"]> => {
-      const bookmarks: Bookmark[] = await findBookmarksWithCreationFields();
-      if (bookmarks.length !== 1) throw new Error("Bookmark not found.");
-      return bookmarks[0].id;
-    };
+    let generatedBookmark: Bookmark;
 
     beforeAll(async () => {
-      generatedBookmark = await mockServicesAndGenerateUniqueBookmark();
-      const id: Bookmark["id"] = await getBookmarkId();
-      await destroy(id);
+      ({ bookmark: generatedBookmark } =
+        await mockServicesAndGenerateUniqueBookmark());
+      await destroy(generatedBookmark.id);
     });
 
     it("Removes it", async () => {
-      const bookmarks: Bookmark[] = await findBookmarksWithCreationFields();
+      const bookmarks: Bookmark[] = await find(generatedBookmark);
       expect(bookmarks).toHaveLength(0);
     });
   });
@@ -204,13 +199,19 @@ describe("destroy", () => {
  * - Mock the services like we did before.
  */
 describe("open", () => {
+  const generateAndOpenBookmark = async (): Promise<BookmarkInfo> => {
+    const info: BookmarkInfo = await generateUniqueBookmark();
+    await open(info.bookmark.id);
+    return info;
+  };
+
   /**
    * - Also mock the tabs repo's method to create a new tab.
    * - Create a unique bookmark.
    * - Call the method.
    */
   describe("When the bookmark is not already open", () => {
-    let creationFields: CreationFields;
+    let bookmark: Bookmark;
 
     const mockCreatingTab = (): void => {
       const tab: chrome.tabs.Tab = generateEpisodeTab();
@@ -220,15 +221,19 @@ describe("open", () => {
     beforeAll(async () => {
       mockCreatingTab();
       mockTimeAndSeriesName();
-      creationFields = await generateUniqueBookmark();
-      // await open()
+      ({ bookmark } = await generateAndOpenBookmark());
     });
 
     /**
      * - Expect a new tab to have been created with "active" set to "true" and
      *   with the correct URL.
      */
-    it.todo("Opens a new tab with the bookmark");
+    it("Opens a new tab with the bookmark", () => {
+      expect(tabsRepo.create).toHaveBeenCalledWith({
+        active: true,
+        url: bookmark.episodeUrl,
+      });
+    });
   });
 
   /**
@@ -237,12 +242,42 @@ describe("open", () => {
    * - Call the method.
    */
   describe("When the bookmark is open", () => {
+    let bookmark: Bookmark;
+
+    let spiedSetTime: jest.SpiedFunction<
+      EpisodeService["sendMessageToSetEpisodeTime"]
+    >;
+
+    const mockSettingTime = (): void => {
+      spiedSetTime = jest.spyOn(episodeService, "sendMessageToSetEpisodeTime");
+      spiedSetTime.mockResolvedValue();
+    };
+
+    // todo: clear mock
+    const mockFindingBookmarkTab = (mockedInfo: MockedInfo): void => {
+      const spiedFind = jest.spyOn(episodeService, "findOneEpisodeTabByUrl");
+      spiedFind.mockResolvedValue(mockedInfo.episodeInfo.tab);
+    };
+
+    beforeAll(async () => {
+      mockSettingTime();
+      const mockedInfo: MockedInfo = mockTimeAndSeriesName();
+      mockFindingBookmarkTab(mockedInfo);
+      /**
+       * Note that the bookmark already has the tab's URL because of how
+       * bookmarks are created.
+       */
+      ({ bookmark } = await generateAndOpenBookmark());
+    });
+
     /**
      * - Find the bookmark using the creation fields so we can get its time.
      * - Expect sendMessageToSetEpisodeTime to have been called with the correct
      *   time.
      */
-    it.todo("Sets the video's time to the bookmark's time");
+    it("Sets the video's time to the bookmark's time", () => {
+      expect(spiedSetTime).toHaveBeenCalledWith(bookmark.timeMs);
+    });
   });
 
   // Note: These cases are less important since they're unlikely to happen.

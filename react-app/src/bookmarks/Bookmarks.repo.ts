@@ -25,10 +25,11 @@ export class BookmarksRepo extends BookmarksRepoAbstraction {
 
   public create = async (
     creationFields: RepoFieldsToCreateBookmark
-  ): Promise<void> => {
+  ): Promise<Bookmark> => {
     const id: string = uuidv4();
     const bookmark: FieldsToStore = this.createBookmarkFields(creationFields);
     await this.chrome.storage.local.set({ [id]: bookmark });
+    return { ...bookmark, id };
   };
 
   private getStoredItems = async (): Promise<StoredItems> => {

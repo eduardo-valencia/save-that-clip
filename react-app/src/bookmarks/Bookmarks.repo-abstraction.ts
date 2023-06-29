@@ -21,7 +21,7 @@ export abstract class BookmarksRepoAbstraction {
    * generate their own IDs. If we switched to a database in the future, it
    * probably wouldn't accept an ID.
    */
-  abstract create: (fields: RepoFieldsToCreateBookmark) => Promise<void>;
+  abstract create: (fields: RepoFieldsToCreateBookmark) => Promise<Bookmark>;
 
   abstract list: () => Promise<Bookmark[]>;
 

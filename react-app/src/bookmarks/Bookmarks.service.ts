@@ -1,5 +1,9 @@
 import _ from "lodash";
-import { EpisodeService, EpisodeTabAndTime } from "../episodes/Episode.service";
+import {
+  EpisodeService,
+  EpisodeTabAndTime,
+  PossibleTab,
+} from "../episodes/Episode.service";
 import {
   PossibleSeriesName,
   SeriesInfoService,
@@ -9,18 +13,23 @@ import {
   Bookmark,
   RepoFieldsToCreateBookmark as RepoCreationFields,
 } from "./Bookmarks.repo-abstraction";
+import { TabsRepo } from "../tabs/Tabs.repo";
+import { TabsRepoAbstraction } from "../tabs/Tabs.repo-abstraction";
 
 export type FieldsToCreateBookmark = Pick<Bookmark, "name">;
 
 interface Options {
   seriesInfoService?: SeriesInfoService;
   episodeService?: EpisodeService;
+  tabsRepo?: TabsRepoAbstraction;
 }
 
 type EpisodeUrlAndTime = Pick<RepoCreationFields, "episodeUrl" | "timeMs">;
 
 export class BookmarksService {
   private repo = new BookmarksRepo();
+
+  private tabsRepo: TabsRepoAbstraction;
 
   private seriesInfo: SeriesInfoService;
 
@@ -29,6 +38,7 @@ export class BookmarksService {
   constructor(options: Options = {}) {
     this.seriesInfo = options.seriesInfoService || new SeriesInfoService();
     this.episodeService = options.episodeService || new EpisodeService();
+    this.tabsRepo = options.tabsRepo || new TabsRepo();
   }
 
   private getTabUrl = ({ url }: EpisodeTabAndTime["tab"]): string => {
@@ -57,11 +67,11 @@ export class BookmarksService {
     return { ...fields, ...urlAndTime, seriesName };
   };
 
-  public create = async (fields: FieldsToCreateBookmark): Promise<void> => {
+  public create = async (fields: FieldsToCreateBookmark): Promise<Bookmark> => {
     const repoFields: RepoCreationFields = await this.getRepoCreationFields(
       fields
     );
-    await this.repo.create(repoFields);
+    return this.repo.create(repoFields);
   };
 
   public find = async (fields?: Partial<Bookmark>): Promise<Bookmark[]> => {
@@ -74,5 +84,32 @@ export class BookmarksService {
     await this.repo.destroy(id);
   };
 
-  public open = async (id: Bookmark["id"]): Promise<void> => {};
+  private validateOneBookmarkFound = (bookmarks: Bookmark[]): void => {
+    if (bookmarks.length === 1) return;
+    else if (bookmarks.length > 1)
+      throw new Error("Found more than one bookmark.");
+    throw new Error("Unable to find a bookmark.");
+  };
+
+  private getById = async (id: Bookmark["id"]): Promise<Bookmark> => {
+    const bookmarks: Bookmark[] = await this.find({ id });
+    this.validateOneBookmarkFound(bookmarks);
+    return bookmarks[0];
+  };
+
+  private createBookmarkTabOrUpdateIt = async (
+    bookmark: Bookmark,
+    tab: PossibleTab
+  ): Promise<void> => {
+    await this.tabsRepo.create({ active: true, url: bookmark.episodeUrl });
+    await this.episodeService.sendMessageToSetEpisodeTime(bookmark.timeMs);
+  };
+
+  public open = async (id: Bookmark["id"]): Promise<void> => {
+    const bookmark: Bookmark = await this.getById(id);
+    const tab: PossibleTab = await this.episodeService.findOneEpisodeTabByUrl(
+      bookmark.episodeUrl
+    );
+    await this.createBookmarkTabOrUpdateIt(bookmark, tab);
+  };
 }

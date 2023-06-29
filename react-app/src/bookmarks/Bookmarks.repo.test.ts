@@ -23,12 +23,6 @@ const generateBookmarkFields = (): CreationFields => {
   };
 };
 
-const generateUniqueBookmark = async (): Promise<CreationFields> => {
-  const bookmark: CreationFields = generateBookmarkFields();
-  await create(bookmark);
-  return bookmark;
-};
-
 const findAndValidateBookmark = (
   creationFields: CreationFields,
   bookmarks: Bookmark[]
@@ -40,12 +34,20 @@ const findAndValidateBookmark = (
 };
 
 const createBookmarkAndExpectToFindIt = async (): Promise<void> => {
-  const creationFields: CreationFields = await generateUniqueBookmark();
+  const creationFields: CreationFields = generateBookmarkFields();
+  await create(creationFields);
   const bookmarks: Bookmark[] = await list();
   findAndValidateBookmark(creationFields, bookmarks);
 };
 
 describe("create", () => {
+  it("Returns the bookmark", async () => {
+    const creationFields: CreationFields = generateBookmarkFields();
+    const bookmark: Bookmark = await create(creationFields);
+    expect(bookmark).toMatchObject(creationFields);
+    expect(bookmark.id).toBeTruthy();
+  });
+
   it("Adds a bookmark to storage", async () => {
     await createBookmarkAndExpectToFindIt();
   });
