@@ -14,6 +14,11 @@ const getComponentOverridesForPlaceholder = (): Components["MuiInput"] &
   return { styleOverrides: { input: getInputPlaceholderStyles() } };
 };
 
+const getButtonStyles = (): CSSObject => {
+  const padding = "0.75rem";
+  return { paddingTop: padding, paddingBottom: padding };
+};
+
 export const theme = createTheme({
   palette: {
     primary: {
@@ -41,5 +46,10 @@ export const theme = createTheme({
   components: {
     MuiInput: getComponentOverridesForPlaceholder(),
     MuiInputBase: getComponentOverridesForPlaceholder(),
+    MuiButton: {
+      styleOverrides: {
+        root: getButtonStyles(),
+      },
+    },
   },
 });

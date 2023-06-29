@@ -14,6 +14,7 @@ export const BookmarkCreationDialog = (): JSX.Element => {
   const { close, isOpen }: BookmarkCreationDialogContextValue = useContext(
     BookmarkCreationDialogContext
   );
+
   return (
     <Dialog onClose={close} open={isOpen} fullScreen>
       <BookmarkCreationDialogToolbar />

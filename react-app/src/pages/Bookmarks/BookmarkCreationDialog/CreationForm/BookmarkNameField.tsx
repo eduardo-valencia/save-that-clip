@@ -25,6 +25,7 @@ export default function BookmarkNameField({
       onChange={handleChange}
       value={name}
       InputLabelProps={{ shrink: true }}
+      fullWidth
     ></TextField>
   );
 }
