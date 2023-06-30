@@ -3,11 +3,13 @@ import webpack from "webpack-stream";
 import open from "open";
 import { Configuration } from "webpack";
 import { ChildProcess } from "child_process";
+import path from "path";
 
 import webpackConfig from "../popup/webpack.config";
 import commonWebpackConfig from "./common/common-webpack-config";
 
 const buildFolder = "build";
+const mainFolder = "main";
 
 /**
  * Must install
@@ -35,14 +37,31 @@ export const watchPopup = (): NodeJS.ReadWriteStream => {
   return buildPopup({ watch: true });
 };
 
-const buildMainTs = (): NodeJS.ReadWriteStream => {
+const buildContentScript = (): NodeJS.ReadWriteStream => {
   const configWithType = commonWebpackConfig as Configuration;
   return gulp
-    .src("./main/content-script.ts")
+    .src(`./${mainFolder}/content-script.ts`)
     .pipe(
       webpack({ ...configWithType, output: { filename: "content-script.js" } })
     )
     .pipe(gulp.dest(buildFolder));
+};
+
+type Path = string;
+type Paths = Path[];
+
+const createMainFilePath = (relativePath: Path): Path => {
+  return path.join(mainFolder, relativePath);
+};
+
+const getMainFilesToCopy = (): Paths => {
+  const relativePaths: Paths = ["background.js", "manifest.json", "popup.html"];
+  return relativePaths.map(createMainFilePath);
+};
+
+const copyOtherMainFiles = (): NodeJS.ReadWriteStream => {
+  const filesToCopy: Paths = getMainFilesToCopy();
+  return gulp.src(filesToCopy).pipe(gulp.dest(buildFolder));
 };
 
 /**
@@ -52,4 +71,4 @@ const buildMainTs = (): NodeJS.ReadWriteStream => {
  *   build folder.
  * - Copy the manifest, popup.html, background.js into the build folder.
  */
-export const build = buildMainTs;
+export const build = copyOtherMainFiles;
