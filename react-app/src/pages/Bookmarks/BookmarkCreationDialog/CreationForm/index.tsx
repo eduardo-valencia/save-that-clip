@@ -9,7 +9,7 @@ import {
   BookmarkCreationDialogContext,
 } from "../BookmarkCreationDialogProvider";
 import FormError from "./FormError";
-// import { BookmarksService } from "../../../../bookmarks/Bookmarks.service";
+import { BookmarksService } from "../../../../bookmarks/Bookmarks.service";
 
 export interface FormErrorInfo {
   error: unknown;
@@ -18,22 +18,21 @@ export interface FormErrorInfo {
 type PossibleErrorInfo = null | FormErrorInfo;
 
 export default function CreationForm() {
+  const bookmarksService = new BookmarksService();
+
   const [name, setName] = useState<Bookmark["name"]>("");
 
   const [error, setError] = useState<PossibleErrorInfo>(null);
-
-  // const bookmarksService = new BookmarksService()
 
   const { close }: BookmarkCreationDialogContextValue = useContext(
     BookmarkCreationDialogContext
   );
 
-  // eslint-disable-next-line @typescript-eslint/require-await
+  // todo: Refresh list of bookmarks
   const saveBookmarkAndClose = async (): Promise<void> => {
-    throw new Error("test");
+    await bookmarksService.create({ name });
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     close!();
-    // await bookmarksService.create({})
   };
 
   const handleError = (error: unknown): void => {
@@ -54,8 +53,6 @@ export default function CreationForm() {
     void trySavingBookmark();
   };
 
-  // todo: Validate that input has a name. It seems that setting it to
-  // "required" will accomplish this, but we must test it.
   return (
     <form onSubmit={handleSubmission}>
       <Box sx={{ marginBottom: "4.13rem" }}>
