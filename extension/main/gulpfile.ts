@@ -24,13 +24,14 @@ type ReadWriteStream = NodeJS.ReadWriteStream;
 
 // todo: Create a watcher that can also build the entire extension. This makes
 // development easier when we modify the extension's source code.
-// todo: See if we should stop reload extension in build because that might
-// break something in prod.
-const buildPopupFromConfig = (config: Configuration = {}): ReadWriteStream => {
+const buildPopupFromConfig = (
+  config: Configuration = {},
+  buildCallback?: () => unknown
+): ReadWriteStream => {
   const configWithType = webpackConfig as Configuration;
   return gulp
     .src("./popup/src/index.tsx")
-    .pipe(webpack({ ...configWithType, ...config }, undefined, reloadExtension))
+    .pipe(webpack({ ...configWithType, ...config }, undefined, buildCallback))
     .pipe(gulp.dest(buildFolder));
 };
 
@@ -38,7 +39,7 @@ const buildPopupFromConfig = (config: Configuration = {}): ReadWriteStream => {
  * We separate this from the other watcher because it helps with performance.
  */
 export const watchPopup = (): ReadWriteStream => {
-  return buildPopupFromConfig({ watch: true });
+  return buildPopupFromConfig({ watch: true }, reloadExtension);
 };
 
 /**
@@ -77,13 +78,6 @@ const copyOtherMainFiles = (): ReadWriteStream => {
     .pipe(gulp.dest(buildFolder));
 };
 
-/**
- * Plan:
- * - Build the popup
- * - Build the main files using a new Webpack config. Copy those files to the
- *   build folder.
- * - Copy the manifest, popup.html, background.js into the build folder.
- */
 export const build = parallel(
   buildPopup,
   buildContentScript,
