@@ -1,4 +1,4 @@
-import gulp from "gulp";
+import gulp, { parallel } from "gulp";
 import webpack from "webpack-stream";
 import open from "open";
 import { Configuration } from "webpack";
@@ -20,9 +20,13 @@ const reloadExtension = (): Promise<ChildProcess> => {
   return open("http://reload.extensions");
 };
 
+type ReadWriteStream = NodeJS.ReadWriteStream;
+
 // todo: Create a watcher that can also build the entire extension. This makes
 // development easier when we modify the extension's source code.
-const buildPopup = (config: Configuration = {}): NodeJS.ReadWriteStream => {
+// todo: See if we should stop reload extension in build because that might
+// break something in prod.
+const buildPopupFromConfig = (config: Configuration = {}): ReadWriteStream => {
   const configWithType = webpackConfig as Configuration;
   return gulp
     .src("./popup/src/index.tsx")
@@ -33,11 +37,18 @@ const buildPopup = (config: Configuration = {}): NodeJS.ReadWriteStream => {
 /**
  * We separate this from the other watcher because it helps with performance.
  */
-export const watchPopup = (): NodeJS.ReadWriteStream => {
-  return buildPopup({ watch: true });
+export const watchPopup = (): ReadWriteStream => {
+  return buildPopupFromConfig({ watch: true });
 };
 
-const buildContentScript = (): NodeJS.ReadWriteStream => {
+/**
+ * Main build
+ */
+const buildPopup = (): ReadWriteStream => {
+  return buildPopupFromConfig();
+};
+
+const buildContentScript = (): ReadWriteStream => {
   const configWithType = commonWebpackConfig as Configuration;
   return gulp
     .src(`./${mainFolder}/content-script.ts`)
@@ -59,7 +70,7 @@ const getMainFilesToCopy = (): Paths => {
   return relativePaths.map(createMainFilePath);
 };
 
-const copyOtherMainFiles = (): NodeJS.ReadWriteStream => {
+const copyOtherMainFiles = (): ReadWriteStream => {
   const filesToCopy: Paths = getMainFilesToCopy();
   return gulp
     .src(filesToCopy, { base: mainFolder })
@@ -73,4 +84,8 @@ const copyOtherMainFiles = (): NodeJS.ReadWriteStream => {
  *   build folder.
  * - Copy the manifest, popup.html, background.js into the build folder.
  */
-export const build = copyOtherMainFiles;
+export const build = parallel(
+  buildPopup,
+  buildContentScript,
+  copyOtherMainFiles
+);
