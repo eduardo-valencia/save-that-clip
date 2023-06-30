@@ -3,7 +3,7 @@ import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import Bookmarks from "./pages/Bookmarks/Bookmarks";
 import ErrorPage from "./pages/ErrorPage";
 import { SearchProvider } from "./components/SearchProvider";
-import { ThemeProvider } from "@mui/material";
+import { GlobalStyles, ThemeProvider } from "@mui/material";
 import { theme } from "./theme";
 
 /**
@@ -22,6 +22,9 @@ function App() {
   return (
     <SearchProvider>
       <ThemeProvider theme={theme}>
+        <GlobalStyles
+          styles={{ html: { minWidth: "320px", minHeight: "500px" } }}
+        />
         <RouterProvider router={router}></RouterProvider>
       </ThemeProvider>
     </SearchProvider>
