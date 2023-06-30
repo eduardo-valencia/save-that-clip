@@ -1,5 +1,6 @@
 {
   "flags": {
-    "require": "sucrase/register/ts"
+    "require": "sucrase/register/ts",
+    "gulpfile": "./main/gulpfile.ts"
   }
 }

@@ -21,11 +21,11 @@ const reloadExtension = (): Promise<ChildProcess> => {
 const watchWithWebpack = (): NodeJS.ReadWriteStream => {
   const configWithType = webpackConfig as Configuration;
   return gulp
-    .src("./src/index.tsx")
+    .src("./popup/src/index.tsx")
     .pipe(
       webpack({ watch: true, ...configWithType }, undefined, reloadExtension)
     )
-    .pipe(gulp.dest("../extension"));
+    .pipe(gulp.dest("./build"));
 };
 
 export const watch = watchWithWebpack;

@@ -16,5 +16,5 @@
     "isolatedModules": true,
     "noEmit": true
   },
-  "include": [".", "./.eslintrc.js"]
+  "include": [".", "./.eslintrc.js", "../popup/webpack.config.js"]
 }
