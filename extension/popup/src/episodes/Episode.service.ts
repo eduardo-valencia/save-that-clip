@@ -5,7 +5,7 @@ import {
   MessageToSetEpisodeTime,
   Messages,
   PossibleEpisodeTime as PossibleTime,
-} from "../../../common/messages";
+} from "../../../main/common/messages";
 import { TabsRepo } from "../tabs/Tabs.repo";
 import { TabsRepoAbstraction } from "../tabs/Tabs.repo-abstraction";
 import { Bookmark } from "../bookmarks/Bookmarks.repo-abstraction";

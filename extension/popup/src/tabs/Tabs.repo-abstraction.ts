@@ -1,4 +1,4 @@
-import { Message } from "../../../common/messages";
+import { Message } from "../../../main/common/messages";
 
 type ChromeTabs = typeof chrome.tabs;
 

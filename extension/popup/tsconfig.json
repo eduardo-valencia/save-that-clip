@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "types": ["./node_modules/chrome-types"],
+    "types": ["../node_modules/chrome-types"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -19,10 +19,9 @@
   },
   "include": [
     "src",
-    ".eslintrc.js",
-    "gulpfile.ts",
-    "../common",
+    "../main/common",
     "jest.config.ts",
-    ".eslintrc.mainTsconfig.js"
+    ".eslintrc.js",
+    "webpack.config.js"
   ]
 }

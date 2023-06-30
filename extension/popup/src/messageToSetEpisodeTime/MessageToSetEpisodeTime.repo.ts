@@ -1,4 +1,4 @@
-import { Messages } from "../../../common/messages";
+import { Messages } from "../../../main/common/messages";
 import { MessageToSetEpisodeTimeRepoAbstraction } from "./MessageToSetEpisodeTime.repo-abstraction";
 
 /**

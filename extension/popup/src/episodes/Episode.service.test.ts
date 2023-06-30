@@ -12,7 +12,7 @@ import {
   EpisodeTime,
   MessageToSetEpisodeTime,
   Messages,
-} from "../../../common/messages";
+} from "../../../main/common/messages";
 import {
   EpisodeService,
   EpisodeTabAndTime,

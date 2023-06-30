@@ -1,12 +1,13 @@
-const path = require('path')
-const dotenv = require('dotenv')
+/* eslint-disable @typescript-eslint/no-var-requires */
+const path = require("path");
+const dotenv = require("dotenv");
 
-dotenv.config()
-const extensionFolder = path.resolve(__dirname, '..', 'extension')
+dotenv.config();
+const buildFolder = path.resolve(__dirname, "../build");
 
 module.exports = {
-  entry: './src/index.tsx',
-  mode: process.env.NODE_ENV || 'production',
+  entry: "./popup/src/index.tsx",
+  mode: process.env.NODE_ENV || "production",
   devtool: false,
   module: {
     rules: [
@@ -14,7 +15,7 @@ module.exports = {
         test: /\.tsx?$/,
         use: [
           {
-            loader: 'ts-loader',
+            loader: "ts-loader",
             options: { compilerOptions: { noEmit: false } },
           },
         ],
@@ -23,10 +24,10 @@ module.exports = {
     ],
   },
   output: {
-    path: extensionFolder,
-    filename: 'popup-script.js',
+    path: buildFolder,
+    filename: "popup-script.js",
   },
   resolve: {
-    extensions: ['.js', '.ts', '.tsx'],
+    extensions: [".js", ".ts", ".tsx"],
   },
-}
+};
