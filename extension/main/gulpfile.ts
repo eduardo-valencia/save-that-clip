@@ -61,7 +61,9 @@ const getMainFilesToCopy = (): Paths => {
 
 const copyOtherMainFiles = (): NodeJS.ReadWriteStream => {
   const filesToCopy: Paths = getMainFilesToCopy();
-  return gulp.src(filesToCopy).pipe(gulp.dest(buildFolder));
+  return gulp
+    .src(filesToCopy, { base: mainFolder })
+    .pipe(gulp.dest(buildFolder));
 };
 
 /**
