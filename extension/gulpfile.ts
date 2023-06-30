@@ -4,7 +4,7 @@ import open from "open";
 import { Configuration } from "webpack";
 import { ChildProcess } from "child_process";
 
-import webpackConfig from "./webpack.config";
+import webpackConfig from "./popup/webpack.config";
 
 /**
  * Must install
