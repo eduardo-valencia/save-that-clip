@@ -1,15 +1,15 @@
 module.exports = {
-  extends: [
-    'react-app',
-    'react-app/jest',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
-  ],
-  parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint'],
   root: true,
-  parserOptions: {
-    project: true,
-    tsconfigRootDir: __dirname,
-  },
-}
+  overrides: [
+    {
+      extends: ["./.eslintrc.mainTsconfig.js"],
+      files: [
+        "src/**/*.tsx",
+        "gulpfile.ts",
+        "jest.config.ts",
+        "webpack.config.js",
+        ".eslintrc.mainTsconfig.js",
+      ],
+    },
+  ],
+};
