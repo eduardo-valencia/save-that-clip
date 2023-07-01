@@ -15,3 +15,7 @@ export interface MessageToSetEpisodeTime extends Message {
   type: Messages.setEpisodeTime;
   timeMs: number;
 }
+
+export interface ResultOfSettingTime {
+  success: boolean;
+}
