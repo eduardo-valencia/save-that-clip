@@ -12,6 +12,7 @@ import {
   EpisodeTime,
   MessageToSetEpisodeTime,
   Messages,
+  ResultOfSettingTime,
 } from "../../../main/common/messages";
 import {
   EpisodeService,
@@ -161,7 +162,8 @@ describe("sendMessageToSetEpisodeTime", () => {
 
   it("Throws an error when it cannot find an episode tab", async () => {
     mockNoTabs();
-    const promise: Promise<void> = sendMessageToSetEpisodeTime(1000);
+    const promise: Promise<ResultOfSettingTime> =
+      sendMessageToSetEpisodeTime(1000);
     await expect(promise).rejects.toBeTruthy();
   });
 });

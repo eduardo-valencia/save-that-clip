@@ -35,11 +35,10 @@ import {
 /**
  * * Services & their mocks
  */
-// ! This is mocked.
-const tabsRepo = new MockedTabsRepo();
+const mockedTabsRepo = new MockedTabsRepo();
 
 // Episode service
-const episodeService = new EpisodeService({ tabsRepo });
+const episodeService = new EpisodeService({ tabsRepo: mockedTabsRepo });
 
 const spiedGetTabAndTime = jest.spyOn(
   episodeService,
@@ -59,7 +58,7 @@ const { generateEpisodeTab } = new TabsFactory();
 const { create, find, destroy, open } = new BookmarksService({
   episodeService,
   seriesInfoService,
-  tabsRepo,
+  tabsRepo: mockedTabsRepo,
 });
 
 /**
@@ -214,7 +213,7 @@ describe("open", () => {
 
     const mockCreatingTab = (): void => {
       const tab: chrome.tabs.Tab = generateEpisodeTab();
-      tabsRepo.create.mockResolvedValue(tab);
+      mockedTabsRepo.create.mockResolvedValue(tab);
     };
 
     beforeAll(async () => {
@@ -224,7 +223,7 @@ describe("open", () => {
     });
 
     it("Opens a new tab with the bookmark", () => {
-      expect(tabsRepo.create).toHaveBeenCalledWith({
+      expect(mockedTabsRepo.create).toHaveBeenCalledWith({
         active: true,
         url: bookmark.episodeUrl,
       });
@@ -242,7 +241,7 @@ describe("open", () => {
 
     const mockSettingEpisodeTime = (): void => {
       spiedSetTime = jest.spyOn(episodeService, "sendMessageToSetEpisodeTime");
-      spiedSetTime.mockResolvedValue();
+      spiedSetTime.mockResolvedValue({ success: true });
     };
 
     const mockFindingBookmarkTab = (mockedInfo: MockedInfo): void => {
