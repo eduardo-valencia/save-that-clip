@@ -50,6 +50,7 @@ export default function CreationForm() {
 
   const handleSubmission = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
+    setError(null);
     void trySavingBookmark();
   };
 
