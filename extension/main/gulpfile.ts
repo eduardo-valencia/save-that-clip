@@ -5,7 +5,7 @@ import { Configuration as Config } from "webpack";
 import { ChildProcess } from "child_process";
 import path from "path";
 
-import webpackConfig from "../popup/webpack.config";
+import popupWebpackConfig from "../popup/webpack.config";
 import commonWebpackConfig from "./common/common-webpack-config";
 import { FSWatcher } from "fs";
 
@@ -48,13 +48,13 @@ const buildPopupFromConfig = getWebpackBuilder("./popup/src/index.tsx");
  */
 export const watchPopup = (): ReadWriteStream => {
   return buildPopupFromConfig({
-    config: { watch: true },
+    config: { ...(popupWebpackConfig as Config), watch: true },
     buildCallback: reloadExtension,
   });
 };
 
 const buildPopup = (): ReadWriteStream => {
-  return buildPopupFromConfig({ config: webpackConfig as Config });
+  return buildPopupFromConfig({ config: popupWebpackConfig as Config });
 };
 
 /**
