@@ -258,7 +258,13 @@ describe("open", () => {
 
     it.todo("Does not try to update the episode's time");
 
-    // todo: test what happens when the URL already has a "t" param.
+    it.todo("Works when the URL already has params");
+
+    /**
+     * Note: I already tested this, but it might be a good idea to test this to
+     * ensure it doesn't break in the future.
+     */
+    it.todo('Works when the URL has a "t" param');
   });
 
   describe("When the bookmark is open", () => {
