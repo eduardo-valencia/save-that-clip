@@ -1,7 +1,7 @@
 import gulp, { parallel } from "gulp";
 import webpack from "webpack-stream";
 import open from "open";
-import { Configuration } from "webpack";
+import { Configuration as Config } from "webpack";
 import { ChildProcess } from "child_process";
 import path from "path";
 
@@ -22,41 +22,66 @@ const reloadExtension = (): Promise<ChildProcess> => {
 
 type ReadWriteStream = NodeJS.ReadWriteStream;
 
+interface FieldsToBuildPopup {
+  config: Config;
+  buildCallback?: () => unknown;
+}
+
+const getWebpackBuilder = (src: string) => {
+  return ({ config, buildCallback }: FieldsToBuildPopup): ReadWriteStream => {
+    return gulp
+      .src(src)
+      .pipe(webpack(config, undefined, buildCallback))
+      .pipe(gulp.dest(buildFolder));
+  };
+};
+
 // todo: Create a watcher that can also build the entire extension. This makes
 // development easier when we modify the extension's source code.
-const buildPopupFromConfig = (
-  config: Configuration = {},
-  buildCallback?: () => unknown
-): ReadWriteStream => {
-  const configWithType = webpackConfig as Configuration;
-  return gulp
-    .src("./popup/src/index.tsx")
-    .pipe(webpack({ ...configWithType, ...config }, undefined, buildCallback))
-    .pipe(gulp.dest(buildFolder));
-};
+// We can set up 2 watchers: one for popup and another for main files.
+// The watcher for the main files will build the app almost exactly like the one
+// for the popup does.
+// We will reload the extension when either webpack instance is done building
+const buildPopupFromConfig = getWebpackBuilder("./popup/src/index.tsx");
 
 /**
  * We separate this from the other watcher because it helps with performance.
  */
 export const watchPopup = (): ReadWriteStream => {
-  return buildPopupFromConfig({ watch: true }, reloadExtension);
+  return buildPopupFromConfig({
+    config: { watch: true },
+    buildCallback: reloadExtension,
+  });
 };
 
 /**
  * Main build
  */
 const buildPopup = (): ReadWriteStream => {
-  return buildPopupFromConfig();
+  return buildPopupFromConfig({ config: webpackConfig as Config });
 };
 
-const buildContentScript = (): ReadWriteStream => {
-  const configWithType = commonWebpackConfig as Configuration;
-  return gulp
-    .src(`./${mainFolder}/content-script.ts`)
-    .pipe(
-      webpack({ ...configWithType, output: { filename: "content-script.js" } })
-    )
-    .pipe(gulp.dest(buildFolder));
+const createContentScriptWebpackConfig = (
+  extraFields: Partial<Config> = {}
+): Config => {
+  const configWithType = commonWebpackConfig as Config;
+  return {
+    ...configWithType,
+    output: { filename: "content-script.js" },
+    ...extraFields,
+  };
+};
+
+const buildContentScriptFromConfig = getWebpackBuilder(
+  `./${mainFolder}/content-script.ts`
+);
+
+const buildContentScript = ({
+  config,
+  buildCallback,
+}: Partial<FieldsToBuildPopup> = {}): ReadWriteStream => {
+  const fullConfig: Config = createContentScriptWebpackConfig(config);
+  return buildContentScriptFromConfig({ config: fullConfig, buildCallback });
 };
 
 type Path = string;
