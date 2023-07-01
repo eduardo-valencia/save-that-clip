@@ -97,13 +97,35 @@ export class BookmarksService {
     return bookmarks[0];
   };
 
+  private getTimeInSeconds = (bookmark: Bookmark): number => {
+    const timeInSeconds: number = bookmark.timeMs / 1000;
+    return Math.floor(timeInSeconds);
+  };
+
+  private getUrlWithTime = (bookmark: Bookmark): string => {
+    const url = new URL(bookmark.episodeUrl);
+    const timeInSeconds: number = this.getTimeInSeconds(bookmark);
+    /**
+     * This parameter allows us to set the time.
+     */
+    url.searchParams.append("t", timeInSeconds.toString());
+    return url.href;
+  };
+
+  private openBookmarkTabAtTime = async (bookmark: Bookmark): Promise<void> => {
+    await this.tabsRepo.create({
+      active: true,
+      url: this.getUrlWithTime(bookmark),
+    });
+  };
+
   private createBookmarkTabOrUpdateIt = async (
     bookmark: Bookmark,
     tab: PossibleTab
   ): Promise<void> => {
     if (tab)
       await this.episodeService.sendMessageToSetEpisodeTime(bookmark.timeMs);
-    else await this.tabsRepo.create({ active: true, url: bookmark.episodeUrl });
+    else await this.openBookmarkTabAtTime(bookmark);
   };
 
   public open = async (id: Bookmark["id"]): Promise<void> => {

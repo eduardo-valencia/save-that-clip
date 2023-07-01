@@ -18,7 +18,7 @@ jest.mock("../chrome.service", () => {
 });
 
 /* eslint-disable import/first */
-import _ from "lodash";
+import _, { endsWith } from "lodash";
 import { EpisodeService, EpisodeTabAndTime } from "../episodes/Episode.service";
 import {
   SeriesInfoService,
@@ -208,28 +208,57 @@ describe("open", () => {
     return info;
   };
 
-  describe("When the bookmark is not already open", () => {
+  describe("When the bookmark is not already open & its time is not divisible by a thousand", () => {
     let bookmark: Bookmark;
+
+    const mockGettingTime = (): void => {
+      const info: MockedInfo = getMockedInfo();
+      info.episodeInfo.time = 101;
+      spiedGetTabAndTime.mockResolvedValue(info.episodeInfo);
+    };
 
     const mockCreatingTab = (): void => {
       const tab: chrome.tabs.Tab = generateEpisodeTab();
       mockedTabsRepo.create.mockResolvedValue(tab);
     };
 
+    const getExpectedTime = (): number => {
+      const timeInSeconds: number = bookmark.timeMs / 1000;
+      return Math.floor(timeInSeconds);
+    };
+
+    const getExpectedUrl = (): string => {
+      const url = new URL(bookmark.episodeUrl);
+      const expectedTime: number = getExpectedTime();
+      url.searchParams.append("t", expectedTime.toString());
+      return url.href;
+    };
+
     beforeAll(async () => {
       mockCreatingTab();
       mockTimeAndSeriesName();
+      /**
+       * This partially overwrites @see mockTimeAndSeriesName.
+       */
+      mockGettingTime();
       ({ bookmark } = await generateAndOpenBookmark());
     });
 
-    it("Opens a new tab with the bookmark", () => {
+    /**
+     * This test case is important because the time must be in seconds, but the
+     * bookmark's time is in milliseconds. Therefore, we need to round the
+     * result down to the nearest second.
+     */
+    it("Opens a new episode tab with the correct time in seconds", () => {
       expect(mockedTabsRepo.create).toHaveBeenCalledWith({
         active: true,
-        url: bookmark.episodeUrl,
+        url: getExpectedUrl(),
       });
     });
 
     it.todo("Does not try to update the episode's time");
+
+    // todo: test what happens when the URL already has a "t" param.
   });
 
   describe("When the bookmark is open", () => {

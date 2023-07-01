@@ -10,7 +10,10 @@ export class TabsFactory {
 
   public generateEpisodeTab = () => {
     const tab: Pick<Tab, "url" | "active" | "id"> = {
-      url: "http://netflix.com/watch/81091396",
+      /**
+       * URLs without query params have trailing slashes, so I added one here.
+       */
+      url: "http://netflix.com/watch/81091396/",
       active: true,
       id: this.generateTabId(),
     };
