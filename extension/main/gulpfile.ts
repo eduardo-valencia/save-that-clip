@@ -12,6 +12,10 @@ const buildFolder = "build";
 const mainFolder = "main";
 
 /**
+ * * Popups
+ */
+
+/**
  * Must install
  * https://chrome.google.com/webstore/detail/extensions-reloader/fimgfedafeadlieiabdeeaodndnlbhid
  * for this to work.
@@ -36,12 +40,6 @@ const getWebpackBuilder = (src: string) => {
   };
 };
 
-// todo: Create a watcher that can also build the entire extension. This makes
-// development easier when we modify the extension's source code.
-// We can set up 2 watchers: one for popup and another for main files.
-// The watcher for the main files will build the app almost exactly like the one
-// for the popup does.
-// We will reload the extension when either webpack instance is done building
 const buildPopupFromConfig = getWebpackBuilder("./popup/src/index.tsx");
 
 /**
@@ -54,12 +52,13 @@ export const watchPopup = (): ReadWriteStream => {
   });
 };
 
-/**
- * Main build
- */
 const buildPopup = (): ReadWriteStream => {
   return buildPopupFromConfig({ config: webpackConfig as Config });
 };
+
+/**
+ * * Content scripts
+ */
 
 const createContentScriptWebpackConfig = (
   extraFields: Partial<Config> = {}
@@ -76,14 +75,21 @@ const buildContentScriptFromConfig = getWebpackBuilder(
   `./${mainFolder}/content-script.ts`
 );
 
-const buildContentScript = ({
-  config,
-  buildCallback,
-}: Partial<FieldsToBuildPopup> = {}): ReadWriteStream => {
-  const fullConfig: Config = createContentScriptWebpackConfig(config);
-  return buildContentScriptFromConfig({ config: fullConfig, buildCallback });
+const buildContentScript = (): ReadWriteStream => {
+  const fullConfig: Config = createContentScriptWebpackConfig();
+  return buildContentScriptFromConfig({ config: fullConfig });
 };
 
+const watchContentScript = (): ReadWriteStream => {
+  return buildContentScriptFromConfig({
+    config: createContentScriptWebpackConfig({ watch: true }),
+    buildCallback: reloadExtension,
+  });
+};
+
+/**
+ * * Other
+ */
 type Path = string;
 type Paths = Path[];
 
@@ -108,3 +114,5 @@ export const build = parallel(
   buildContentScript,
   copyOtherMainFiles
 );
+
+export const watch = parallel(watchContentScript, watchPopup);
