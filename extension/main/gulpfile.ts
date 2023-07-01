@@ -7,6 +7,7 @@ import path from "path";
 
 import webpackConfig from "../popup/webpack.config";
 import commonWebpackConfig from "./common/common-webpack-config";
+import { FSWatcher } from "fs";
 
 const buildFolder = "build";
 const mainFolder = "main";
@@ -88,7 +89,7 @@ const watchContentScript = (): ReadWriteStream => {
 };
 
 /**
- * * Other
+ * * Other extension main files
  */
 type Path = string;
 type Paths = Path[];
@@ -109,10 +110,24 @@ const copyOtherMainFiles = (): ReadWriteStream => {
     .pipe(gulp.dest(buildFolder));
 };
 
+const copyFilesAndReload = gulp.series(copyOtherMainFiles, reloadExtension);
+
+const watchOtherMainFiles = (): FSWatcher => {
+  const filesToCopy: Paths = getMainFilesToCopy();
+  return gulp.watch(filesToCopy, copyFilesAndReload);
+};
+
+/**
+ * * Other
+ */
 export const build = parallel(
   buildPopup,
   buildContentScript,
   copyOtherMainFiles
 );
 
-export const watch = parallel(watchContentScript, watchPopup);
+export const watch = parallel(
+  watchContentScript,
+  watchPopup,
+  watchOtherMainFiles
+);
