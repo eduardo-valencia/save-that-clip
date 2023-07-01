@@ -27,7 +27,7 @@
   "scripts": {
     "popup-build": "webpack -c ./popup/webpack.config.js",
     "popup-test": "jest --config ./popup/jest.config.ts",
-    "popup-test:watch": "npm run test -- --watch",
+    "popup-test:watch": "npm run popup-test -- --watch",
     "popup-lint-ts": "tsc --noEmit --project ./popup/tsconfig.json"
   },
   "browserslist": {
