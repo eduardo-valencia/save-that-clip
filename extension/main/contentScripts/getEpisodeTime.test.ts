@@ -29,7 +29,7 @@ afterEach(() => {
 });
 
 describe("When the video element exists", () => {
-  const videoTime = 300;
+  const videoTimeSeconds = 300;
 
   const addVideoElement = (): void => {
     document.body.innerHTML = "<video />";
@@ -38,7 +38,7 @@ describe("When the video element exists", () => {
   const setVideoTime = (): void => {
     const video: HTMLVideoElement | null = document.querySelector("video");
     if (!video) throw new Error("Element not found.");
-    video.currentTime = videoTime;
+    video.currentTime = videoTimeSeconds;
   };
 
   beforeAll(() => {
@@ -48,7 +48,8 @@ describe("When the video element exists", () => {
 
   it("Responds with the time", async () => {
     const response: unknown = await sendMessageToGetTime();
-    expect(response).toEqual(videoTime);
+    const timeInMs = videoTimeSeconds * 1000;
+    expect(response).toEqual(timeInMs);
   });
 });
 
