@@ -18,20 +18,38 @@ import {
   EpisodeService,
   EpisodeTabAndTime,
   PossibleTab,
+  ScriptResult,
 } from "./Episode.service";
 import { TabsFactory } from "../tabs/Tabs.factory";
 import { MockedTabsRepo } from "../tabs/MockedTabs.repo";
+import {
+  InjectionResult,
+  ScriptsRepoAbstraction,
+} from "../scripts/Scripts.repo-abstraction";
 
 /**
  * Repos and services
  */
-const tabsRepo = new MockedTabsRepo();
+type ExecuteScript = ScriptsRepoAbstraction["executeScript"];
+
+class MockedScriptsRepo extends ScriptsRepoAbstraction {
+  public executeScript: jest.MockedFunction<ExecuteScript> = jest.fn();
+}
+
+const mockedTabsRepo = new MockedTabsRepo();
+const mockedScriptsRepo = new MockedScriptsRepo();
+
 const {
   get1stEpisodeTabAndTime: findTimeOf1stEpisodeTab,
   findOneEpisodeTab,
   sendMessageToSetEpisodeTime,
   findOneEpisodeTabByUrl,
-} = new EpisodeService({ tabsRepo });
+  setTime,
+} = new EpisodeService({
+  tabsRepo: mockedTabsRepo,
+  scriptsRepo: mockedScriptsRepo,
+});
+
 const { generateEpisodeTab } = new TabsFactory();
 
 /**
@@ -41,13 +59,19 @@ type Tab = chrome.tabs.Tab;
 
 const mockTabWithEpisode = (): Tab => {
   const tab: Tab = generateEpisodeTab();
-  tabsRepo.query.mockResolvedValue([tab]);
+  mockedTabsRepo.query.mockResolvedValue([tab]);
   return tab;
 };
 
 const mockNoTabs = (): void => {
   // We pretend that there are no tabs
-  tabsRepo.query.mockResolvedValue([]);
+  mockedTabsRepo.query.mockResolvedValue([]);
+};
+
+const mockTimeResponse = (): EpisodeTime => {
+  const mockedEpisodeTime: EpisodeTime = 1000;
+  mockedTabsRepo.sendMessage.mockResolvedValue(mockedEpisodeTime);
+  return mockedEpisodeTime;
 };
 
 afterEach(() => {
@@ -73,7 +97,7 @@ describe("findOneEpisodeTab", () => {
      * permissions.
      */
     it("Queries the tabs repo for active tabs", () => {
-      expect(tabsRepo.query).toBeCalledWith({
+      expect(mockedTabsRepo.query).toBeCalledWith({
         active: true,
         lastFocusedWindow: true,
       });
@@ -90,7 +114,7 @@ describe("findOneEpisodeTab", () => {
 
     const mockActiveTab = (): void => {
       const tab: Tab = getActiveTab();
-      tabsRepo.query.mockResolvedValue([tab]);
+      mockedTabsRepo.query.mockResolvedValue([tab]);
     };
 
     beforeAll(() => {
@@ -111,15 +135,11 @@ describe("getTimeOf1stEpisodeTab", () => {
   };
 
   describe("When the content script responds with the time", () => {
-    const mockedEpisodeTime: EpisodeTime = 1000;
-
-    const mockTimeResponse = (): void => {
-      tabsRepo.sendMessage.mockResolvedValue(mockedEpisodeTime);
-    };
+    let mockedEpisodeTime: EpisodeTime;
 
     beforeAll(() => {
       mockTabWithEpisode();
-      mockTimeResponse();
+      mockedEpisodeTime = mockTimeResponse();
     });
 
     it("Returns the episode's time", async () => {
@@ -130,7 +150,7 @@ describe("getTimeOf1stEpisodeTab", () => {
 
   it("Throws an error when the content script does not respond with a time", async () => {
     mockTabWithEpisode();
-    tabsRepo.sendMessage.mockResolvedValue(null);
+    mockedTabsRepo.sendMessage.mockResolvedValue(null);
     await callMethodAndExpectError();
   });
 
@@ -156,7 +176,7 @@ describe("sendMessageToSetEpisodeTime", () => {
 
     it("Sends a message", () => {
       const message: MessageToSetEpisodeTime = getMessage();
-      expect(tabsRepo.sendMessage).toHaveBeenCalledWith(tab.id, message);
+      expect(mockedTabsRepo.sendMessage).toHaveBeenCalledWith(tab.id, message);
     });
   });
 
@@ -186,7 +206,7 @@ describe("findOneEpisodeTabByUrl", () => {
 
     beforeAll(() => {
       const tabs: Tab[] = getTabs();
-      tabsRepo.query.mockResolvedValue(tabs);
+      mockedTabsRepo.query.mockResolvedValue(tabs);
     });
 
     it("Returns the episode tab with the URL", async () => {
@@ -194,5 +214,65 @@ describe("findOneEpisodeTabByUrl", () => {
       const tab: PossibleTab = await findOneEpisodeTabByUrl(tabToFind.url!);
       expect(tab).toEqual(tabToFind);
     });
+  });
+});
+
+/**
+ * Plan:
+ * - Create a new repo for scripting so we can easily mock it in the future.
+ * - Explain that we're making a repo instead of the Chrome service because
+ *   mocking the latter might require combining multiple mocks if we needed to
+ *   mock various aspects of the Chrome service in the future.
+ * - Create a mocked repo with executeScript as jest.fn()
+ */
+describe("setTime", () => {
+  /**
+   * Other test utils.
+   */
+
+  /**
+   * - Call the method and get the success status. Call it with any fake time.
+   * - Expect "success" to equal false.
+   */
+  const callMethodAndExpectFailure = async (): Promise<void> => {
+    const { success }: ScriptResult = await setTime(1);
+    expect(success).toEqual(true);
+  };
+
+  /**
+   * - Return an injection result that has a "result" of null.
+   * - Call setTime.
+   * - Expect it to return a "success" of false.
+   */
+  describe("When the injected script does not return a successful status", () => {
+    const createInjectionResult = (): InjectionResult => {
+      const result: ScriptResult = { success: false };
+      return { frameId: 1, documentId: "", result };
+    };
+
+    const mockUnsuccessfulStatus = (): void => {
+      const result: InjectionResult = createInjectionResult();
+      mockedScriptsRepo.executeScript.mockResolvedValue([result]);
+    };
+
+    beforeAll(() => {
+      mockTabWithEpisode();
+      mockTimeResponse();
+      mockUnsuccessfulStatus();
+    });
+
+    // todo: fix false positive
+    it('Returns an object with "success" as false', async () => {
+      await callMethodAndExpectFailure();
+    });
+  });
+
+  /**
+   * - Mock executeScript to return an empty array of injection results.
+   * - Call setTime.
+   * Expect ito to return a "success" of false.
+   */
+  describe("When executing the script does not return any injection results", () => {
+    it.todo('Returns an object with "success" as false');
   });
 });

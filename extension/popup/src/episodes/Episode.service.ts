@@ -10,9 +10,15 @@ import {
 import { TabsRepo } from "../tabs/Tabs.repo";
 import { TabsRepoAbstraction } from "../tabs/Tabs.repo-abstraction";
 import { Bookmark } from "../bookmarks/Bookmarks.repo-abstraction";
+import {
+  InjectionResult,
+  ScriptsRepoAbstraction,
+} from "../scripts/Scripts.repo-abstraction";
+import { ScriptsRepo } from "../scripts/Scripts.repo";
 
 interface Options {
   tabsRepo?: TabsRepoAbstraction;
+  scriptsRepo?: ScriptsRepoAbstraction;
 }
 
 type Tab = chrome.tabs.Tab;
@@ -33,14 +39,20 @@ declare const netflix: any;
 
 type InjectedFunc = chrome.scripting.ScriptInjection["func"];
 
+export interface ScriptResult {
+  success: boolean;
+}
+
 /**
  * This service allows us to interact with an episode tab.
  */
 export class EpisodeService {
   private tabsRepo: TabsRepoAbstraction;
+  private scriptsRepo: ScriptsRepoAbstraction;
 
   constructor(options?: Options) {
     this.tabsRepo = options?.tabsRepo || new TabsRepo();
+    this.scriptsRepo = options?.scriptsRepo || new ScriptsRepo();
   }
 
   private getActiveTabs = (): Promise<Tab[]> => {
@@ -147,11 +159,12 @@ export class EpisodeService {
   /* eslint-disable @typescript-eslint/no-unsafe-member-access */
   /* eslint-disable @typescript-eslint/no-unsafe-call */
   /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-  private setTime = (bookmark: Bookmark): void => {
+  private setTimeInBrowser = (timeMs: Bookmark["timeMs"]): ScriptResult => {
     const { videoPlayer } = netflix.appContext.state.playerApp.getAPI();
     const [sessionId] = videoPlayer.getAllPlayerSessionIds();
     const player = videoPlayer.getVideoPlayerBySessionId(sessionId);
-    player.seek(bookmark.timeMs);
+    player.seek(timeMs);
+    return { success: true };
   };
   /* eslint-enable @typescript-eslint/no-unsafe-return */
   /* eslint-enable @typescript-eslint/no-unsafe-member-access */
@@ -167,16 +180,24 @@ export class EpisodeService {
     return tab.id!;
   };
 
-  // todo: Handle errors with setting time
-  private injectScriptToSetTime = async (bookmark: Bookmark): Promise<void> => {
-    await chrome.scripting.executeScript({
+  private injectScriptToSetTime = async (
+    timeMs: Bookmark["timeMs"]
+  ): Promise<InjectionResult[]> => {
+    return this.scriptsRepo.executeScript({
       target: { tabId: await this.getEpisodeTabId() },
       /**
        * We overwrite the type because Chrome's types are wrong.
        */
-      func: this.setTime as unknown as InjectedFunc,
-      args: [bookmark],
+      func: this.setTimeInBrowser as unknown as InjectedFunc,
+      args: [timeMs],
       world: "MAIN",
     });
+  };
+
+  public setTime = async (
+    timeMs: Bookmark["timeMs"]
+  ): Promise<ScriptResult> => {
+    await this.injectScriptToSetTime(timeMs);
+    return { success: true };
   };
 }

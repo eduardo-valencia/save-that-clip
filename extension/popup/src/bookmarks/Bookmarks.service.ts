@@ -71,7 +71,9 @@ export class BookmarksService {
     const repoFields: RepoCreationFields = await this.getRepoCreationFields(
       fields
     );
-    return this.repo.create(repoFields);
+    const bookmark = await this.repo.create(repoFields);
+    await this.episodeService.setTime(bookmark.timeMs);
+    return bookmark;
   };
 
   public find = async (fields?: Partial<Bookmark>): Promise<Bookmark[]> => {
