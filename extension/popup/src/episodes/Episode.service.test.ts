@@ -248,6 +248,19 @@ describe("setTime", () => {
     return { frameId: 1, documentId: "", result };
   };
 
+  it.todo("Runs it against the main window");
+
+  it.todo("Runs the script against the correct tab");
+
+  /**
+   * To test this, we might be able to execute the function against a custom
+   * context. The context should have a mocked variable called "netflix". We
+   * should mock its methods and test that the correct methods get called.
+   */
+  it.todo("Passes a function that sets the time correctly");
+
+  it.todo("Passes the correct args to the function that we will inject");
+
   describe("When all injection results return a success status", () => {
     const mockSuccessfulStatus = (): void => {
       const result: InjectionResult = createInjectionResult(true);

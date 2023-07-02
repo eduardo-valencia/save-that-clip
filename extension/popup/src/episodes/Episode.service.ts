@@ -200,6 +200,10 @@ export class EpisodeService {
     result,
   }: InjectionResult): boolean => {
     const resultWithType = result as ScriptResult | undefined;
+    /**
+     * If there's an error, it might not return a "success" status of false. So,
+     * we should check if it is not true.
+     */
     return resultWithType?.success !== true;
   };
 
