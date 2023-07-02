@@ -270,22 +270,12 @@ describe("open", () => {
   describe("When the bookmark is open", () => {
     let bookmark: Bookmark;
 
-    let spiedSetTime: jest.SpiedFunction<
-      EpisodeService["sendMessageToSetEpisodeTime"]
-    >;
-
-    const mockSettingEpisodeTime = (): void => {
-      spiedSetTime = jest.spyOn(episodeService, "sendMessageToSetEpisodeTime");
-      spiedSetTime.mockResolvedValue({ success: true });
-    };
-
     const mockFindingBookmarkTab = (mockedInfo: MockedInfo): void => {
       const spiedFind = jest.spyOn(episodeService, "findOneEpisodeTabByUrl");
       spiedFind.mockResolvedValue(mockedInfo.episodeInfo.tab);
     };
 
     beforeAll(async () => {
-      mockSettingEpisodeTime();
       const mockedInfo: MockedInfo = mockTimeAndSeriesName();
       mockFindingBookmarkTab(mockedInfo);
       /**
@@ -295,9 +285,7 @@ describe("open", () => {
       ({ bookmark } = await generateAndOpenBookmark());
     });
 
-    it("Sets the video's time to the bookmark's time", () => {
-      expect(spiedSetTime).toHaveBeenCalledWith(bookmark.timeMs);
-    });
+    it.todo("Sets the video's time to the bookmark's time");
 
     it.todo("Does not create a tab");
   });

@@ -23,7 +23,6 @@ type MessageHandlers = {
 const getMessageHandlers = (): MessageHandlers => {
   return {
     [Messages.getEpisodeTime]: netflixMessageHandlers.sendEpisodeTime,
-    [Messages.setEpisodeTime]: netflixMessageHandlers.sendEpisodeTime,
   };
 };
 

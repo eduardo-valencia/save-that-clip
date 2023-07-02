@@ -2,10 +2,8 @@ import _ from "lodash";
 import {
   EpisodeTime,
   Message,
-  MessageToSetEpisodeTime,
   Messages,
   PossibleEpisodeTime as PossibleTime,
-  ResultOfSettingTime,
 } from "../../../main/common/messages";
 import { TabsRepo } from "../tabs/Tabs.repo";
 import { TabsRepoAbstraction } from "../tabs/Tabs.repo-abstraction";
@@ -103,14 +101,6 @@ export class EpisodeService {
     throw new Error("No tab with a Netflix episode was found.");
   };
 
-  private sendMessageToEpisodeTab = async (message: Message) => {
-    const episodeTab: PossibleTab = await this.findOneEpisodeTab();
-    if (!episodeTab) return this.handleMissingTab();
-    const { sendMessage } = this.tabsRepo;
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return sendMessage(episodeTab.id!, message) as Promise<ResultOfSettingTime>;
-  };
-
   private sendMessageToGetTime = async (
     episodeTab: Tab
   ): Promise<PossibleTime> => {
@@ -139,19 +129,6 @@ export class EpisodeService {
     if (!episodeTab) return this.handleMissingTab();
     const time: EpisodeTime = await this.findAndValidateEpisodeTime(episodeTab);
     return { time, tab: episodeTab };
-  };
-
-  private getMessageToSetTime = (
-    timeMs: MessageToSetEpisodeTime["timeMs"]
-  ): MessageToSetEpisodeTime => {
-    return { type: Messages.setEpisodeTime, timeMs };
-  };
-
-  public sendMessageToSetEpisodeTime = async (
-    timeMs: MessageToSetEpisodeTime["timeMs"]
-  ): Promise<ResultOfSettingTime> => {
-    const message: MessageToSetEpisodeTime = this.getMessageToSetTime(timeMs);
-    return this.sendMessageToEpisodeTab(message);
   };
 
   /**

@@ -8,12 +8,7 @@
  * - An "episode tab" is an active tab with a Netflix episode.
  */
 
-import {
-  EpisodeTime,
-  MessageToSetEpisodeTime,
-  Messages,
-  ResultOfSettingTime,
-} from "../../../main/common/messages";
+import { EpisodeTime } from "../../../main/common/messages";
 import {
   EpisodeService,
   EpisodeTabAndTime,
@@ -42,7 +37,6 @@ const mockedScriptsRepo = new MockedScriptsRepo();
 const {
   get1stEpisodeTabAndTime: findTimeOf1stEpisodeTab,
   findOneEpisodeTab,
-  sendMessageToSetEpisodeTime,
   findOneEpisodeTabByUrl,
   setTime,
 } = new EpisodeService({
@@ -157,34 +151,6 @@ describe("getTimeOf1stEpisodeTab", () => {
   it("Throws an error when we try returning the time when there is no Netflix tab open", async () => {
     mockNoTabs();
     await callMethodAndExpectError();
-  });
-});
-
-describe("sendMessageToSetEpisodeTime", () => {
-  describe("After calling it when there is an episode tab", () => {
-    let tab: Tab;
-    const timeMs: MessageToSetEpisodeTime["timeMs"] = 1000;
-
-    const getMessage = (): MessageToSetEpisodeTime => {
-      return { type: Messages.setEpisodeTime, timeMs: 1000 };
-    };
-
-    beforeAll(async () => {
-      tab = mockTabWithEpisode();
-      await sendMessageToSetEpisodeTime(timeMs);
-    });
-
-    it("Sends a message", () => {
-      const message: MessageToSetEpisodeTime = getMessage();
-      expect(mockedTabsRepo.sendMessage).toHaveBeenCalledWith(tab.id, message);
-    });
-  });
-
-  it("Throws an error when it cannot find an episode tab", async () => {
-    mockNoTabs();
-    const promise: Promise<ResultOfSettingTime> =
-      sendMessageToSetEpisodeTime(1000);
-    await expect(promise).rejects.toBeTruthy();
   });
 });
 

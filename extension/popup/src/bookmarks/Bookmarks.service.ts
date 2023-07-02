@@ -125,8 +125,10 @@ export class BookmarksService {
     bookmark: Bookmark,
     tab: PossibleTab
   ): Promise<void> => {
+    // todo: set episode time
     if (tab)
-      await this.episodeService.sendMessageToSetEpisodeTime(bookmark.timeMs);
+      // await this.episodeService.sendMessageToSetEpisodeTime(bookmark.timeMs);
+      throw new Error("not implemented");
     else await this.openBookmarkTabAtTime(bookmark);
   };
 
