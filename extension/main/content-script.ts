@@ -1,15 +1,38 @@
+import { getChrome } from "./common/chrome.service";
 import { Message, Messages } from "./common/messages";
 
 type Sender = chrome.runtime.MessageSender;
 
 type SendResponse = (...args: any) => void;
 
-const sendEpisodeTime = () => {};
+export type Runtime = typeof chrome.runtime;
 
-const setEpisodeTime = () => {};
+export type OnMessage = Runtime["onMessage"];
+
+export type AddListener = OnMessage["addListener"];
+
+export type MessageHandler = Parameters<AddListener>[0];
+
+const sendEpisodeTime: MessageHandler = (
+  message: Message,
+  sender: Sender,
+  sendResponse: SendResponse
+): undefined => {
+  sendResponse(null);
+  return undefined;
+};
+
+const setEpisodeTime: MessageHandler = (
+  message: Message,
+  sender: Sender,
+  sendResponse: SendResponse
+): undefined => {
+  sendResponse(null);
+  return undefined;
+};
 
 type MessageHandlers = {
-  [key in Messages]: SendResponse;
+  [key in Messages]: MessageHandler;
 };
 
 const getMessageHandlers = (): MessageHandlers => {
@@ -29,10 +52,16 @@ const handleMessage = (
   message: Message,
   sender: Sender,
   sendResponse: SendResponse
-): undefined => {};
-
-const listenToMessages = (): void => {
-  chrome.runtime.onMessage.addListener(handleMessage);
+): undefined => {
+  const handlers: MessageHandlers = getMessageHandlers();
+  const { [message.type]: handler } = handlers;
+  handler(message, sender, sendResponse);
+  return undefined;
 };
 
-export {};
+const listenToMessages = (): void => {
+  const chromeInstance: typeof chrome = getChrome();
+  chromeInstance.runtime.onMessage.addListener(handleMessage);
+};
+
+listenToMessages();

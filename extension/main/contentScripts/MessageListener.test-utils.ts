@@ -1,14 +1,12 @@
 import { Message } from "../common/messages";
+import {
+  AddListener,
+  MessageHandler,
+  OnMessage,
+  Runtime,
+} from "../content-script";
 
-type Runtime = typeof chrome.runtime;
-
-type OnMessage = Runtime["onMessage"];
-
-type AddListener = OnMessage["addListener"];
-
-type SpiedAddListener = jest.SpiedFunction<AddListener>;
-
-type MessageHandler = Parameters<AddListener>[0];
+export type SpiedAddListener = jest.SpiedFunction<AddListener>;
 
 type PromiseExecutor = ConstructorParameters<typeof Promise>[0];
 
@@ -18,6 +16,15 @@ interface FieldsToSendMessage {
   spy: SpiedAddListener;
   message: Message;
 }
+
+/**
+ * We must place this outside of the class. Otherwise, we'll create a new
+ * instance of the mocked function each time we create a Chrome service, so some
+ * tests wouldn't work.
+ */
+const onMessageMock: Pick<OnMessage, "addListener"> = {
+  addListener: jest.fn(),
+};
 
 export class MessageListenerTestUtils {
   private getHandler = (spy: SpiedAddListener): MessageHandler => {
@@ -66,9 +73,6 @@ export class MessageListenerTestUtils {
   };
 
   private getMockedOnMessage = () => {
-    const onMessageMock: Pick<OnMessage, "addListener"> = {
-      addListener: jest.fn(),
-    };
     return onMessageMock as OnMessage;
   };
 
