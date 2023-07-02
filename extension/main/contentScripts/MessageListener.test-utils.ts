@@ -7,14 +7,13 @@ import {
   SendResponse,
 } from "../content-script";
 
-export type SpiedAddListener = jest.SpiedFunction<AddListener>;
+type SpiedAddListener = jest.SpiedFunction<AddListener>;
 
 type PromiseExecutor = ConstructorParameters<typeof Promise>[0];
 
 type Resolve = Parameters<PromiseExecutor>[0];
 
 interface FieldsToSendMessage {
-  spy: SpiedAddListener;
   message: Message;
 }
 
@@ -23,14 +22,12 @@ interface FieldsToSendMessage {
  * instance of the mocked function each time we create a Chrome service, so some
  * tests wouldn't work.
  */
-const onMessageMock: Pick<OnMessage, "addListener"> = {
-  addListener: jest.fn(),
-};
+const spiedAddListener: SpiedAddListener = jest.fn();
 
 export class MessageListenerTestUtils {
-  private getHandler = (spy: SpiedAddListener): MessageHandler => {
-    expect(spy).toHaveBeenCalled();
-    const [handler] = spy.mock.lastCall;
+  private getHandler = (): MessageHandler => {
+    expect(spiedAddListener).toHaveBeenCalled();
+    const [handler] = spiedAddListener.mock.lastCall;
     expect(handler).toBeTruthy();
     return handler;
   };
@@ -42,11 +39,10 @@ export class MessageListenerTestUtils {
   };
 
   private getExecutePromiseToSendMessage = ({
-    spy,
     message,
   }: FieldsToSendMessage) => {
     return (resolve: Resolve): void => {
-      const handleMessage: MessageHandler = this.getHandler(spy);
+      const handleMessage: MessageHandler = this.getHandler();
       const sender = {};
       const sendResponse = this.getSendMessageResponse(resolve);
       handleMessage(message, sender, sendResponse);
@@ -66,6 +62,9 @@ export class MessageListenerTestUtils {
   };
 
   private getMockedOnMessage = () => {
+    const onMessageMock: Pick<OnMessage, "addListener"> = {
+      addListener: spiedAddListener as unknown as AddListener,
+    };
     return onMessageMock as OnMessage;
   };
 
