@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import _ from "lodash";
 import {
   EpisodeService,
@@ -25,6 +29,9 @@ interface Options {
 }
 
 type EpisodeUrlAndTime = Pick<RepoCreationFields, "episodeUrl" | "timeMs">;
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+declare const netflix: any;
 
 export class BookmarksService {
   private repo = new BookmarksRepo();
@@ -67,11 +74,32 @@ export class BookmarksService {
     return { ...fields, ...urlAndTime, seriesName };
   };
 
+  private setTime = (): void => {
+    const { videoPlayer } = netflix.appContext.state.playerApp.getAPI();
+    const [sessionId] = videoPlayer.getAllPlayerSessionIds();
+    const player = videoPlayer.getVideoPlayerBySessionId(sessionId);
+    player.seek(3 * 1000);
+  };
+
+  private injectScript = async (bookmark: Bookmark): Promise<void> => {
+    const { tab }: EpisodeTabAndTime =
+      await this.episodeService.get1stEpisodeTabAndTime();
+    await chrome.scripting.executeScript({
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      target: { tabId: tab.id! },
+      func: this.setTime,
+      args: [bookmark],
+      world: "MAIN",
+    });
+  };
+
   public create = async (fields: FieldsToCreateBookmark): Promise<Bookmark> => {
     const repoFields: RepoCreationFields = await this.getRepoCreationFields(
       fields
     );
-    return this.repo.create(repoFields);
+    const bookmark: Bookmark = await this.repo.create(repoFields);
+    await this.injectScript(bookmark);
+    return bookmark;
   };
 
   public find = async (fields?: Partial<Bookmark>): Promise<Bookmark[]> => {
