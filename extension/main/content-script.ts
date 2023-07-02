@@ -1,35 +1,20 @@
 import { getChrome } from "./common/chrome.service";
 import { Message, Messages } from "./common/messages";
-
-type Sender = chrome.runtime.MessageSender;
-
-export type SendResponse = (...args: unknown[]) => void;
+import { NetflixEpisodeMessageHandlers } from "./contentScripts/NetflixEpisodeTime.service";
 
 export type Runtime = typeof chrome.runtime;
+
+export type Sender = chrome.runtime.MessageSender;
+
+export type SendResponse = (...args: unknown[]) => void;
 
 export type OnMessage = Runtime["onMessage"];
 
 export type AddListener = OnMessage["addListener"];
 
-export type MessageHandler = Parameters<AddListener>[0];
+const netflixMessageHandlers = new NetflixEpisodeMessageHandlers();
 
-const sendEpisodeTime: MessageHandler = (
-  message: Message,
-  sender: Sender,
-  sendResponse: SendResponse
-): undefined => {
-  sendResponse(null);
-  return undefined;
-};
-
-const setEpisodeTime: MessageHandler = (
-  message: Message,
-  sender: Sender,
-  sendResponse: SendResponse
-): undefined => {
-  sendResponse(null);
-  return undefined;
-};
+type MessageHandler = (message: Message, sender: Sender) => unknown;
 
 type MessageHandlers = {
   [key in Messages]: MessageHandler;
@@ -37,25 +22,24 @@ type MessageHandlers = {
 
 const getMessageHandlers = (): MessageHandlers => {
   return {
-    [Messages.getEpisodeTime]: sendEpisodeTime,
-    [Messages.setEpisodeTime]: setEpisodeTime,
+    [Messages.getEpisodeTime]: netflixMessageHandlers.sendEpisodeTime,
+    [Messages.setEpisodeTime]: netflixMessageHandlers.sendEpisodeTime,
   };
 };
 
-/**
- * Plan:
- * 1. Get the message handlers
- * 2. Get the message handler for the message type.
- * 3. Call it to handle the message.
- */
+const getMessageHandlerFromType = (type: Messages): MessageHandler => {
+  const handlers: MessageHandlers = getMessageHandlers();
+  return handlers[type];
+};
+
 const handleMessage = (
   message: Message,
   sender: Sender,
   sendResponse: SendResponse
 ): undefined => {
-  const handlers: MessageHandlers = getMessageHandlers();
-  const { [message.type]: handler } = handlers;
-  handler(message, sender, sendResponse);
+  const handler: MessageHandler = getMessageHandlerFromType(message.type);
+  const response: unknown = handler(message, sender);
+  sendResponse(response);
   return undefined;
 };
 

@@ -1,13 +1,19 @@
 import { Message } from "../common/messages";
 import {
   AddListener,
-  MessageHandler,
   OnMessage,
   Runtime,
   SendResponse,
 } from "../content-script";
 
 type SpiedAddListener = jest.SpiedFunction<AddListener>;
+
+/**
+ * We must place this outside of the class. Otherwise, we'll create a new
+ * instance of the mocked function each time we create a Chrome service, so some
+ * tests wouldn't work.
+ */
+const spiedAddListener: SpiedAddListener = jest.fn();
 
 type PromiseExecutor = ConstructorParameters<typeof Promise>[0];
 
@@ -17,15 +23,10 @@ interface FieldsToSendMessage {
   message: Message;
 }
 
-/**
- * We must place this outside of the class. Otherwise, we'll create a new
- * instance of the mocked function each time we create a Chrome service, so some
- * tests wouldn't work.
- */
-const spiedAddListener: SpiedAddListener = jest.fn();
+type MainMessageHandler = Parameters<AddListener>[0];
 
 export class MessageListenerTestUtils {
-  private getHandler = (): MessageHandler => {
+  private getHandler = (): MainMessageHandler => {
     expect(spiedAddListener).toHaveBeenCalled();
     const [handler] = spiedAddListener.mock.lastCall;
     expect(handler).toBeTruthy();
@@ -42,7 +43,7 @@ export class MessageListenerTestUtils {
     message,
   }: FieldsToSendMessage) => {
     return (resolve: Resolve): void => {
-      const handleMessage: MessageHandler = this.getHandler();
+      const handleMessage: MainMessageHandler = this.getHandler();
       const sender = {};
       const sendResponse = this.getSendMessageResponse(resolve);
       handleMessage(message, sender, sendResponse);
