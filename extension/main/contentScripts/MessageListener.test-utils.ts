@@ -4,6 +4,7 @@ import {
   MessageHandler,
   OnMessage,
   Runtime,
+  SendResponse,
 } from "../content-script";
 
 export type SpiedAddListener = jest.SpiedFunction<AddListener>;
@@ -34,7 +35,7 @@ export class MessageListenerTestUtils {
     return handler;
   };
 
-  private getSendMessageResponse = (resolve: Resolve) => {
+  private getSendMessageResponse = (resolve: Resolve): SendResponse => {
     return (response?: unknown): void => {
       resolve(response);
     };
@@ -59,14 +60,6 @@ export class MessageListenerTestUtils {
    *   only all the last listener.
    *
    * @returns the message response
-   *
-   * Plan:
-   *
-   * - Get handler
-   * - Return new promise
-   * - Define the callback, which is supposed to receive a response. Make sure
-   *   the callback calls Promise.resolve with the response it receives.
-   * - Call the handler with the message, a mocked sender, and the callback.
    */
   public sendMessage = (fields: FieldsToSendMessage): Promise<unknown> => {
     return new Promise(this.getExecutePromiseToSendMessage(fields));

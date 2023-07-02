@@ -3,7 +3,7 @@ import { Message, Messages } from "./common/messages";
 
 type Sender = chrome.runtime.MessageSender;
 
-type SendResponse = (...args: any) => void;
+export type SendResponse = (...args: unknown[]) => void;
 
 export type Runtime = typeof chrome.runtime;
 
