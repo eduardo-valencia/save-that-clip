@@ -37,7 +37,7 @@ declare const netflix: any;
 
 type InjectedFunc = chrome.scripting.ScriptInjection["func"];
 
-export interface ScriptResult {
+export interface ResultOfSettingTime {
   success: boolean;
 }
 
@@ -138,7 +138,9 @@ export class EpisodeService {
   /* eslint-disable @typescript-eslint/no-unsafe-member-access */
   /* eslint-disable @typescript-eslint/no-unsafe-call */
   /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-  private setTimeInBrowser = (timeMs: Bookmark["timeMs"]): ScriptResult => {
+  private setTimeInBrowser = (
+    timeMs: Bookmark["timeMs"]
+  ): ResultOfSettingTime => {
     const { videoPlayer } = netflix.appContext.state.playerApp.getAPI();
     const [sessionId] = videoPlayer.getAllPlayerSessionIds();
     const player = videoPlayer.getVideoPlayerBySessionId(sessionId);
@@ -176,7 +178,7 @@ export class EpisodeService {
   private getIfIsUnsuccessfulInjectionResult = ({
     result,
   }: InjectionResult): boolean => {
-    const resultWithType = result as ScriptResult | undefined;
+    const resultWithType = result as ResultOfSettingTime | undefined;
     /**
      * If there's an error, it might not return a "success" status of false. So,
      * we should check if it is not true.
@@ -192,7 +194,7 @@ export class EpisodeService {
 
   private getIfWasSuccessful = (
     results: InjectionResult[]
-  ): ScriptResult["success"] => {
+  ): ResultOfSettingTime["success"] => {
     if (!results.length) return false;
     const unsuccessfulResult: PossibleResult =
       this.findUnsuccessfulInjectionResult(results);
@@ -201,7 +203,7 @@ export class EpisodeService {
 
   public trySettingTime = async (
     timeMs: Bookmark["timeMs"]
-  ): Promise<ScriptResult> => {
+  ): Promise<ResultOfSettingTime> => {
     const results: InjectionResult[] = await this.injectScriptToSetTime(timeMs);
     /**
      * When we execute a script against the Netflix tab, it returns an injection

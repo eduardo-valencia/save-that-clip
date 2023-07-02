@@ -3,7 +3,7 @@ import {
   EpisodeService,
   EpisodeTabAndTime,
   PossibleTab,
-  ScriptResult,
+  ResultOfSettingTime,
 } from "../episodes/Episode.service";
 import {
   PossibleSeriesName,
@@ -121,10 +121,9 @@ export class BookmarksService {
   };
 
   private setTimeOrOpenNewTab = async (bookmark: Bookmark): Promise<void> => {
-    const result: ScriptResult = await this.episodeService.trySettingTime(
-      bookmark.timeMs
-    );
-    // if (!result.success) await this.openBookmarkTabAtTime(bookmark);
+    const result: ResultOfSettingTime =
+      await this.episodeService.trySettingTime(bookmark.timeMs);
+    if (!result.success) await this.openBookmarkTabAtTime(bookmark);
   };
 
   private createBookmarkTabOrUpdateIt = async (

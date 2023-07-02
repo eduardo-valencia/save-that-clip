@@ -19,7 +19,11 @@ jest.mock("../../../main/common/chrome.service", () => {
 
 /* eslint-disable import/first */
 import _ from "lodash";
-import { EpisodeService, EpisodeTabAndTime } from "../episodes/Episode.service";
+import {
+  EpisodeService,
+  EpisodeTabAndTime,
+  ResultOfSettingTime,
+} from "../episodes/Episode.service";
 import {
   SeriesInfoService,
   SeriesName,
@@ -98,7 +102,7 @@ interface BookmarkInfo {
 }
 
 /**
- * ! Important
+ * * Important
  *
  * Make sure to mock the services first. @see mockTimeAndSeriesName
  */
@@ -216,18 +220,39 @@ describe("open", () => {
     return info;
   };
 
-  describe("When the bookmark is not already open & its time is not divisible by a thousand", () => {
+  type SpiedSetTime = jest.SpiedFunction<EpisodeService["trySettingTime"]>;
+
+  const mockSettingTime = (
+    success: ResultOfSettingTime["success"]
+  ): SpiedSetTime => {
+    const spiedSetTime = jest.spyOn(episodeService, "trySettingTime");
+    spiedSetTime.mockResolvedValue({ success });
+    return spiedSetTime;
+  };
+
+  const mockFindingBookmarkTab = (mockedInfo: MockedInfo): void => {
+    const spiedFind = jest.spyOn(episodeService, "findOneEpisodeTabByUrl");
+    spiedFind.mockResolvedValue(mockedInfo.episodeInfo.tab);
+  };
+
+  // For testing setting the episode's time
+  const mockTimeAndSeriesAndFindingBookmarkTab = (): void => {
+    const mockedInfo: MockedInfo = mockTimeAndSeriesName();
+    mockFindingBookmarkTab(mockedInfo);
+  };
+
+  const mockCreatingTab = (): void => {
+    const tab: chrome.tabs.Tab = generateEpisodeTab();
+    mockedTabsRepo.create.mockResolvedValue(tab);
+  };
+
+  describe("After opening the bookmark when it's not already open & its time is not divisible by a thousand", () => {
     let bookmark: Bookmark;
 
     const mockGettingTime = (): void => {
       const info: MockedInfo = getMockedInfo();
       info.episodeInfo.time = 101;
       spiedGetTabAndTime.mockResolvedValue(info.episodeInfo);
-    };
-
-    const mockCreatingTab = (): void => {
-      const tab: chrome.tabs.Tab = generateEpisodeTab();
-      mockedTabsRepo.create.mockResolvedValue(tab);
     };
 
     const getExpectedTime = (): number => {
@@ -242,7 +267,7 @@ describe("open", () => {
       return url.href;
     };
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       mockCreatingTab();
       mockTimeAndSeriesName();
       /**
@@ -275,27 +300,16 @@ describe("open", () => {
     it.todo('Works when the URL has a "t" param');
   });
 
-  describe("When the bookmark is open", () => {
+  describe("After calling it when the episode is open", () => {
     let bookmark: Bookmark;
-    let spiedSetTime: jest.SpiedFunction<EpisodeService["trySettingTime"]>;
-
-    const mockSettingTime = (): void => {
-      spiedSetTime = jest.spyOn(episodeService, "trySettingTime");
-      spiedSetTime.mockResolvedValue({ success: true });
-    };
-
-    const mockFindingBookmarkTab = (mockedInfo: MockedInfo): void => {
-      const spiedFind = jest.spyOn(episodeService, "findOneEpisodeTabByUrl");
-      spiedFind.mockResolvedValue(mockedInfo.episodeInfo.tab);
-    };
+    let spiedSetTime: SpiedSetTime;
 
     const setUpMocks = (): void => {
-      const mockedInfo: MockedInfo = mockTimeAndSeriesName();
-      mockFindingBookmarkTab(mockedInfo);
-      mockSettingTime();
+      mockTimeAndSeriesAndFindingBookmarkTab();
+      spiedSetTime = mockSettingTime(true);
     };
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       setUpMocks();
       /**
        * Note that the bookmark already has the tab's URL because of how
@@ -308,11 +322,22 @@ describe("open", () => {
       expect(spiedSetTime).toHaveBeenCalledWith(bookmark.timeMs);
     });
 
-    it.todo("Does not create a tab");
+    it("Does not create a tab", () => {
+      expect(mockedTabsRepo.create).not.toHaveBeenCalled();
+    });
   });
 
   describe("When we failed to set the time", () => {
-    it.todo("Opens a new tab");
+    beforeAll(() => {
+      mockTimeAndSeriesAndFindingBookmarkTab();
+      mockCreatingTab();
+      mockSettingTime(false);
+    });
+
+    it("Opens a new tab", async () => {
+      await generateAndOpenBookmark();
+      expect(mockedTabsRepo.create).toHaveBeenCalled();
+    });
   });
 
   // Note: These cases are less important since they're unlikely to happen.

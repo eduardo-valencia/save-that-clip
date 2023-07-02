@@ -13,7 +13,7 @@ import {
   EpisodeService,
   EpisodeTabAndTime,
   PossibleTab,
-  ScriptResult,
+  ResultOfSettingTime,
 } from "./Episode.service";
 import { TabsFactory } from "../tabs/Tabs.factory";
 import { MockedTabsRepo } from "../tabs/MockedTabs.repo";
@@ -181,9 +181,9 @@ describe("trySettingTime", () => {
    */
 
   const callMethodAndExpectSuccessStatus = async (
-    isSuccessful: ScriptResult["success"]
+    isSuccessful: ResultOfSettingTime["success"]
   ): Promise<void> => {
-    const { success }: ScriptResult = await setTime(1);
+    const { success }: ResultOfSettingTime = await setTime(1);
     expect(success).toEqual(isSuccessful);
   };
 
@@ -192,9 +192,9 @@ describe("trySettingTime", () => {
   };
 
   const createInjectionResult = (
-    success: ScriptResult["success"]
+    success: ResultOfSettingTime["success"]
   ): InjectionResult => {
-    const result: ScriptResult = { success };
+    const result: ResultOfSettingTime = { success };
     return { frameId: 1, documentId: "", result };
   };
 
