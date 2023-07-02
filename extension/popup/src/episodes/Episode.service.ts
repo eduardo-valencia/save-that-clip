@@ -199,7 +199,7 @@ export class EpisodeService {
     return !unsuccessfulResult;
   };
 
-  public setTime = async (
+  public trySettingTime = async (
     timeMs: Bookmark["timeMs"]
   ): Promise<ScriptResult> => {
     const results: InjectionResult[] = await this.injectScriptToSetTime(timeMs);

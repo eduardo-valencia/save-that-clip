@@ -31,14 +31,22 @@ import {
   BookmarksService,
   FieldsToCreateBookmark as CreationFields,
 } from "./Bookmarks.service";
+import { MockedScriptsRepo } from "../scripts/MockedScripts.repo";
 
 /**
  * * Services & their mocks
  */
 const mockedTabsRepo = new MockedTabsRepo();
+/**
+ * We must mock this to avoid trying to load "chrome," which does not exist.
+ */
+const mockedScriptsRepo = new MockedScriptsRepo();
 
 // Episode service
-const episodeService = new EpisodeService({ tabsRepo: mockedTabsRepo });
+const episodeService = new EpisodeService({
+  tabsRepo: mockedTabsRepo,
+  scriptsRepo: mockedScriptsRepo,
+});
 
 const spiedGetTabAndTime = jest.spyOn(
   episodeService,
@@ -269,15 +277,26 @@ describe("open", () => {
 
   describe("When the bookmark is open", () => {
     let bookmark: Bookmark;
+    let spiedSetTime: jest.SpiedFunction<EpisodeService["trySettingTime"]>;
+
+    const mockSettingTime = (): void => {
+      spiedSetTime = jest.spyOn(episodeService, "trySettingTime");
+      spiedSetTime.mockResolvedValue({ success: true });
+    };
 
     const mockFindingBookmarkTab = (mockedInfo: MockedInfo): void => {
       const spiedFind = jest.spyOn(episodeService, "findOneEpisodeTabByUrl");
       spiedFind.mockResolvedValue(mockedInfo.episodeInfo.tab);
     };
 
-    beforeAll(async () => {
+    const setUpMocks = (): void => {
       const mockedInfo: MockedInfo = mockTimeAndSeriesName();
       mockFindingBookmarkTab(mockedInfo);
+      mockSettingTime();
+    };
+
+    beforeAll(async () => {
+      setUpMocks();
       /**
        * Note that the bookmark already has the tab's URL because of how
        * bookmarks are created.
@@ -285,9 +304,15 @@ describe("open", () => {
       ({ bookmark } = await generateAndOpenBookmark());
     });
 
-    it.todo("Sets the video's time to the bookmark's time");
+    it("Sets the video's time to the bookmark's time", () => {
+      expect(spiedSetTime).toHaveBeenCalledWith(bookmark.timeMs);
+    });
 
     it.todo("Does not create a tab");
+  });
+
+  describe("When we failed to set the time", () => {
+    it.todo("Opens a new tab");
   });
 
   // Note: These cases are less important since they're unlikely to happen.

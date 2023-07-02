@@ -17,20 +17,12 @@ import {
 } from "./Episode.service";
 import { TabsFactory } from "../tabs/Tabs.factory";
 import { MockedTabsRepo } from "../tabs/MockedTabs.repo";
-import {
-  InjectionResult,
-  ScriptsRepoAbstraction,
-} from "../scripts/Scripts.repo-abstraction";
+import { InjectionResult } from "../scripts/Scripts.repo-abstraction";
+import { MockedScriptsRepo } from "../scripts/MockedScripts.repo";
 
 /**
  * Repos and services
  */
-type ExecuteScript = ScriptsRepoAbstraction["executeScript"];
-
-class MockedScriptsRepo extends ScriptsRepoAbstraction {
-  public executeScript: jest.MockedFunction<ExecuteScript> = jest.fn();
-}
-
 const mockedTabsRepo = new MockedTabsRepo();
 const mockedScriptsRepo = new MockedScriptsRepo();
 
@@ -38,7 +30,7 @@ const {
   get1stEpisodeTabAndTime: findTimeOf1stEpisodeTab,
   findOneEpisodeTab,
   findOneEpisodeTabByUrl,
-  setTime,
+  trySettingTime: setTime,
 } = new EpisodeService({
   tabsRepo: mockedTabsRepo,
   scriptsRepo: mockedScriptsRepo,
@@ -183,15 +175,7 @@ describe("findOneEpisodeTabByUrl", () => {
   });
 });
 
-/**
- * Plan:
- * - Create a new repo for scripting so we can easily mock it in the future.
- * - Explain that we're making a repo instead of the Chrome service because
- *   mocking the latter might require combining multiple mocks if we needed to
- *   mock various aspects of the Chrome service in the future.
- * - Create a mocked repo with executeScript as jest.fn()
- */
-describe("setTime", () => {
+describe("trySettingTime", () => {
   /**
    * Other test utils.
    */
@@ -244,11 +228,6 @@ describe("setTime", () => {
     });
   });
 
-  /**
-   * - Return an injection result that has a "result" of null.
-   * - Call setTime.
-   * - Expect it to return a "success" of false.
-   */
   describe("When at least one injection result does not return a successful status", () => {
     const createInjectionResults = (): InjectionResult[] => {
       const successful: InjectionResult = createInjectionResult(true);
@@ -272,11 +251,6 @@ describe("setTime", () => {
     });
   });
 
-  /**
-   * - Mock executeScript to return an empty array of injection results.
-   * - Call setTime.
-   * Expect ito to return a "success" of false.
-   */
   describe("When executing the script does not return any injection results", () => {
     beforeAll(() => {
       mockTabWithEpisode();

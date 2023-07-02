@@ -3,6 +3,7 @@ import {
   EpisodeService,
   EpisodeTabAndTime,
   PossibleTab,
+  ScriptResult,
 } from "../episodes/Episode.service";
 import {
   PossibleSeriesName,
@@ -71,9 +72,7 @@ export class BookmarksService {
     const repoFields: RepoCreationFields = await this.getRepoCreationFields(
       fields
     );
-    const bookmark = await this.repo.create(repoFields);
-    await this.episodeService.setTime(bookmark.timeMs);
-    return bookmark;
+    return this.repo.create(repoFields);
   };
 
   public find = async (fields?: Partial<Bookmark>): Promise<Bookmark[]> => {
@@ -121,14 +120,18 @@ export class BookmarksService {
     });
   };
 
+  private setTimeOrOpenNewTab = async (bookmark: Bookmark): Promise<void> => {
+    const result: ScriptResult = await this.episodeService.trySettingTime(
+      bookmark.timeMs
+    );
+    // if (!result.success) await this.openBookmarkTabAtTime(bookmark);
+  };
+
   private createBookmarkTabOrUpdateIt = async (
     bookmark: Bookmark,
     tab: PossibleTab
   ): Promise<void> => {
-    // todo: set episode time
-    if (tab)
-      // await this.episodeService.sendMessageToSetEpisodeTime(bookmark.timeMs);
-      throw new Error("not implemented");
+    if (tab) await this.setTimeOrOpenNewTab(bookmark);
     else await this.openBookmarkTabAtTime(bookmark);
   };
 
