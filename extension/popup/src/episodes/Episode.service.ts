@@ -25,6 +25,15 @@ export interface EpisodeTabAndTime {
 }
 
 /**
+ * This is used in an injected script, but it is not actually accessible
+ * anywhere besides the injected script. In other words, don't use this.
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+declare const netflix: any;
+
+type InjectedFunc = chrome.scripting.ScriptInjection["func"];
+
+/**
  * This service allows us to interact with an episode tab.
  */
 export class EpisodeService {
@@ -129,5 +138,45 @@ export class EpisodeService {
   ): Promise<ResultOfSettingTime> => {
     const message: MessageToSetEpisodeTime = this.getMessageToSetTime(timeMs);
     return this.sendMessageToEpisodeTab(message);
+  };
+
+  /**
+   * * This function is being injected into the Netflix episode's tab.
+   */
+  /* eslint-disable @typescript-eslint/no-unsafe-return */
+  /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+  /* eslint-disable @typescript-eslint/no-unsafe-call */
+  /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+  private setTime = (bookmark: Bookmark): void => {
+    const { videoPlayer } = netflix.appContext.state.playerApp.getAPI();
+    const [sessionId] = videoPlayer.getAllPlayerSessionIds();
+    const player = videoPlayer.getVideoPlayerBySessionId(sessionId);
+    player.seek(bookmark.timeMs);
+  };
+  /* eslint-enable @typescript-eslint/no-unsafe-return */
+  /* eslint-enable @typescript-eslint/no-unsafe-member-access */
+  /* eslint-enable @typescript-eslint/no-unsafe-call */
+  /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+
+  private getEpisodeTabId = async (): Promise<number> => {
+    const { tab }: EpisodeTabAndTime = await this.get1stEpisodeTabAndTime();
+    /**
+     * We assert this type because the tab is guaranteed to have an ID.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return tab.id!;
+  };
+
+  // todo: Handle errors with setting time
+  private injectScriptToSetTime = async (bookmark: Bookmark): Promise<void> => {
+    await chrome.scripting.executeScript({
+      target: { tabId: await this.getEpisodeTabId() },
+      /**
+       * We overwrite the type because Chrome's types are wrong.
+       */
+      func: this.setTime as unknown as InjectedFunc,
+      args: [bookmark],
+      world: "MAIN",
+    });
   };
 }
