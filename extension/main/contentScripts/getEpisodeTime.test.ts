@@ -16,9 +16,15 @@ import "../content-script";
 
 const { sendMessage } = new MessageListenerTestUtils();
 
-// todo: Add way of testing that it responds with an error
+const sendMessageToGetTime = (): Promise<unknown> => {
+  const message: Message = { type: Messages.getEpisodeTime };
+  return sendMessage({ message });
+};
 
 afterEach(() => {
+  /**
+   * We reset the HTML to prevents tests from interfering with each other.
+   */
   document.body.innerHTML = "";
 });
 
@@ -41,10 +47,12 @@ describe("When the video element exists", () => {
   });
 
   it("Responds with the time", async () => {
-    const message: Message = { type: Messages.getEpisodeTime };
-    const response: unknown = await sendMessage({ message });
+    const response: unknown = await sendMessageToGetTime();
     expect(response).toEqual(videoTime);
   });
 });
 
-it.todo("Responds with null when the video element does not exist");
+it("Responds with null when the video element does not exist", async () => {
+  const response: unknown = await sendMessageToGetTime();
+  expect(response).toBeNull();
+});
