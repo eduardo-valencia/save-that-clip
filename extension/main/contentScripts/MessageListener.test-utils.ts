@@ -2,7 +2,9 @@ import { Message } from "../common/messages";
 
 type Runtime = typeof chrome.runtime;
 
-type AddListener = Runtime["onMessage"]["addListener"];
+type OnMessage = Runtime["onMessage"];
+
+type AddListener = OnMessage["addListener"];
 
 type SpiedAddListener = jest.SpiedFunction<AddListener>;
 
@@ -61,5 +63,28 @@ export class MessageListenerTestUtils {
    */
   public sendMessage = (fields: FieldsToSendMessage): Promise<unknown> => {
     return new Promise(this.getExecutePromiseToSendMessage(fields));
+  };
+
+  private getMockedOnMessage = () => {
+    const onMessageMock: Pick<OnMessage, "addListener"> = {
+      addListener: jest.fn(),
+    };
+    return onMessageMock as OnMessage;
+  };
+
+  private getMockedRunTime = () => {
+    const onMessage: OnMessage = this.getMockedOnMessage();
+    const runtimeMock: Pick<Runtime, "onMessage"> = { onMessage };
+    return runtimeMock as Runtime;
+  };
+
+  private getMockedChrome = () => {
+    const runtime: Runtime = this.getMockedRunTime();
+    const chromeMock: Pick<typeof chrome, "runtime"> = { runtime };
+    return chromeMock as typeof chrome;
+  };
+
+  public getMockedChromeService = () => {
+    return { getChrome: this.getMockedChrome };
   };
 }
