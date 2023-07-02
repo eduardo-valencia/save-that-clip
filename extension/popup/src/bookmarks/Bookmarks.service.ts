@@ -30,8 +30,14 @@ interface Options {
 
 type EpisodeUrlAndTime = Pick<RepoCreationFields, "episodeUrl" | "timeMs">;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+/**
+ * This is used in an injected script, but it is not actually accessible
+ * anywhere besides the injected script. In other words, don't use this.
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
 declare const netflix: any;
+
+type InjectedFunc = chrome.scripting.ScriptInjection["func"];
 
 export class BookmarksService {
   private repo = new BookmarksRepo();
@@ -74,20 +80,31 @@ export class BookmarksService {
     return { ...fields, ...urlAndTime, seriesName };
   };
 
-  private setTime = (): void => {
+  private setTime = (bookmark: Bookmark): void => {
     const { videoPlayer } = netflix.appContext.state.playerApp.getAPI();
     const [sessionId] = videoPlayer.getAllPlayerSessionIds();
     const player = videoPlayer.getVideoPlayerBySessionId(sessionId);
-    player.seek(3 * 1000);
+    player.seek(bookmark.timeMs);
   };
 
-  private injectScript = async (bookmark: Bookmark): Promise<void> => {
+  private getEpisodeTabId = async (): Promise<number> => {
     const { tab }: EpisodeTabAndTime =
       await this.episodeService.get1stEpisodeTabAndTime();
+    /**
+     * We assert this type because the tab is guaranteed to have an ID.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return tab.id!;
+  };
+
+  // todo: See if we should move this to the episode service.
+  private injectScript = async (bookmark: Bookmark): Promise<void> => {
     await chrome.scripting.executeScript({
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      target: { tabId: tab.id! },
-      func: this.setTime,
+      target: { tabId: await this.getEpisodeTabId() },
+      /**
+       * We overwrite the type because Chrome's types are wrong.
+       */
+      func: this.setTime as unknown as InjectedFunc,
       args: [bookmark],
       world: "MAIN",
     });
@@ -97,9 +114,7 @@ export class BookmarksService {
     const repoFields: RepoCreationFields = await this.getRepoCreationFields(
       fields
     );
-    const bookmark: Bookmark = await this.repo.create(repoFields);
-    await this.injectScript(bookmark);
-    return bookmark;
+    return this.repo.create(repoFields);
   };
 
   public find = async (fields?: Partial<Bookmark>): Promise<Bookmark[]> => {
