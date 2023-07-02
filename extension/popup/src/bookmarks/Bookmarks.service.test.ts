@@ -13,12 +13,12 @@
 
 import { getMockedChromeService } from "./storageMock";
 
-jest.mock("../chrome.service", () => {
+jest.mock("../../../main/common/chrome.service", () => {
   return getMockedChromeService();
 });
 
 /* eslint-disable import/first */
-import _, { endsWith } from "lodash";
+import _ from "lodash";
 import { EpisodeService, EpisodeTabAndTime } from "../episodes/Episode.service";
 import {
   SeriesInfoService,

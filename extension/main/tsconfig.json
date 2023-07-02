@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "types": ["../node_modules/chrome-types"],
+    "types": ["../node_modules/chrome-types", "jest"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,

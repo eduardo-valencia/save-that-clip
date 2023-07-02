@@ -6,7 +6,7 @@ import {
   RepoFieldsToCreateBookmark,
 } from "./Bookmarks.repo-abstraction";
 import { StoredItems } from "./storageMock";
-import { getChrome } from "../chrome.service";
+import { getChrome } from "../../../main/common/chrome.service";
 
 type FieldsToStore = Omit<Bookmark, "id">;
 
