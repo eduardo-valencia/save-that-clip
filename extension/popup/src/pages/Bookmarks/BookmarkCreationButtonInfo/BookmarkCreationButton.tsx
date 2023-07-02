@@ -3,9 +3,16 @@ import React, { useContext } from "react";
 import {
   BookmarkCreationDialogContext,
   BookmarkCreationDialogContextValue,
-} from "./BookmarkCreationDialog/BookmarkCreationDialogProvider";
+} from "../BookmarkCreationDialog/BookmarkCreationDialogProvider";
+import { IsButtonDisabled } from ".";
 
-export default function BookmarkCreationButton(): JSX.Element {
+interface Props {
+  disabled: IsButtonDisabled;
+}
+
+export default function BookmarkCreationButton({
+  disabled,
+}: Props): JSX.Element {
   const { open }: BookmarkCreationDialogContextValue = useContext(
     BookmarkCreationDialogContext
   );
@@ -23,6 +30,7 @@ export default function BookmarkCreationButton(): JSX.Element {
         boxShadow: 0,
       }}
       onClick={open}
+      disabled={disabled}
     >
       Add Bookmark
     </Button>
