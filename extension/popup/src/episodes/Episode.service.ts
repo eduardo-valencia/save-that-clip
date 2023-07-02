@@ -43,6 +43,8 @@ export interface ScriptResult {
   success: boolean;
 }
 
+type PossibleResult = InjectionResult | undefined;
+
 /**
  * This service allows us to interact with an episode tab.
  */
@@ -194,10 +196,37 @@ export class EpisodeService {
     });
   };
 
+  private getIfIsUnsuccessfulInjectionResult = ({
+    result,
+  }: InjectionResult): boolean => {
+    const resultWithType = result as ScriptResult | undefined;
+    return resultWithType?.success !== true;
+  };
+
+  private findUnsuccessfulInjectionResult = (
+    results: InjectionResult[]
+  ): PossibleResult => {
+    return results.find(this.getIfIsUnsuccessfulInjectionResult);
+  };
+
+  private getIfWasSuccessful = (
+    results: InjectionResult[]
+  ): ScriptResult["success"] => {
+    if (!results.length) return false;
+    const unsuccessfulResult: PossibleResult =
+      this.findUnsuccessfulInjectionResult(results);
+    return !unsuccessfulResult;
+  };
+
   public setTime = async (
     timeMs: Bookmark["timeMs"]
   ): Promise<ScriptResult> => {
-    await this.injectScriptToSetTime(timeMs);
-    return { success: true };
+    const results: InjectionResult[] = await this.injectScriptToSetTime(timeMs);
+    /**
+     * When we execute a script against the Netflix tab, it returns an injection
+     * result with some information. We must analyze these results to determine if
+     * everything the time was actually set.
+     **/
+    return { success: this.getIfWasSuccessful(results) };
   };
 }

@@ -230,29 +230,56 @@ describe("setTime", () => {
    * Other test utils.
    */
 
-  /**
-   * - Call the method and get the success status. Call it with any fake time.
-   * - Expect "success" to equal false.
-   */
-  const callMethodAndExpectFailure = async (): Promise<void> => {
+  const callMethodAndExpectSuccessStatus = async (
+    isSuccessful: ScriptResult["success"]
+  ): Promise<void> => {
     const { success }: ScriptResult = await setTime(1);
-    expect(success).toEqual(true);
+    expect(success).toEqual(isSuccessful);
   };
+
+  const callMethodAndExpectFailure = async (): Promise<void> => {
+    await callMethodAndExpectSuccessStatus(false);
+  };
+
+  const createInjectionResult = (
+    success: ScriptResult["success"]
+  ): InjectionResult => {
+    const result: ScriptResult = { success };
+    return { frameId: 1, documentId: "", result };
+  };
+
+  describe("When all injection results return a success status", () => {
+    const mockSuccessfulStatus = (): void => {
+      const result: InjectionResult = createInjectionResult(true);
+      mockedScriptsRepo.executeScript.mockResolvedValue([result]);
+    };
+
+    beforeAll(() => {
+      mockTabWithEpisode();
+      mockTimeResponse();
+      mockSuccessfulStatus();
+    });
+
+    it('Returns an object with "success" as true', async () => {
+      await callMethodAndExpectSuccessStatus(true);
+    });
+  });
 
   /**
    * - Return an injection result that has a "result" of null.
    * - Call setTime.
    * - Expect it to return a "success" of false.
    */
-  describe("When the injected script does not return a successful status", () => {
-    const createInjectionResult = (): InjectionResult => {
-      const result: ScriptResult = { success: false };
-      return { frameId: 1, documentId: "", result };
+  describe("When at least one injection result does not return a successful status", () => {
+    const createInjectionResults = (): InjectionResult[] => {
+      const successful: InjectionResult = createInjectionResult(true);
+      const unsuccessful: InjectionResult = createInjectionResult(false);
+      return [successful, unsuccessful];
     };
 
     const mockUnsuccessfulStatus = (): void => {
-      const result: InjectionResult = createInjectionResult();
-      mockedScriptsRepo.executeScript.mockResolvedValue([result]);
+      const results: InjectionResult[] = createInjectionResults();
+      mockedScriptsRepo.executeScript.mockResolvedValue(results);
     };
 
     beforeAll(() => {
@@ -261,7 +288,6 @@ describe("setTime", () => {
       mockUnsuccessfulStatus();
     });
 
-    // todo: fix false positive
     it('Returns an object with "success" as false', async () => {
       await callMethodAndExpectFailure();
     });
@@ -273,6 +299,14 @@ describe("setTime", () => {
    * Expect ito to return a "success" of false.
    */
   describe("When executing the script does not return any injection results", () => {
-    it.todo('Returns an object with "success" as false');
+    beforeAll(() => {
+      mockTabWithEpisode();
+      mockTimeResponse();
+      mockedScriptsRepo.executeScript.mockResolvedValue([]);
+    });
+
+    it('Returns an object with "success" as false', async () => {
+      await callMethodAndExpectFailure();
+    });
   });
 });
