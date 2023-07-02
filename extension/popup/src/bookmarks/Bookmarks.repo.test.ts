@@ -1,7 +1,7 @@
 /* eslint-disable import/first */
 import { getMockedChromeService } from "./storageMock";
 
-jest.mock("../chrome.service", () => {
+jest.mock("../../../main/common/chrome.service", () => {
   return getMockedChromeService();
 });
 

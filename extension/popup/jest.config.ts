@@ -1,9 +1,3 @@
-import { Config } from "jest";
-
-const config: Config = {
-  preset: "ts-jest",
-  transform: { "^.+\\.ts?$": "ts-jest" },
-  testEnvironment: "jest-environment-jsdom",
-};
+import config from "../main/common/commonJestConfig";
 
 export default config;
