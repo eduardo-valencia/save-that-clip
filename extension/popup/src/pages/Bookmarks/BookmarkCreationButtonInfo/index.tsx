@@ -8,14 +8,28 @@ export type IsButtonDisabled = boolean;
 export default function BookmarkCreationButtonInfo() {
   const [isDisabled, setIsDisabled] = useState<IsButtonDisabled>(false);
 
+  const setIsDisabledIfNoEpisodeTab = async (): Promise<void> => {
+    const episodeService = new EpisodeService();
+    const tab: PossibleTab = await episodeService.findOneEpisodeTab();
+    setIsDisabled(!tab);
+  };
+
   useEffect(() => {
-    const setDefaultIsDisabled = async (): Promise<void> => {
-      const episodeService = new EpisodeService();
-      const tab: PossibleTab = await episodeService.findOneEpisodeTab();
-      setIsDisabled(!tab);
+    const handleTabChange = (): void => {
+      void setIsDisabledIfNoEpisodeTab();
     };
 
-    void setDefaultIsDisabled();
+    /**
+     * We must do this because the popup will only work if it's open in the
+     * Netflix tab.
+     */
+    const listenForChangesToTab = (): void => {
+      chrome.tabs.onUpdated.addListener(handleTabChange);
+      chrome.tabs.onReplaced.addListener(handleTabChange);
+    };
+
+    void setIsDisabledIfNoEpisodeTab();
+    listenForChangesToTab();
   }, []);
 
   return (

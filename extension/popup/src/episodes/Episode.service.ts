@@ -55,7 +55,7 @@ export class EpisodeService {
     this.scriptsRepo = options?.scriptsRepo || new ScriptsRepo();
   }
 
-  private getActiveTabs = (): Promise<Tab[]> => {
+  private getCurrentTabs = (): Promise<Tab[]> => {
     return this.tabsRepo.query({ active: true, lastFocusedWindow: true });
   };
 
@@ -69,7 +69,7 @@ export class EpisodeService {
   public findOneEpisodeTabByUrl = async (
     url: Bookmark["episodeUrl"]
   ): Promise<PossibleTab> => {
-    const tabs: Tab[] = await this.getActiveTabs();
+    const tabs: Tab[] = await this.getCurrentTabs();
     const tabWithUrl: Tab | undefined = _.find(tabs, { url });
     return tabWithUrl || null;
   };
@@ -91,7 +91,7 @@ export class EpisodeService {
    * should enable the "Add Bookmark" button.
    */
   public findOneEpisodeTab = async (): Promise<PossibleTab> => {
-    const tabs: Tab[] = await this.getActiveTabs();
+    const tabs: Tab[] = await this.getCurrentTabs();
     const withEpisodeUrl: Tab | undefined =
       this.findTabWithUrlLikeEpisode(tabs);
     return withEpisodeUrl || null;
