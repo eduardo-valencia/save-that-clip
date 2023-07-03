@@ -19,7 +19,7 @@ export default function SeriesItem({ possibleName }: Props) {
   const link: string = getLink();
   return (
     <ResourceItem>
-      <Link to={link}>
+      <Link to={link} style={{ textDecoration: "none" }}>
         <ResourceItemTitle>
           {possibleName || defaultSeriesName}
         </ResourceItemTitle>

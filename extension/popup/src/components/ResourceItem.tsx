@@ -9,6 +9,7 @@ export default function ResourceItem(props: BoxProps) {
         mb: "1.5rem",
         paddingBottom: "0.88rem",
         borderBottom: "0.0625rem solid #A9ABBD",
+        listStyle: "none",
       }}
       {...props}
     />

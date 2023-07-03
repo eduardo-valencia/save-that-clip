@@ -21,9 +21,9 @@ export default function SeriesSection() {
       aria-busy={!possibleBookmarks}
     >
       {possibleBookmarks ? (
-        <LoadingIndicator progressElementId={progressElementId} />
-      ) : (
         <SeriesList />
+      ) : (
+        <LoadingIndicator progressElementId={progressElementId} />
       )}
     </div>
   );

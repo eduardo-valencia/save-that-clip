@@ -10,6 +10,7 @@ export default function ResourceItemTitle(props: TypographyProps) {
         fontWeight: 500,
         lineHeight: "1.75rem",
         letterSpacing: "-0.025rem",
+        color: "black",
       }}
       {...props}
     />
