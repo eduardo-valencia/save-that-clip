@@ -9,6 +9,7 @@ import {
   SearchContextValue,
 } from "../../components/SearchProvider";
 import SeriesSection from "./SeriesSection";
+import BookmarkSearchResults from "./BookmarkSearchResults";
 
 const Bookmarks = () => {
   const { query }: SearchContextValue = useContext(SearchContext);
@@ -21,7 +22,7 @@ const Bookmarks = () => {
         </Header>
         <BookmarkCreationDialog />
       </BookmarkCreationDialogProvider>
-      {query ? null : <SeriesSection />}
+      {query ? <BookmarkSearchResults /> : <SeriesSection />}
     </Layout>
   );
 };

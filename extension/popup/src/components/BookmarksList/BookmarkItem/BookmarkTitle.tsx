@@ -15,7 +15,12 @@ export default function BookmarkTitle({ bookmark }: Props) {
   };
 
   return (
-    <Button variant="text" aria-label="Open bookmark" onClick={openBookmark}>
+    <Button
+      variant="text"
+      aria-label="Open bookmark"
+      onClick={openBookmark}
+      sx={{ p: 0, minWidth: 0, ":hover": { backgroundColor: "initial" } }}
+    >
       <ResourceItemTitle>{bookmark.name}</ResourceItemTitle>
     </Button>
   );

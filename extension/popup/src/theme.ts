@@ -16,7 +16,14 @@ const getComponentOverridesForPlaceholder = (): Components["MuiInput"] &
 
 const getButtonStyles = (): CSSObject => {
   const padding = "0.75rem";
-  return { paddingTop: padding, paddingBottom: padding };
+  const boxShadow = "none";
+  return {
+    paddingTop: padding,
+    paddingBottom: padding,
+    boxShadow,
+    borderRadius: "0.3125rem",
+    ":hover": { boxShadow },
+  };
 };
 
 export const theme = createTheme({
@@ -42,7 +49,6 @@ export const theme = createTheme({
       lineHeight: "normal",
       textTransform: "none",
       letterSpacing: "-0.02225rem",
-      borderRadius: "0.3125rem",
     },
   },
   components: {

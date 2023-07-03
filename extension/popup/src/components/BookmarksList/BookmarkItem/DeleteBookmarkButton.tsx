@@ -14,9 +14,12 @@ export default function DeleteBookmarkButton(props: Props) {
         backgroundColor: "rgba(255, 0, 0, 0.10)",
         color: "#FF0000",
         px: "0.715rem",
+        ":hover": {
+          backgroundColor: "rgba(255, 0, 0, 0.3)",
+        },
       }}
     >
-      DeleteBookmarkButton
+      Delete
     </Button>
   );
 }
