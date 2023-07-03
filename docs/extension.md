@@ -2,7 +2,7 @@
 
 ## Testing the Extension
 
-See the React App's documentation for more information about testing it.
+See the extension's documentation for more information about testing it. To load the extension, see <https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked>.
 
 ### Notes
 
