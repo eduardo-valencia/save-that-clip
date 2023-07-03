@@ -10,6 +10,10 @@ import {
 } from "../BookmarkCreationDialogProvider";
 import FormError from "./FormError";
 import { BookmarksService } from "../../../../bookmarks/Bookmarks.service";
+import {
+  BookmarksContextValue,
+  BookmarksContext,
+} from "../../../../components/BookmarksProvider";
 
 export interface FormErrorInfo {
   error: unknown;
@@ -24,13 +28,17 @@ export default function CreationForm() {
 
   const [error, setError] = useState<PossibleErrorInfo>(null);
 
+  const { findAndSetBookmarks }: BookmarksContextValue =
+    useContext(BookmarksContext);
+
   const { close }: BookmarkCreationDialogContextValue = useContext(
     BookmarkCreationDialogContext
   );
 
-  // todo: Refresh list of bookmarks
   const saveBookmarkAndClose = async (): Promise<void> => {
     await bookmarksService.create({ name });
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    await findAndSetBookmarks!();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     close!();
   };

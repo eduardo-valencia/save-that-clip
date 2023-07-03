@@ -19,7 +19,7 @@ export const Search = (): JSX.Element => {
 
   return (
     <TextField
-      label="Search"
+      label="Search Bookmarks"
       placeholder="Search"
       id="search"
       value={query}
