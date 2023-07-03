@@ -5,7 +5,7 @@
   "content_scripts": [
     {
       "js": ["content-script.js"],
-      "matches": ["<all_urls>"]
+      "matches": ["*://netflix.com/watch/*"]
     }
   ],
   "action": {
@@ -20,5 +20,6 @@
     "32": "./icons/icon-32x32.png",
     "48": "./icons/icon-48x48.png",
     "128": "./icons/icon-128x128.png"
-  }
+  },
+  "host_permissions": ["https://netflix.com/", "http://netflix.com/"]
 }
