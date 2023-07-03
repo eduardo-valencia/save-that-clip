@@ -40,7 +40,6 @@ export default function CreationForm() {
   );
 
   const saveBookmarkAndClose = async (): Promise<void> => {
-    setIsLoading(true);
     await bookmarksService.create({ name });
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     await findAndSetBookmarks!();
@@ -58,15 +57,19 @@ export default function CreationForm() {
       await saveBookmarkAndClose();
     } catch (error) {
       handleError(error);
-    } finally {
-      setIsLoading(false);
     }
+  };
+
+  const trySavingBookmarkAndUpdateIsLoading = async (): Promise<void> => {
+    setIsLoading(true);
+    await trySavingBookmark();
+    setIsLoading(false);
   };
 
   const handleSubmission = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
     setError(null);
-    void trySavingBookmark();
+    void trySavingBookmarkAndUpdateIsLoading();
   };
 
   return (
