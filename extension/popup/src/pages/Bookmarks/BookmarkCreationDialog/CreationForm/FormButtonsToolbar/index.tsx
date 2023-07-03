@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import React from "react";
-import CancelButton from "../CancelButton";
-import SaveButton from "../SaveButton";
+import CancelButton from "./CancelButton";
+import SaveButton from "./SaveButton";
 
 export default function FormButtonsToolbar() {
   return (

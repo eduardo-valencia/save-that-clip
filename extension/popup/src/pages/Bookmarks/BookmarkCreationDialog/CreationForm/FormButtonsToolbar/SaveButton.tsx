@@ -1,5 +1,5 @@
 import React from "react";
-import FormActionButton from "./FormActionButton";
+import FormActionButton from "../FormActionButton";
 
 export default function SaveButton() {
   return (
