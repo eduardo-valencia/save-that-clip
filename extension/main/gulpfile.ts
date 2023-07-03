@@ -46,7 +46,7 @@ const buildPopupFromConfig = getWebpackBuilder("./popup/src/index.tsx");
 /**
  * We separate this from the other watcher because it helps with performance.
  */
-export const watchPopup = (): ReadWriteStream => {
+export const buildAndWatchPopup = (): ReadWriteStream => {
   return buildPopupFromConfig({
     config: { ...(popupWebpackConfig as Config), watch: true },
     buildCallback: reloadExtension,
@@ -81,7 +81,7 @@ const buildContentScript = (): ReadWriteStream => {
   return buildContentScriptFromConfig({ config: fullConfig });
 };
 
-const watchContentScript = (): ReadWriteStream => {
+const buildAndWatchContentScript = (): ReadWriteStream => {
   return buildContentScriptFromConfig({
     config: createContentScriptWebpackConfig({ watch: true }),
     buildCallback: reloadExtension,
@@ -91,20 +91,25 @@ const watchContentScript = (): ReadWriteStream => {
 /**
  * * Other extension main files
  */
-type Path = string;
-type Paths = Path[];
+type Glob = string;
+type Globs = Glob[];
 
-const createMainFilePath = (relativePath: Path): Path => {
-  return path.join(mainFolder, relativePath);
+const createMainFilePath = (relativeGlob: Glob): Glob => {
+  return path.join(mainFolder, relativeGlob);
 };
 
-const getMainFilesToCopy = (): Paths => {
-  const relativePaths: Paths = ["background.js", "manifest.json", "popup.html"];
-  return relativePaths.map(createMainFilePath);
+const getMainFilesToCopy = (): Globs => {
+  const relativeGlobs: Globs = [
+    "background.js",
+    "manifest.json",
+    "popup.html",
+    "icons/*",
+  ];
+  return relativeGlobs.map(createMainFilePath);
 };
 
 const copyOtherMainFiles = (): ReadWriteStream => {
-  const filesToCopy: Paths = getMainFilesToCopy();
+  const filesToCopy: Globs = getMainFilesToCopy();
   return gulp
     .src(filesToCopy, { base: mainFolder })
     .pipe(gulp.dest(buildFolder));
@@ -113,7 +118,7 @@ const copyOtherMainFiles = (): ReadWriteStream => {
 const copyFilesAndReload = gulp.series(copyOtherMainFiles, reloadExtension);
 
 const watchOtherMainFiles = (): FSWatcher => {
-  const filesToCopy: Paths = getMainFilesToCopy();
+  const filesToCopy: Globs = getMainFilesToCopy();
   return gulp.watch(filesToCopy, copyFilesAndReload);
 };
 
@@ -126,8 +131,9 @@ export const build = parallel(
   copyOtherMainFiles
 );
 
-export const watch = parallel(
-  watchContentScript,
-  watchPopup,
+export const dev = parallel(
+  buildAndWatchContentScript,
+  buildAndWatchPopup,
+  copyFilesAndReload,
   watchOtherMainFiles
 );
