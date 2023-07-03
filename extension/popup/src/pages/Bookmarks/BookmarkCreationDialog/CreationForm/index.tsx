@@ -39,7 +39,7 @@ export default function CreationForm() {
     BookmarkCreationDialogContext
   );
 
-  const saveBookmarkAndClose = async (): Promise<void> => {
+  const saveBookmarkAndRefreshAndClose = async (): Promise<void> => {
     await bookmarksService.create({ name });
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     await findAndSetBookmarks!();
@@ -54,7 +54,7 @@ export default function CreationForm() {
 
   const trySavingBookmark = async (): Promise<void> => {
     try {
-      await saveBookmarkAndClose();
+      await saveBookmarkAndRefreshAndClose();
     } catch (error) {
       handleError(error);
     }
