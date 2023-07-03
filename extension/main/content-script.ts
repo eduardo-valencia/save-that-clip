@@ -1,3 +1,9 @@
+/**
+ * Note that this content script will only be loaded on certain pages. Please
+ * avoid assuming that it exists. Ex: Do not send a message to the content
+ * script unless we know it exists. Otherwise, this could cause errors.
+ */
+
 import { getChrome } from "./common/chrome.service";
 import { Message, Messages } from "./common/messages";
 import { NetflixEpisodeMessageHandlers } from "./contentScripts/NetflixEpisodeTime.service";
