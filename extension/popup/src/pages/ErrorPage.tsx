@@ -1,13 +1,13 @@
-import { Typography } from '@mui/material'
-import PageContainer from '../components/PageContainer'
+import { Typography } from "@mui/material";
+import { Layout } from "../components/Layout";
 
 const ErrorPage = () => {
   return (
-    <PageContainer>
-      <Typography variant='h1'>There was an unexpected error.</Typography>
+    <Layout>
+      <Typography variant="h1">There was an unexpected error.</Typography>
       <Typography>Please try again later.</Typography>
-    </PageContainer>
-  )
-}
+    </Layout>
+  );
+};
 
-export default ErrorPage
+export default ErrorPage;

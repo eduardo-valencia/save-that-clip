@@ -1,16 +1,10 @@
 import React, { useContext } from "react";
-import {
-  BookmarksContextValue,
-  BookmarksContext,
-} from "../../components/BookmarksProvider";
-import {
-  SearchContext,
-  SearchContextValue,
-} from "../../components/SearchProvider";
+import { BookmarksContextValue, BookmarksContext } from "./BookmarksProvider";
+import { SearchContext, SearchContextValue } from "./SearchProvider";
 import BookmarksListWithLoader, {
   BookmarksListWithLoaderProps,
-} from "../../components/BookmarksList/BookmarksListWithLoader";
-import { Bookmark } from "../../bookmarks/Bookmarks.repo-abstraction";
+} from "./BookmarksList/BookmarksListWithLoader";
+import { Bookmark } from "../bookmarks/Bookmarks.repo-abstraction";
 
 export default function BookmarkSearchResults() {
   const { bookmarks }: BookmarksContextValue = useContext(BookmarksContext);

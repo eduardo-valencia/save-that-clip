@@ -1,11 +1,12 @@
 import React from "react";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
-import Bookmarks from "./pages/Bookmarks/Bookmarks";
+import BookmarksPage from "./pages/Bookmarks/BookmarksPage";
 import ErrorPage from "./pages/ErrorPage";
 import { SearchProvider } from "./components/SearchProvider";
 import { GlobalStyles, ThemeProvider } from "@mui/material";
 import { theme } from "./theme";
 import { BookmarksProvider } from "./components/BookmarksProvider";
+import SeriesPage from "./pages/Series/SeriesPage";
 
 /**
  * We must use a memory router because Chrome extensions don't support browser
@@ -14,7 +15,12 @@ import { BookmarksProvider } from "./components/BookmarksProvider";
 const router = createMemoryRouter([
   {
     path: "/",
-    element: <Bookmarks />,
+    element: <BookmarksPage />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/series/:name",
+    element: <SeriesPage />,
     errorElement: <ErrorPage />,
   },
 ]);

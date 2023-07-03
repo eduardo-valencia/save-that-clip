@@ -5,6 +5,7 @@ import { Pages } from "../../pages";
 import ResourceItemTitle from "../../../components/ResourceItemTitle";
 import { defaultSeriesName } from "../../../seriesInfo/seriesConfig";
 import { PossibleSeriesName } from "../../../seriesInfo/SeriesInfo.service";
+import LinkWithoutStyles from "../../../components/LinkWithoutStyles";
 
 interface Props {
   possibleName: PossibleSeriesName;
@@ -19,11 +20,11 @@ export default function SeriesItem({ possibleName }: Props) {
   const link: string = getLink();
   return (
     <ResourceItem>
-      <Link to={link} style={{ textDecoration: "none" }}>
+      <LinkWithoutStyles to={link}>
         <ResourceItemTitle>
           {possibleName || defaultSeriesName}
         </ResourceItemTitle>
-      </Link>
+      </LinkWithoutStyles>
     </ResourceItem>
   );
 }
