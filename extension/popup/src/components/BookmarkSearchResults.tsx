@@ -10,9 +10,9 @@ export default function BookmarkSearchResults() {
   const { bookmarks }: BookmarksContextValue = useContext(BookmarksContext);
   const { query }: SearchContextValue = useContext(SearchContext);
 
-  const getIfBookmarkMatchesQuery = (): boolean => {
+  const getIfBookmarkMatchesQuery = (bookmark: Bookmark): boolean => {
     const queryPattern = new RegExp(query, "gi");
-    return queryPattern.test(query);
+    return queryPattern.test(bookmark.name);
   };
 
   const filterBookmarksByQuery = (): Bookmark[] => {
