@@ -1,7 +1,8 @@
 {
   "name": "Save that Clip",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "manifest_version": 3,
+  "description": "An extension that allows you to bookmark timestamps on Netflix episodes. Easily find and revisit your favorite moments on Netflix.",
   "content_scripts": [
     {
       "js": ["content-script.js"],
