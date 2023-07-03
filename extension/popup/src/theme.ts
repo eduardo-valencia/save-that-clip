@@ -41,6 +41,8 @@ export const theme = createTheme({
       fontWeight: 500,
       lineHeight: "normal",
       textTransform: "none",
+      letterSpacing: "-0.02225rem",
+      borderRadius: "0.3125rem",
     },
   },
   components: {

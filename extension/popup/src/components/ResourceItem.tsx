@@ -1,7 +1,7 @@
 import { Box, BoxProps } from "@mui/material";
 import React from "react";
 
-export default function ResourceItem(props: BoxProps) {
+export default function ResourceItem({ sx = {}, ...other }: BoxProps) {
   return (
     <Box
       component="li"
@@ -10,8 +10,9 @@ export default function ResourceItem(props: BoxProps) {
         paddingBottom: "0.88rem",
         borderBottom: "0.0625rem solid #A9ABBD",
         listStyle: "none",
+        ...sx,
       }}
-      {...props}
+      {...other}
     />
   );
 }

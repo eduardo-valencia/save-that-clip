@@ -25,8 +25,6 @@ export default function BookmarkCreationButton({
         width: "9.0625rem",
         px: "0.56rem",
         py: "0.75rem",
-        letterSpacing: "-0.02225rem",
-        borderRadius: "0.3125rem",
         boxShadow: 0,
       }}
       onClick={open}
