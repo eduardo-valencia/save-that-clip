@@ -10,21 +10,20 @@ import { Params, useParams } from "react-router-dom";
 import { PossibleSeriesName } from "../../seriesInfo/SeriesInfo.service";
 import { defaultSeriesName } from "../../seriesInfo/seriesConfig";
 import ToolbarWithBackButton from "./ToolbarWithBackButton";
+import SeriesBookmarks from "./SeriesBookmarks";
 
 const SeriesPage = () => {
   const { query }: SearchContextValue = useContext(SearchContext);
   const { name }: Readonly<Params<string>> = useParams();
 
-  // todo: Throw an error if we cannot find a bookmark with this decoded name
-  // because it might indicate an error with decoding, which might be likely if
-  // this decoder doesn't work in certain edge cases.
   const decodeSeriesName = (): PossibleSeriesName => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return name === "null" ? null : name!;
   };
 
+  const decodedName: PossibleSeriesName = decodeSeriesName();
+
   const getSeriesDisplayName = (): string => {
-    const decodedName: PossibleSeriesName = decodeSeriesName();
     return decodedName || defaultSeriesName;
   };
 
@@ -34,7 +33,11 @@ const SeriesPage = () => {
     <Layout>
       <ToolbarWithBackButton />
       <HeaderWithBookmarkCreationButton title={displayName} />
-      {query ? <BookmarkSearchResults /> : null}
+      {query ? (
+        <BookmarkSearchResults />
+      ) : (
+        <SeriesBookmarks possibleSeriesName={decodedName} />
+      )}
     </Layout>
   );
 };
