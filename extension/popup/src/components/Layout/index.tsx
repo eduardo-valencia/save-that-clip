@@ -1,6 +1,6 @@
 import { AppBar, BoxProps, Toolbar } from "@mui/material";
-import { Search } from "./Search";
 import PageContainer from "../PageContainer";
+import Search from "./Search";
 
 export function Layout({ sx, ...other }: BoxProps): JSX.Element {
   return (

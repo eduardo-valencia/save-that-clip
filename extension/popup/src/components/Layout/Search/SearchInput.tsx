@@ -1,9 +1,9 @@
 import { ChangeEvent, useContext } from "react";
 import { InputAdornment, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { SearchContext, SearchContextValue } from "../SearchProvider";
+import { SearchContext, SearchContextValue } from "../../SearchProvider";
 
-export const Search = (): JSX.Element => {
+export const SearchInput = (): JSX.Element => {
   const { query, setQuery }: SearchContextValue = useContext(SearchContext);
 
   const handleMissingSetQuery = (): never => {
@@ -32,6 +32,7 @@ export const Search = (): JSX.Element => {
         ),
       }}
       variant="outlined"
+      sx={{ mr: "1rem" }}
     />
   );
 };
