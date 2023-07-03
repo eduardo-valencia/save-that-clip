@@ -20,7 +20,7 @@ export default function DeleteBookmarkButton({ bookmarkId }: Props) {
   const deleteBookmarkAndRefreshBookmarks = async (): Promise<void> => {
     await bookmarksService.destroy(bookmarkId);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    await findAndSetBookmarks!();
+    await findAndSetBookmarks!(false);
   };
 
   const handleClick = (): void => {
