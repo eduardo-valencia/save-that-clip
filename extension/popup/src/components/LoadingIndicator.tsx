@@ -5,7 +5,7 @@ export interface LoadingIndicatorProps {
   /**
    * @see CircularProgress to learn how this helps accessibility.
    */
-  progressElementId: string;
+  progressElementId?: string;
 }
 
 export default function LoadingIndicator(props: LoadingIndicatorProps) {
