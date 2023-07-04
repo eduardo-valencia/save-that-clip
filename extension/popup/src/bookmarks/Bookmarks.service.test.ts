@@ -82,7 +82,7 @@ interface MockedTimeAndSeries {
   seriesName: SeriesName;
 }
 
-const getMockedInfo = (): MockedTimeAndSeries => {
+const getMockedTimeAndSeries = (): MockedTimeAndSeries => {
   return {
     episodeInfo: { time: 1, tab: generateEpisodeTab() },
     seriesName: "test",
@@ -90,7 +90,7 @@ const getMockedInfo = (): MockedTimeAndSeries => {
 };
 
 const mockTimeAndSeriesName = (): MockedTimeAndSeries => {
-  const info: MockedTimeAndSeries = getMockedInfo();
+  const info: MockedTimeAndSeries = getMockedTimeAndSeries();
   spiedGetTabAndTime.mockResolvedValue(info.episodeInfo);
   spiedGetSeriesName.mockResolvedValue(info.seriesName);
   return info;
@@ -174,7 +174,7 @@ describe("create", () => {
     };
 
     const createEpisodeInfo = (): EpisodeTabAndTime => {
-      const { episodeInfo }: MockedTimeAndSeries = getMockedInfo();
+      const { episodeInfo }: MockedTimeAndSeries = getMockedTimeAndSeries();
       const { tab, ...other } = episodeInfo;
       return { ...other, tab: { ...tab, url: getTabUrl() } };
     };
@@ -292,7 +292,7 @@ describe("open", () => {
     let bookmark: Bookmark;
 
     const mockGettingTime = (): void => {
-      const info: MockedTimeAndSeries = getMockedInfo();
+      const info: MockedTimeAndSeries = getMockedTimeAndSeries();
       info.episodeInfo.time = 101;
       spiedGetTabAndTime.mockResolvedValue(info.episodeInfo);
     };
