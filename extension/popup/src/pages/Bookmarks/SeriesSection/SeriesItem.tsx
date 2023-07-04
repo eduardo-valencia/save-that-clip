@@ -14,7 +14,9 @@ interface Props {
 export default function SeriesItem({ possibleName }: Props) {
   const getLink = (): string => {
     const pageId: string = possibleName ? possibleName : "null";
-    return `${Pages.series}/${pageId}`;
+    // Because the series's name might have special chars.
+    const encodedPageId: string = encodeURIComponent(pageId);
+    return `${Pages.series}/${encodedPageId}`;
   };
 
   const link: string = getLink();
