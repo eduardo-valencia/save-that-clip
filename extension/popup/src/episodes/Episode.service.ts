@@ -94,7 +94,6 @@ export class EpisodeService {
   ): Promise<TabMatch> => {
     const tabs: Tab[] = await this.getCurrentTabs();
     const { pathname } = new URL(urlToGetPathFrom);
-    console.log("pathname", pathname);
     return tabs.find(this.getGetIfTabUrlHasPathname(pathname));
   };
 
