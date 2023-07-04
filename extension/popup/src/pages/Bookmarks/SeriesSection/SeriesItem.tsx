@@ -1,6 +1,5 @@
 import React from "react";
 import ResourceItem from "../../../components/ResourceItem";
-import { Link } from "react-router-dom";
 import { Pages } from "../../pages";
 import ResourceItemTitle from "../../../components/ResourceItemTitle";
 import { defaultSeriesName } from "../../../seriesInfo/seriesConfig";
