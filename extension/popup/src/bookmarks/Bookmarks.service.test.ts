@@ -77,20 +77,20 @@ const { create, find, destroy, open } = new BookmarksService({
  * * Other test utils.
  */
 
-interface MockedInfo {
+interface MockedTimeAndSeries {
   episodeInfo: EpisodeTabAndTime;
   seriesName: SeriesName;
 }
 
-const getMockedInfo = (): MockedInfo => {
+const getMockedInfo = (): MockedTimeAndSeries => {
   return {
     episodeInfo: { time: 1, tab: generateEpisodeTab() },
     seriesName: "test",
   };
 };
 
-const mockTimeAndSeriesName = (): MockedInfo => {
-  const info: MockedInfo = getMockedInfo();
+const mockTimeAndSeriesName = (): MockedTimeAndSeries => {
+  const info: MockedTimeAndSeries = getMockedInfo();
   spiedGetTabAndTime.mockResolvedValue(info.episodeInfo);
   spiedGetSeriesName.mockResolvedValue(info.seriesName);
   return info;
@@ -127,8 +127,8 @@ afterEach(() => {
 });
 
 describe("create / find", () => {
-  describe("After creating one", () => {
-    let mockedInfo: MockedInfo;
+  describe("After creating one when one already exists", () => {
+    let mockedInfo: MockedTimeAndSeries;
     let creationFields: CreationFields;
 
     const getExpectedFields = (): Partial<Bookmark> => {
@@ -143,6 +143,7 @@ describe("create / find", () => {
 
     beforeAll(async () => {
       mockedInfo = mockTimeAndSeriesName();
+      // We create one to ensure we can correctly find the correct bookmark
       ({ creationFields } = await generateUniqueBookmark());
       await create(creationFields);
     });
@@ -162,6 +163,44 @@ describe("create / find", () => {
       expect(bookmarks).toContainEqual(objectWithFields);
     });
   });
+});
+
+describe("create", () => {
+  describe("When the tab's url has params", () => {
+    const baseUrl = "http://netflix.com/watch/123";
+
+    const getTabUrl = (): string => {
+      return `${baseUrl}?t=300`;
+    };
+
+    const createEpisodeInfo = (): EpisodeTabAndTime => {
+      const { episodeInfo }: MockedTimeAndSeries = getMockedInfo();
+      const { tab, ...other } = episodeInfo;
+      return { ...other, tab: { ...tab, url: getTabUrl() } };
+    };
+
+    const mockTimeAndTab = (): void => {
+      const episodeInfo: EpisodeTabAndTime = createEpisodeInfo();
+      spiedGetTabAndTime.mockResolvedValue(episodeInfo);
+    };
+
+    beforeAll(() => {
+      mockTimeAndSeriesName();
+      // This overwrites part of the previous mocked info.
+      mockTimeAndTab();
+    });
+
+    it("Sets the bookmark's URL without them", async () => {
+      const { bookmark }: BookmarkInfo = await generateUniqueBookmark();
+      expect(bookmark.episodeUrl).toEqual(baseUrl);
+    });
+  });
+
+  /**
+   * We might want an explicit test because we don't know whether the mocked tab
+   * has params by default.
+   */
+  it.todo("Works when the URL does not have params");
 });
 
 describe("find", () => {
@@ -230,7 +269,7 @@ describe("open", () => {
     return spiedSetTime;
   };
 
-  const mockFindingBookmarkTab = (mockedInfo: MockedInfo): void => {
+  const mockFindingBookmarkTab = (mockedInfo: MockedTimeAndSeries): void => {
     const spiedFind = jest.spyOn(
       episodeService,
       "findOneEpisodeTabWithSamePathAsUrl"
@@ -240,7 +279,7 @@ describe("open", () => {
 
   // For testing setting the episode's time
   const mockTimeAndSeriesAndFindingBookmarkTab = (): void => {
-    const mockedInfo: MockedInfo = mockTimeAndSeriesName();
+    const mockedInfo: MockedTimeAndSeries = mockTimeAndSeriesName();
     mockFindingBookmarkTab(mockedInfo);
   };
 
@@ -253,7 +292,7 @@ describe("open", () => {
     let bookmark: Bookmark;
 
     const mockGettingTime = (): void => {
-      const info: MockedInfo = getMockedInfo();
+      const info: MockedTimeAndSeries = getMockedInfo();
       info.episodeInfo.time = 101;
       spiedGetTabAndTime.mockResolvedValue(info.episodeInfo);
     };

@@ -48,10 +48,24 @@ export class BookmarksService {
     return url;
   };
 
+  /**
+   * Netflix URLs can have a "t" param that sets the time, which could interfere
+   * with us setting the episode's time. To prevent this, we remove the params.
+   */
+  private getUrlWithoutParams = (url: string): string => {
+    const splitByParams: string[] = url.split("?");
+    return splitByParams[0];
+  };
+
+  private createEpisodeUrl = (tab: EpisodeTabAndTime["tab"]): string => {
+    const tabUrl: string = this.getTabUrl(tab);
+    return this.getUrlWithoutParams(tabUrl);
+  };
+
   private getEpisodeUrlAndTime = async (): Promise<EpisodeUrlAndTime> => {
     const { tab, time }: EpisodeTabAndTime =
       await this.episodeService.get1stEpisodeTabAndTime();
-    return { timeMs: time, episodeUrl: this.getTabUrl(tab) };
+    return { timeMs: time, episodeUrl: this.createEpisodeUrl(tab) };
   };
 
   private getSeriesName = (
