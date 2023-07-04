@@ -19,7 +19,12 @@ export default function BookmarkTitle({ bookmark }: Props) {
       variant="text"
       aria-label="Open bookmark"
       onClick={openBookmark}
-      sx={{ p: 0, minWidth: 0, ":hover": { backgroundColor: "initial" } }}
+      sx={{
+        p: 0,
+        minWidth: 0,
+        ":hover": { backgroundColor: "initial" },
+        textAlign: "left",
+      }}
     >
       <ResourceItemTitle>{bookmark.name}</ResourceItemTitle>
     </Button>
