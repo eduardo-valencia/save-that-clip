@@ -29,7 +29,7 @@ const mockedScriptsRepo = new MockedScriptsRepo();
 const {
   get1stEpisodeTabAndTime: findTimeOf1stEpisodeTab,
   findOneEpisodeTab,
-  findOneEpisodeTabByUrl,
+  findOneEpisodeTabWithSamePathAsUrl: findOneEpisodeTabByUrl,
   trySettingTime: setTime,
 } = new EpisodeService({
   tabsRepo: mockedTabsRepo,
@@ -146,7 +146,7 @@ describe("getTimeOf1stEpisodeTab", () => {
   });
 });
 
-describe("findOneEpisodeTabByUrl", () => {
+describe("findOneEpisodeTabWithUrlPath", () => {
   describe("Even when there are multiple episode tabs", () => {
     let tabToFind: Tab;
 
@@ -171,6 +171,37 @@ describe("findOneEpisodeTabByUrl", () => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const tab: PossibleTab = await findOneEpisodeTabByUrl(tabToFind.url!);
       expect(tab).toEqual(tabToFind);
+    });
+  });
+
+  describe("When the query params don't match", () => {
+    let tab: Tab;
+
+    const createTabUrlWithTimeParam = (tab: Tab, timeMs: number): string => {
+      if (!tab.url) throw new Error("Tab is missing a URL.");
+      const urlInstance = new URL(tab.url);
+      urlInstance.searchParams.append("t", timeMs.toString());
+      return urlInstance.href;
+    };
+
+    const createTab = (): void => {
+      tab = generateEpisodeTab();
+      tab.url = createTabUrlWithTimeParam(tab, 1000);
+    };
+
+    const tryFindingTabWithUrlWithOtherParams = (): Promise<PossibleTab> => {
+      const urlWithOtherParams: string = createTabUrlWithTimeParam(tab, 2);
+      return findOneEpisodeTabByUrl(urlWithOtherParams);
+    };
+
+    beforeAll(() => {
+      createTab();
+      mockedTabsRepo.query.mockResolvedValue([tab]);
+    });
+
+    it("Returns an episode tab", async () => {
+      const foundTab: PossibleTab = await tryFindingTabWithUrlWithOtherParams();
+      expect(foundTab).toEqual(tab);
     });
   });
 });

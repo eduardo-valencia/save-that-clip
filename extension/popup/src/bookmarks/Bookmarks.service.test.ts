@@ -231,7 +231,10 @@ describe("open", () => {
   };
 
   const mockFindingBookmarkTab = (mockedInfo: MockedInfo): void => {
-    const spiedFind = jest.spyOn(episodeService, "findOneEpisodeTabByUrl");
+    const spiedFind = jest.spyOn(
+      episodeService,
+      "findOneEpisodeTabWithSamePathAsUrl"
+    );
     spiedFind.mockResolvedValue(mockedInfo.episodeInfo.tab);
   };
 

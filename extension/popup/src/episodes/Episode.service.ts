@@ -1,4 +1,3 @@
-import _ from "lodash";
 import {
   EpisodeTime,
   Message,
@@ -42,6 +41,7 @@ export interface ResultOfSettingTime {
 }
 
 type PossibleResult = InjectionResult | undefined;
+type TabMatch = Tab | undefined;
 
 /**
  * This service allows us to interact with an episode tab.
@@ -59,6 +59,26 @@ export class EpisodeService {
     return this.tabsRepo.query({ active: true, lastFocusedWindow: true });
   };
 
+  private getGetIfTabUrlHasPathname = (pathname: URL["pathname"]) => {
+    return (tab: Tab): boolean => {
+      /**
+       * All episode tabs should have a URL by definition. If they do not, it
+       * means something went very wrong.
+       */
+      if (!tab.url) throw new Error("Tab is missing a URL.");
+      const urlInstance = new URL(tab.url);
+      return urlInstance.pathname === pathname;
+    };
+  };
+
+  private getUrlPathAndFindTabWithSameOne = async (
+    urlToGetPathFrom: Bookmark["episodeUrl"]
+  ): Promise<TabMatch> => {
+    const tabs: Tab[] = await this.getCurrentTabs();
+    const { pathname } = new URL(urlToGetPathFrom);
+    return tabs.find(this.getGetIfTabUrlHasPathname(pathname));
+  };
+
   /**
    * Implementation notes:
    *
@@ -66,11 +86,11 @@ export class EpisodeService {
    * pending tab would have unloaded content, so we wouldn't be able to change
    * the episode's time anyways.
    */
-  public findOneEpisodeTabByUrl = async (
+  public findOneEpisodeTabWithSamePathAsUrl = async (
     url: Bookmark["episodeUrl"]
   ): Promise<PossibleTab> => {
-    const tabs: Tab[] = await this.getCurrentTabs();
-    const tabWithUrl: Tab | undefined = _.find(tabs, { url });
+    const findTab = this.getUrlPathAndFindTabWithSameOne;
+    const tabWithUrl: TabMatch = await findTab(url);
     return tabWithUrl || null;
   };
 

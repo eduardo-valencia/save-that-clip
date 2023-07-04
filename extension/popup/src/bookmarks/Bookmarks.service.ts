@@ -136,9 +136,8 @@ export class BookmarksService {
 
   public open = async (id: Bookmark["id"]): Promise<void> => {
     const bookmark: Bookmark = await this.getById(id);
-    const tab: PossibleTab = await this.episodeService.findOneEpisodeTabByUrl(
-      bookmark.episodeUrl
-    );
+    const findTab = this.episodeService.findOneEpisodeTabWithSamePathAsUrl;
+    const tab: PossibleTab = await findTab(bookmark.episodeUrl);
     await this.createBookmarkTabOrUpdateIt(bookmark, tab);
   };
 }
