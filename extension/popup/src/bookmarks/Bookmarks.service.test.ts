@@ -269,18 +269,25 @@ describe("open", () => {
     return spiedSetTime;
   };
 
-  const mockFindingBookmarkTab = (mockedInfo: MockedTimeAndSeries): void => {
-    const spiedFind = jest.spyOn(
-      episodeService,
-      "findOneEpisodeTabWithSamePathAsUrl"
-    );
+  type SpiedFindBookmarkTab = jest.SpiedFunction<
+    EpisodeService["findOneEpisodeTabWithSamePathAsUrl"]
+  >;
+
+  const spyOnFindingBookmarkTab = (): SpiedFindBookmarkTab => {
+    return jest.spyOn(episodeService, "findOneEpisodeTabWithSamePathAsUrl");
+  };
+
+  const mockFindingBookmarkTabWithTab = (
+    mockedInfo: MockedTimeAndSeries
+  ): void => {
+    const spiedFind: SpiedFindBookmarkTab = spyOnFindingBookmarkTab();
     spiedFind.mockResolvedValue(mockedInfo.episodeInfo.tab);
   };
 
   // For testing setting the episode's time
   const mockTimeAndSeriesAndFindingBookmarkTab = (): void => {
     const mockedInfo: MockedTimeAndSeries = mockTimeAndSeriesName();
-    mockFindingBookmarkTab(mockedInfo);
+    mockFindingBookmarkTabWithTab(mockedInfo);
   };
 
   const mockCreatingTab = (): void => {
@@ -309,13 +316,23 @@ describe("open", () => {
       return url.href;
     };
 
-    beforeEach(async () => {
+    const mockFindingNoBookmarksTab = (): void => {
+      const spiedFind: SpiedFindBookmarkTab = spyOnFindingBookmarkTab();
+      spiedFind.mockResolvedValue(null);
+    };
+
+    const setUpMocks = (): void => {
       mockCreatingTab();
       mockTimeAndSeriesName();
       /**
        * This partially overwrites @see mockTimeAndSeriesName.
        */
       mockGettingTime();
+      mockFindingNoBookmarksTab();
+    };
+
+    beforeEach(async () => {
+      setUpMocks();
       ({ bookmark } = await generateAndOpenBookmark());
     });
 
