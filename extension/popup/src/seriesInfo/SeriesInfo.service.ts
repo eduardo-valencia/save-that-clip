@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import _ from "lodash";
 import config from "../config";
+import { ErrorReporterService } from "../errorReporter/ErrorReporter.service";
 
 export type SeriesName = string;
 
@@ -16,6 +17,7 @@ export type PossibleSeriesName = SeriesName | null;
 
 export class SeriesInfoService {
   private httpRepo;
+  private errorReporterService = new ErrorReporterService();
 
   constructor(options: Options = {}) {
     this.httpRepo = options.httpRepo || axios;
@@ -96,7 +98,7 @@ export class SeriesInfoService {
   };
 
   private handleErrorGettingSeriesName = (error: unknown): null => {
-    console.error(error);
+    this.errorReporterService.captureExceptionAndLogError(error);
     return null;
   };
 

@@ -1,6 +1,5 @@
 import React, { useContext, useState } from "react";
 import { Box } from "@mui/material";
-import { captureException } from "@sentry/browser";
 import { Bookmark } from "../../../../bookmarks/Bookmarks.repo-abstraction";
 import BookmarkNameField from "./BookmarkNameField";
 import {
@@ -15,6 +14,7 @@ import {
 } from "../../../../components/BookmarksProvider";
 import FormButtonsToolbar from "./FormButtonsToolbar";
 import LoadingIndicator from "../../../../components/LoadingIndicator";
+import { ErrorReporterService } from "../../../../errorReporter/ErrorReporter.service";
 
 export interface FormErrorInfo {
   error: unknown;
@@ -26,6 +26,7 @@ type IsLoading = boolean;
 
 export default function CreationForm() {
   const bookmarksService = new BookmarksService();
+  const errorReporterService = new ErrorReporterService();
 
   const [name, setName] = useState<Bookmark["name"]>("");
 
@@ -49,8 +50,7 @@ export default function CreationForm() {
   };
 
   const handleError = (error: unknown): void => {
-    console.error(error);
-    captureException(error);
+    errorReporterService.captureExceptionAndLogError(error);
     setError({ error });
   };
 
