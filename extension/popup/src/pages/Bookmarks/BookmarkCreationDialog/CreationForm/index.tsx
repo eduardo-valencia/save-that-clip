@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import { Box } from "@mui/material";
+import { captureException } from "@sentry/browser";
 import { Bookmark } from "../../../../bookmarks/Bookmarks.repo-abstraction";
 import BookmarkNameField from "./BookmarkNameField";
 import {
@@ -49,6 +50,7 @@ export default function CreationForm() {
 
   const handleError = (error: unknown): void => {
     console.error(error);
+    captureException(error);
     setError({ error });
   };
 
