@@ -59,6 +59,24 @@ export class EpisodeService {
     return this.tabsRepo.query({ active: true, lastFocusedWindow: true });
   };
 
+  private getPathWithoutTrailingSlash = (path: string): string => {
+    if (!path) return path;
+    const lastCharIndex: number = path.length - 1;
+    if (path[lastCharIndex] === "/") return path.substring(0, lastCharIndex);
+    return path;
+  };
+
+  private getIfPathsAreEqual = (path1: string, path2: string): boolean => {
+    const sanitizedUrl1: string = this.getPathWithoutTrailingSlash(path1);
+    const sanitizedUrl2: string = this.getPathWithoutTrailingSlash(path2);
+    return sanitizedUrl1 === sanitizedUrl2;
+  };
+
+  /**
+   * We compare the path names to ensure the URLs are considered the same even
+   * when the trailing slashes don't match. We also need to disregard query
+   * parameters because tabs' URLs might have them.
+   */
   private getGetIfTabUrlHasPathname = (pathname: URL["pathname"]) => {
     return (tab: Tab): boolean => {
       /**
@@ -67,7 +85,7 @@ export class EpisodeService {
        */
       if (!tab.url) throw new Error("Tab is missing a URL.");
       const urlInstance = new URL(tab.url);
-      return urlInstance.pathname === pathname;
+      return this.getIfPathsAreEqual(pathname, urlInstance.pathname);
     };
   };
 
@@ -76,6 +94,7 @@ export class EpisodeService {
   ): Promise<TabMatch> => {
     const tabs: Tab[] = await this.getCurrentTabs();
     const { pathname } = new URL(urlToGetPathFrom);
+    console.log("pathname", pathname);
     return tabs.find(this.getGetIfTabUrlHasPathname(pathname));
   };
 

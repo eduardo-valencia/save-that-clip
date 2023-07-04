@@ -60,6 +60,12 @@ const mockTimeResponse = (): EpisodeTime => {
   return mockedEpisodeTime;
 };
 
+const createTabWithUrl = (url: string): Tab => {
+  const tab: Tab = generateEpisodeTab();
+  tab.url = url;
+  return tab;
+};
+
 afterEach(() => {
   jest.resetAllMocks();
 });
@@ -150,15 +156,9 @@ describe("findOneEpisodeTabWithUrlPath", () => {
   describe("Even when there are multiple episode tabs", () => {
     let tabToFind: Tab;
 
-    const generateTabWithOtherUrl = (): Tab => {
-      const tab: Tab = generateEpisodeTab();
-      tab.url = "http://example.com";
-      return tab;
-    };
-
     const getTabs = (): Tab[] => {
       tabToFind = generateEpisodeTab();
-      const tabWithOtherUrl: Tab = generateTabWithOtherUrl();
+      const tabWithOtherUrl: Tab = createTabWithUrl("http://example.com");
       return [tabWithOtherUrl, tabToFind];
     };
 
@@ -174,23 +174,22 @@ describe("findOneEpisodeTabWithUrlPath", () => {
     });
   });
 
-  describe("When the query params don't match", () => {
+  describe("When the query params don't match, but everything else does", () => {
     let tab: Tab;
 
-    const createTabUrlWithTimeParam = (tab: Tab, timeMs: number): string => {
-      if (!tab.url) throw new Error("Tab is missing a URL.");
-      const urlInstance = new URL(tab.url);
+    const createTabUrlWithTimeParam = (timeMs: number): string => {
+      const urlInstance = new URL("https://netflix.com/watch/234");
       urlInstance.searchParams.append("t", timeMs.toString());
       return urlInstance.href;
     };
 
     const createTab = (): void => {
-      tab = generateEpisodeTab();
-      tab.url = createTabUrlWithTimeParam(tab, 1000);
+      const url: string = createTabUrlWithTimeParam(1000);
+      tab = createTabWithUrl(url);
     };
 
     const tryFindingTabWithUrlWithOtherParams = (): Promise<PossibleTab> => {
-      const urlWithOtherParams: string = createTabUrlWithTimeParam(tab, 2);
+      const urlWithOtherParams: string = createTabUrlWithTimeParam(2);
       return findOneEpisodeTabByUrl(urlWithOtherParams);
     };
 
@@ -201,6 +200,23 @@ describe("findOneEpisodeTabWithUrlPath", () => {
 
     it("Returns an episode tab", async () => {
       const foundTab: PossibleTab = await tryFindingTabWithUrlWithOtherParams();
+      expect(foundTab).toEqual(tab);
+    });
+  });
+
+  describe("When they are the same URLs, but one of them has a trailing slash", () => {
+    let tab: Tab;
+    const withoutTrailingSlash = `http://www.netflix.com/watch/123`;
+
+    beforeAll(() => {
+      tab = createTabWithUrl(withoutTrailingSlash);
+      mockedTabsRepo.query.mockResolvedValue([tab]);
+    });
+
+    it("Returns an episode tab", async () => {
+      const foundTab: PossibleTab = await findOneEpisodeTabByUrl(
+        `${withoutTrailingSlash}/`
+      );
       expect(foundTab).toEqual(tab);
     });
   });
