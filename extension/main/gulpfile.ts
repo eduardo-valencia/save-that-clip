@@ -4,10 +4,10 @@ import open from "open";
 import { Configuration as Config } from "webpack";
 import { ChildProcess } from "child_process";
 import path from "path";
+import { FSWatcher } from "fs";
 
 import popupWebpackConfig from "../popup/webpack.config";
 import commonWebpackConfig from "./common/common-webpack-config";
-import { FSWatcher } from "fs";
 
 const buildFolder = "build";
 const mainFolder = "main";
@@ -123,12 +123,20 @@ const watchOtherMainFiles = (): FSWatcher => {
 };
 
 /**
+ * We are legally required to do this.
+ */
+const copyLicense = (): ReadWriteStream => {
+  return gulp.src("./docs/used-licenses.md").pipe(gulp.dest(buildFolder));
+};
+
+/**
  * * Other
  */
 export const build = parallel(
   buildPopup,
   buildContentScript,
-  copyOtherMainFiles
+  copyOtherMainFiles,
+  copyLicense
 );
 
 export const dev = parallel(

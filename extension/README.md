@@ -12,6 +12,12 @@ The popup is the part of the extension that users see and interact with. Users c
 
 ## Commands
 
+### General commands
+
+#### `npx gulp build`
+
+Builds the popup and the "main" folder's files and copies them into the extension's build folder, `build`, so that we can load it into Chrome. This also generates the licensing info.
+
 ### Popup's commands
 
 #### `npm run popup-test`
