@@ -25,5 +25,5 @@ export abstract class BookmarksRepoAbstraction {
 
   abstract list: () => Promise<Bookmark[]>;
 
-  abstract destroy: (url: Bookmark["episodeUrl"]) => Promise<void>;
+  abstract destroy: (id: Bookmark["id"]) => Promise<void>;
 }
