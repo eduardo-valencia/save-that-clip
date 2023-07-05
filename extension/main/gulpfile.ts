@@ -13,10 +13,6 @@ const buildFolder = "build";
 const mainFolder = "main";
 
 /**
- * * Popups
- */
-
-/**
  * Must install
  * https://chrome.google.com/webstore/detail/extensions-reloader/fimgfedafeadlieiabdeeaodndnlbhid
  * for this to work.
@@ -40,6 +36,10 @@ const getWebpackBuilder = (src: string) => {
       .pipe(gulp.dest(buildFolder));
   };
 };
+
+/**
+ * * Popups
+ */
 
 const buildPopupFromConfig = getWebpackBuilder("./popup/src/index.tsx");
 
