@@ -73,8 +73,14 @@ export class SeriesInfoService {
   };
 
   /**
-   * ! Important
-   * This throws an error when it cannot find the series' name.
+   * ! Important This throws an error when it cannot find the series' name.
+   *
+   * Implementation notes:
+   *
+   * We don't get the series's name from the current tab because it isn't always
+   * present on the page. Although it might seem that we can get the series's
+   * name from the element under the video's scrubber, that element disappears
+   * after a period of inactivity, so that would not work.
    */
   private getSeriesName = async (
     episodeUrl: EpisodeUrl
