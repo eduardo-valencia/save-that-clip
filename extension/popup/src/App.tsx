@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import BookmarksPage from "./pages/Bookmarks/BookmarksPage";
 import ErrorPage from "./pages/ErrorPage";
@@ -26,6 +26,20 @@ const router = createMemoryRouter([
 ]);
 
 function App() {
+  const handleBlur = (): void => {
+    window.close();
+  };
+
+  useEffect(() => {
+    window.addEventListener("blur", handleBlur);
+
+    const removeListener = (): void => {
+      window.removeEventListener("blur", handleBlur);
+    };
+
+    return removeListener;
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyles
