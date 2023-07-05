@@ -14,3 +14,4 @@ See the extension's documentation for more information about testing it. To load
 
 - We need the "tabs" permission to be able to see the URL.
 - We install the content script on all Netflix URLs instead of only the episode URLs. This is because we kept getting an error saying "Receiving end does not exist" when we switched between a non-episode Netflix page to an episode and then tried creating a bookmark. Installing the content script on all Netflix URLs seems to fix that.
+- We specify the HTTP and HTTPS versions of Netflix in `host_permissions` because Chrome does not allow us to use a wildcard for the scheme there.
