@@ -67,6 +67,11 @@ const createContentScriptWebpackConfig = (
   const configWithType = commonWebpackConfig as Config;
   return {
     ...configWithType,
+    /**
+     * We must disable devtool. Otherwise, we'll get an error when we load the
+     * content script.
+     */
+    devtool: false,
     output: { filename: "content-script.js" },
     ...extraFields,
   };
