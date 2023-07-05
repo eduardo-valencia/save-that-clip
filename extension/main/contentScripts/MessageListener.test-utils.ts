@@ -39,7 +39,7 @@ export class MessageListenerTestUtils {
     };
   };
 
-  private getExecutePromiseToSendMessage = ({
+  private getMessageSenderPromiseResolver = ({
     message,
   }: FieldsToSendMessage) => {
     return (resolve: Resolve): void => {
@@ -54,12 +54,12 @@ export class MessageListenerTestUtils {
    * Implementation notes:
    *
    * - This might not be accurate if there are multiple listeners because we
-   *   only all the last listener.
+   *   only call the last listener.
    *
    * @returns the message response
    */
   public sendMessage = (fields: FieldsToSendMessage): Promise<unknown> => {
-    return new Promise(this.getExecutePromiseToSendMessage(fields));
+    return new Promise(this.getMessageSenderPromiseResolver(fields));
   };
 
   private getMockedOnMessage = () => {
