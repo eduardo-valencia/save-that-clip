@@ -1,14 +1,14 @@
 import _ from "lodash";
 import { ErrorReporterService } from "../errorReporter/ErrorReporter.service";
+import { HttpRepoAbstraction } from "./Http.repo-abstraction";
+import { HttpRepo } from "./Http.repo";
 
 export type SeriesName = string;
 
 type ElementMatch = Element | null;
 
-type Fetch = typeof fetch;
-
 interface Options {
-  fetch?: Fetch;
+  httpRepo?: HttpRepoAbstraction;
 }
 
 type EpisodeUrl = string;
@@ -16,11 +16,11 @@ type EpisodeUrl = string;
 export type PossibleSeriesName = SeriesName | null;
 
 export class SeriesInfoService {
-  private fetch: Fetch;
+  private httpRepo: HttpRepoAbstraction;
   private errorReporterService = new ErrorReporterService();
 
   constructor(options: Options = {}) {
-    this.fetch = options.fetch || fetch;
+    this.httpRepo = options.httpRepo || new HttpRepo();
   }
 
   private handleInvalidName = (metadata: string): never => {
@@ -59,8 +59,17 @@ export class SeriesInfoService {
     return this.parseJsonStringAndGetTitle(metadataElement.innerHTML);
   };
 
-  private handleNonStringResponseData = (): never => {
-    throw new Error("Response data is not a string.");
+  private getSeriesPageHtml = async (
+    episodeUrl: EpisodeUrl
+  ): Promise<string> => {
+    /**
+     * We omit credentials so it thinks we aren't signed in and redirects us to
+     * the series's page.
+     */
+    const response: Response = await this.httpRepo.fetch(episodeUrl, {
+      credentials: "omit",
+    });
+    return response.text();
   };
 
   /**
@@ -70,16 +79,8 @@ export class SeriesInfoService {
   private getSeriesName = async (
     episodeUrl: EpisodeUrl
   ): Promise<SeriesName> => {
-    /**
-     * We omit credentials so it thinks we aren't signed in and redirects us to
-     * the series's page.
-     */
-    const response = await this.fetch.bind(window)(episodeUrl, {
-      credentials: "omit",
-    });
-    const textData: string = await response.text();
-    if (typeof textData !== "string") this.handleNonStringResponseData();
-    return this.getTitleFromHtml(textData);
+    const seriesHtml: string = await this.getSeriesPageHtml(episodeUrl);
+    return this.getTitleFromHtml(seriesHtml);
   };
 
   private handleErrorGettingSeriesName = (error: unknown): null => {

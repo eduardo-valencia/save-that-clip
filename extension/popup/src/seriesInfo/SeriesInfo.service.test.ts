@@ -1,9 +1,16 @@
+import { HttpRepoAbstraction } from "./Http.repo-abstraction";
 import { SeriesInfoService, PossibleSeriesName } from "./SeriesInfo.service";
 
 describe("When Axios returns Netflix's HTML", () => {
   let service: SeriesInfoService;
+
   type Fetch = typeof fetch;
-  let spiedFetch: jest.MockedFunction<Fetch>;
+
+  class MockedHttpRepo extends HttpRepoAbstraction {
+    public fetch: jest.MockedFunction<Fetch> = jest.fn();
+  }
+
+  let mockedRepo: MockedHttpRepo;
 
   const episodeName = "Test";
   const episodeHref = "/watch/81091396";
@@ -31,12 +38,7 @@ describe("When Axios returns Netflix's HTML", () => {
 
   const mockResponse = (): void => {
     const response: Response = getMockedResponseInfo();
-    spiedFetch.mockResolvedValue(response);
-  };
-
-  const mockFetch = (): void => {
-    spiedFetch = jest.fn();
-    mockResponse();
+    mockedRepo.fetch.mockResolvedValue(response);
   };
 
   const getNameForEpisode = (): Promise<PossibleSeriesName> => {
@@ -44,8 +46,9 @@ describe("When Axios returns Netflix's HTML", () => {
   };
 
   beforeAll(() => {
-    mockFetch();
-    service = new SeriesInfoService({ fetch: spiedFetch });
+    mockedRepo = new MockedHttpRepo();
+    mockResponse();
+    service = new SeriesInfoService({ httpRepo: mockedRepo });
   });
 
   it("Returns the series's name", async () => {
@@ -54,7 +57,7 @@ describe("When Axios returns Netflix's HTML", () => {
   });
 
   it("Requests the correct URL & omits credentials in the request", () => {
-    expect(spiedFetch).toHaveBeenCalledWith(episodeUrl, {
+    expect(mockedRepo.fetch).toHaveBeenCalledWith(episodeUrl, {
       credentials: "omit",
     });
   });
