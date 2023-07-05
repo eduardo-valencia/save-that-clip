@@ -10,15 +10,20 @@ interface Props {
 export default function BookmarkTitle({ bookmark }: Props) {
   const bookmarksService = new BookmarksService();
 
-  const openBookmark = (): void => {
-    void bookmarksService.open(bookmark.id);
+  const openBookmarkAndCloseWindow = async (): Promise<void> => {
+    await bookmarksService.open(bookmark.id);
+    window.close();
+  };
+
+  const handleClick = (): void => {
+    void openBookmarkAndCloseWindow();
   };
 
   return (
     <Button
       variant="text"
       aria-label="Open bookmark"
-      onClick={openBookmark}
+      onClick={handleClick}
       sx={{
         p: 0,
         minWidth: 0,
