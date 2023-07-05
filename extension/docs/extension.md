@@ -8,6 +8,7 @@ See the extension's documentation for more information about testing it. To load
 
 - You might have to manually reload the extension (and not through <https://chrome.google.com/webstore/detail/extensions-reloader/fimgfedafeadlieiabdeeaodndnlbhid>) if you made changes to the manifest.
 - You may have to reload the page if Gulp reloads the extension automatically. Otherwise, the popup might be unable to connect to the content script, and you might receive a message saying, "Receiving end does not exist."
+- If you want to inspect the popup, you must temporarily remove the blur listener in `App.tsx`. Otherwise, the app will close as soon as you inspect the popup.
 
 ## Manifest
 
