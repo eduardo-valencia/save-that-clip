@@ -25,7 +25,6 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "popup-build": "webpack -c ./popup/webpack.config.js",
     "popup-test": "jest --config ./popup/jest.config.ts",
     "popup-test:watch": "npm run popup-test -- --watch",
     "base-lint-ts": "tsc --noEmit",

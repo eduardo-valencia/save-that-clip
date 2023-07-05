@@ -14,10 +14,6 @@ The popup is the part of the extension that users see and interact with. Users c
 
 ### Popup's commands
 
-#### `npm run popup-build`
-
-Adds the extension into the extension's build folder so that we can load it into Chrome. Please note that the extension's build folder differs from the React App's build folder.
-
 #### `npm run popup-test`
 
 Launches the test runner in the interactive watch mode.\
@@ -31,7 +27,7 @@ Runs the tests in watch mode.
 
 Lints TypeScript files.
 
-### Main's commands
+### Main folder's commands
 
 #### `npm run main-test`
 
