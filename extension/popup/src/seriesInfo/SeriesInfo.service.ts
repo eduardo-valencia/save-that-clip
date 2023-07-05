@@ -5,8 +5,10 @@ export type SeriesName = string;
 
 type ElementMatch = Element | null;
 
+type Fetch = typeof fetch;
+
 interface Options {
-  fetch?: typeof fetch;
+  fetch?: Fetch;
 }
 
 type EpisodeUrl = string;
@@ -14,7 +16,7 @@ type EpisodeUrl = string;
 export type PossibleSeriesName = SeriesName | null;
 
 export class SeriesInfoService {
-  private fetch;
+  private fetch: Fetch;
   private errorReporterService = new ErrorReporterService();
 
   constructor(options: Options = {}) {
@@ -72,7 +74,9 @@ export class SeriesInfoService {
      * We omit credentials so it thinks we aren't signed in and redirects us to
      * the series's page.
      */
-    const response = await this.fetch(episodeUrl, { credentials: "omit" });
+    const response = await this.fetch.bind(window)(episodeUrl, {
+      credentials: "omit",
+    });
     const textData: string = await response.text();
     if (typeof textData !== "string") this.handleNonStringResponseData();
     return this.getTitleFromHtml(textData);
