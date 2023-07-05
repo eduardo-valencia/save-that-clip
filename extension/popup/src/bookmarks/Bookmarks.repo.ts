@@ -38,20 +38,27 @@ export class BookmarksRepo extends BookmarksRepoAbstraction {
     return this.chrome.storage.local.get(storageKey);
   };
 
-  private addBookmarkFromStoredItem = (
+  private addIdToBookmark = (
+    storedValue: unknown,
+    key: keyof StoredItems
+  ): Bookmark => {
+    const id = key as string;
+    const bookmarkFields = storedValue as FieldsToStore;
+    return { ...bookmarkFields, id };
+  };
+
+  private createAndAddBookmarkToList = (
     bookmarks: Bookmark[],
     storedValue: unknown,
     key: keyof StoredItems
   ): Bookmark[] => {
-    const id = key as string;
-    const bookmarkFields = storedValue as FieldsToStore;
-    const bookmark: Bookmark = { ...bookmarkFields, id };
+    const bookmark: Bookmark = this.addIdToBookmark(storedValue, key);
     return [...bookmarks, bookmark];
   };
 
   public list = async (): Promise<Bookmark[]> => {
     const storedItems: StoredItems = await this.getStoredItems();
-    return _.reduce(storedItems, this.addBookmarkFromStoredItem, []);
+    return _.reduce(storedItems, this.createAndAddBookmarkToList, []);
   };
 
   public destroy = async (id: Bookmark["id"]): Promise<void> => {
