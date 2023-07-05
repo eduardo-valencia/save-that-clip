@@ -1,6 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse } from "axios";
 import _ from "lodash";
-import config from "../config";
 import { ErrorReporterService } from "../errorReporter/ErrorReporter.service";
 
 export type SeriesName = string;
@@ -8,7 +6,7 @@ export type SeriesName = string;
 type ElementMatch = Element | null;
 
 interface Options {
-  httpRepo?: AxiosInstance;
+  fetch?: typeof fetch;
 }
 
 type EpisodeUrl = string;
@@ -16,11 +14,11 @@ type EpisodeUrl = string;
 export type PossibleSeriesName = SeriesName | null;
 
 export class SeriesInfoService {
-  private httpRepo;
+  private fetch;
   private errorReporterService = new ErrorReporterService();
 
   constructor(options: Options = {}) {
-    this.httpRepo = options.httpRepo || axios;
+    this.fetch = options.fetch || fetch;
   }
 
   private handleInvalidName = (metadata: string): never => {
@@ -63,27 +61,6 @@ export class SeriesInfoService {
     throw new Error("Response data is not a string.");
   };
 
-  private joinPathNameOfApiAndEpisodeUrls = (
-    apiUrl: URL,
-    episodeUrl: URL
-  ): string => {
-    if (apiUrl.pathname === "/") return episodeUrl.pathname;
-    return `${apiUrl.pathname}${episodeUrl.pathname}`;
-  };
-
-  /**
-   * We must make a request to our API because it will forward the request to
-   * Netflix. This is necessary to avoid running into CORS issues.
-   */
-  private convertNetflixUrlToApiUrl = (
-    episodeUrlString: EpisodeUrl
-  ): string => {
-    const apiUrl = new URL(config.apiUrl);
-    const episodeUrl = new URL(episodeUrlString);
-    apiUrl.pathname = this.joinPathNameOfApiAndEpisodeUrls(apiUrl, episodeUrl);
-    return apiUrl.toString();
-  };
-
   /**
    * ! Important
    * This throws an error when it cannot find the series' name.
@@ -91,10 +68,14 @@ export class SeriesInfoService {
   private getSeriesName = async (
     episodeUrl: EpisodeUrl
   ): Promise<SeriesName> => {
-    const convertedUrl: string = this.convertNetflixUrlToApiUrl(episodeUrl);
-    const response: AxiosResponse = await this.httpRepo.get(convertedUrl);
-    if (typeof response.data !== "string") this.handleNonStringResponseData();
-    return this.getTitleFromHtml(response.data as string);
+    /**
+     * We omit credentials so it thinks we aren't signed in and redirects us to
+     * the series's page.
+     */
+    const response = await this.fetch(episodeUrl, { credentials: "omit" });
+    const textData: string = await response.text();
+    if (typeof textData !== "string") this.handleNonStringResponseData();
+    return this.getTitleFromHtml(textData);
   };
 
   private handleErrorGettingSeriesName = (error: unknown): null => {
