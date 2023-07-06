@@ -12,7 +12,7 @@ import {
 } from "./Bookmarks.repo-abstraction";
 import _ from "lodash";
 
-const { create, list } = new BookmarksRepo();
+const { create, list, destroy } = new BookmarksRepo();
 
 const generateBookmarkFields = (): CreationFields => {
   return {
@@ -33,6 +33,11 @@ const findAndValidateBookmark = (
   expect(bookmark!.id).toBeTruthy();
 };
 
+const generateBookmark = async (): Promise<Bookmark> => {
+  const creationFields: CreationFields = generateBookmarkFields();
+  return create(creationFields);
+};
+
 const createBookmarkAndExpectToFindIt = async (): Promise<void> => {
   const creationFields: CreationFields = generateBookmarkFields();
   await create(creationFields);
@@ -51,10 +56,56 @@ describe("create", () => {
   it("Adds a bookmark to storage", async () => {
     await createBookmarkAndExpectToFindIt();
   });
+
+  it("Can store multiple bookmarks", async () => {
+    await generateBookmark();
+    await generateBookmark();
+    const bookmarks: Bookmark[] = await list();
+    expect(bookmarks.length).toBeGreaterThanOrEqual(2);
+  });
 });
 
 describe("list", () => {
   it("Lists bookmarks", async () => {
     await createBookmarkAndExpectToFindIt();
+  });
+
+  describe("When there are no bookmarks", () => {
+    const destroyBookmark = async (bookmark: Bookmark): Promise<void> => {
+      await destroy(bookmark.id);
+    };
+
+    const destroyAllBookmarks = async (): Promise<void> => {
+      const bookmarks: Bookmark[] = await list();
+      const promises: Promise<void>[] = bookmarks.map(destroyBookmark);
+      await Promise.all(promises);
+    };
+
+    beforeAll(async () => {
+      await destroyAllBookmarks();
+    });
+
+    it("Returns an empty array", async () => {
+      const bookmarks: Bookmark[] = await list();
+      expect(bookmarks).toEqual([]);
+    });
+  });
+});
+
+describe("destroy", () => {
+  describe("When there are multiple bookmarks", () => {
+    let otherBookmark: Bookmark;
+    let bookmarkToDelete: Bookmark;
+
+    beforeAll(async () => {
+      otherBookmark = await generateBookmark();
+      bookmarkToDelete = await generateBookmark();
+    });
+
+    it("Avoids destroying bookmarks without the same ID", async () => {
+      await destroy(bookmarkToDelete.id);
+      const bookmarks: Bookmark[] = await list();
+      expect(bookmarks).toContain(otherBookmark);
+    });
   });
 });

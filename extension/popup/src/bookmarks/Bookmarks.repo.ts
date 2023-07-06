@@ -5,6 +5,7 @@ import {
   RepoFieldsToCreateBookmark,
 } from "./Bookmarks.repo-abstraction";
 import { getChrome } from "../../../main/common/chrome.service";
+import _ from "lodash";
 
 interface StoredData {
   bookmarks?: Bookmark[];
@@ -41,7 +42,7 @@ export class BookmarksRepo extends BookmarksRepoAbstraction {
   };
 
   private getStoredItems = async (): Promise<StoredData> => {
-    return this.chrome.storage.local.get("bookmarks");
+    return this.chrome.storage.local.get("bookmarks" as keyof StoredData);
   };
 
   public list = async (): Promise<Bookmark[]> => {
@@ -50,6 +51,8 @@ export class BookmarksRepo extends BookmarksRepoAbstraction {
   };
 
   public destroy = async (id: Bookmark["id"]): Promise<void> => {
-    await this.chrome.storage.local.remove(id);
+    const bookmarks: Bookmark[] = await this.list();
+    _.remove(bookmarks, { id });
+    // await this.chrome.storage.local.set({ bookmarks } as StoredData);
   };
 }

@@ -23,8 +23,8 @@ class LocalStorageArea {
   public items: StoredItems = {};
 
   private findItems = (storageKeys?: PossibleStorageKeys): StoredItems => {
-    if (storageKeys === null) return this.items;
-    throw new Error("Non-null storage keys are unsupported.");
+    if (typeof storageKeys === "string") return _.pick(this.items, storageKeys);
+    throw new Error("Filtering by non-string storage keys is unsupported.");
   };
 
   /**
