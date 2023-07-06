@@ -154,14 +154,19 @@ export class EpisodeService {
     return time;
   };
 
+  private get1stEpisodeTab = async (): Promise<Tab> => {
+    const episodeTab: PossibleTab = await this.findOneEpisodeTab();
+    if (!episodeTab) return this.handleMissingTab();
+    return episodeTab;
+  };
+
   /**
    * We must throw an error when a tab was not found because we would only call
    * this method when attempting to create a bookmark, and we expect a Netflix
    * tab to be open already.
    */
   public get1stEpisodeTabAndTime = async (): Promise<EpisodeTabAndTime> => {
-    const episodeTab: PossibleTab = await this.findOneEpisodeTab();
-    if (!episodeTab) return this.handleMissingTab();
+    const episodeTab: Tab = await this.get1stEpisodeTab();
     const time: EpisodeTime = await this.findAndValidateEpisodeTime(episodeTab);
     return { time, tab: episodeTab };
   };
@@ -188,7 +193,7 @@ export class EpisodeService {
   /* eslint-enable @typescript-eslint/no-unsafe-assignment */
 
   private getEpisodeTabId = async (): Promise<number> => {
-    const { tab }: EpisodeTabAndTime = await this.get1stEpisodeTabAndTime();
+    const tab: Tab = await this.get1stEpisodeTab();
     /**
      * We assert this type because the tab is guaranteed to have an ID.
      */
