@@ -10,6 +10,15 @@ All parts of the extension except for the popup.
 
 The popup is the part of the extension that users see and interact with. Users can open the popup by clicking on the extension's icon in the Chrome toolbar.
 
+## Environment Variables
+
+You can provide the following environment variables in the app. They are optional unless otherwise specified:
+
+- `NODE_ENV` (required)
+- `SENTRY_ORG`: Sentry organization
+- `SENTRY_PROJECT`
+- `SENTRY_AUTH_TOKEN`
+
 ## Commands
 
 ### General commands
@@ -22,8 +31,7 @@ Builds the popup and the "main" folder's files and copies them into the extensio
 
 #### `npm run popup-test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Runs the tests.
 
 #### `npm run popup-test:watch`
 
