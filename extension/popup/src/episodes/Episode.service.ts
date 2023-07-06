@@ -243,7 +243,7 @@ export class EpisodeService {
     /**
      * When we execute a script against the Netflix tab, it returns an injection
      * result with some information. We must analyze these results to determine if
-     * everything the time was actually set.
+     * the time was actually set.
      **/
     return { success: this.getIfWasSuccessful(results) };
   };
