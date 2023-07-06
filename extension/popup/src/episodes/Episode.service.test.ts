@@ -152,7 +152,7 @@ describe("getTimeOf1stEpisodeTab", () => {
   });
 });
 
-describe("findOneEpisodeTabWithUrlPath", () => {
+describe("findOneEpisodeTabWithSamePathAsUrl", () => {
   describe("Even when there are multiple episode tabs", () => {
     let tabToFind: Tab;
 
@@ -219,6 +219,16 @@ describe("findOneEpisodeTabWithUrlPath", () => {
       );
       expect(foundTab).toEqual(tab);
     });
+  });
+
+  /**
+   * Because tabs that aren't committed might have empty URLs. Otherwise, we
+   * might get an error if the user opens the popup in a tab that is not committed.
+   */
+  it("Does not throw an error when one of the tabs has an empty URL", async () => {
+    const tab: Tab = createTabWithUrl("");
+    mockedTabsRepo.query.mockResolvedValue([tab]);
+    await findOneEpisodeTabByUrl("https://example.com");
   });
 });
 

@@ -75,15 +75,12 @@ export class EpisodeService {
   /**
    * We compare the path names to ensure the URLs are considered the same even
    * when the trailing slashes don't match. We also need to disregard query
-   * parameters because tabs' URLs might have them.
+   * parameters because tabs' URLs might have them, so they might prevent us
+   * from matching a tab with a URL path.
    */
   private getGetIfTabUrlHasPathname = (pathname: URL["pathname"]) => {
     return (tab: Tab): boolean => {
-      /**
-       * All episode tabs should have a URL by definition. If they do not, it
-       * means something went very wrong.
-       */
-      if (!tab.url) throw new Error("Tab is missing a URL.");
+      if (!tab.url) return false;
       const urlInstance = new URL(tab.url);
       return this.getIfPathsAreEqual(pathname, urlInstance.pathname);
     };
@@ -100,7 +97,7 @@ export class EpisodeService {
   /**
    * Implementation notes:
    *
-   * This won't finding tabs with pending URLs. However, this is fine because a
+   * This won't find tabs with pending URLs. However, this is fine because a
    * pending tab would have unloaded content, so we wouldn't be able to change
    * the episode's time anyways.
    */
