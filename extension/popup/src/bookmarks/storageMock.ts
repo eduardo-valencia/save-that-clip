@@ -35,7 +35,13 @@ class LocalStorageArea {
   public get = (storageKeys?: PossibleStorageKeys): Promise<StoredItems> => {
     return new Promise((resolve) => {
       const items: StoredItems = this.findItems(storageKeys);
-      resolve(items);
+      /**
+       * We make a copy in case we try to mutate the stored items. If we do not copy
+       * it, some tests could falsely pass if we mutate the items, but forget to
+       * update them using chrome.storage.
+       */
+      const itemsCopy: StoredItems = { ...items };
+      resolve(itemsCopy);
     });
   };
 

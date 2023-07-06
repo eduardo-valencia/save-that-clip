@@ -7,7 +7,7 @@ import {
 import { getChrome } from "../../../main/common/chrome.service";
 import _ from "lodash";
 
-interface StoredData {
+export interface StoredData {
   bookmarks?: Bookmark[];
 }
 

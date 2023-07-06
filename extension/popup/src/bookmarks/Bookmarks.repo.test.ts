@@ -5,12 +5,13 @@ jest.mock("../../../main/common/chrome.service", () => {
   return getMockedChromeService();
 });
 
-import { BookmarksRepo } from "./Bookmarks.repo";
+import { BookmarksRepo, StoredData } from "./Bookmarks.repo";
 import {
   Bookmark,
   RepoFieldsToCreateBookmark as CreationFields,
 } from "./Bookmarks.repo-abstraction";
 import _ from "lodash";
+import { getChrome } from "../../../main/common/chrome.service";
 
 const { create, list, destroy } = new BookmarksRepo();
 
@@ -70,19 +71,12 @@ describe("list", () => {
     await createBookmarkAndExpectToFindIt();
   });
 
-  describe("When there are no bookmarks", () => {
-    const destroyBookmark = async (bookmark: Bookmark): Promise<void> => {
-      await destroy(bookmark.id);
-    };
-
-    const destroyAllBookmarks = async (): Promise<void> => {
-      const bookmarks: Bookmark[] = await list();
-      const promises: Promise<void>[] = bookmarks.map(destroyBookmark);
-      await Promise.all(promises);
-    };
-
+  describe("When the 'bookmarks' key does not exist", () => {
     beforeAll(async () => {
-      await destroyAllBookmarks();
+      const chromeInstance: typeof chrome = getChrome();
+      await chromeInstance.storage.local.remove(
+        "bookmarks" as keyof StoredData
+      );
     });
 
     it("Returns an empty array", async () => {
