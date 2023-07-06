@@ -1,7 +1,7 @@
 import { HttpRepoAbstraction } from "./Http.repo-abstraction";
 import { SeriesInfoService, PossibleSeriesName } from "./SeriesInfo.service";
 
-describe("When Axios returns Netflix's HTML", () => {
+describe("When fetch returns Netflix's HTML", () => {
   let service: SeriesInfoService;
 
   type Fetch = typeof fetch;
