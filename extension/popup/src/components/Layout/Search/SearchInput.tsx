@@ -6,15 +6,9 @@ import { SearchContext, SearchContextValue } from "../../SearchProvider";
 export const SearchInput = (): JSX.Element => {
   const { query, setQuery }: SearchContextValue = useContext(SearchContext);
 
-  const handleMissingSetQuery = (): never => {
-    throw new Error(
-      "Failed to set the search query because setQuery is missing."
-    );
-  };
-
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    if (!setQuery) return handleMissingSetQuery();
-    setQuery(event.target.value);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    setQuery!(event.target.value);
   };
 
   return (
