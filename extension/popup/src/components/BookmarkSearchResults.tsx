@@ -1,13 +1,16 @@
 import React, { useContext } from "react";
-import { BookmarksContextValue, BookmarksContext } from "./BookmarksProvider";
+import { BookmarksContextValue } from "./BookmarksProvider";
 import { SearchContext, SearchContextValue } from "./SearchProvider";
 import BookmarksListWithLoader, {
   BookmarksListWithLoaderProps,
 } from "./BookmarksList/BookmarksListWithLoader";
 import { Bookmark } from "../bookmarks/Bookmarks.repo-abstraction";
 
-export default function BookmarkSearchResults() {
-  const { bookmarks }: BookmarksContextValue = useContext(BookmarksContext);
+interface Props {
+  possibleBookmarks: BookmarksContextValue["bookmarks"];
+}
+
+export default function BookmarkSearchResults({ possibleBookmarks }: Props) {
   const { query }: SearchContextValue = useContext(SearchContext);
 
   const getIfBookmarkMatchesQuery = (bookmark: Bookmark): boolean => {
@@ -17,12 +20,12 @@ export default function BookmarkSearchResults() {
 
   const filterBookmarksByQuery = (): Bookmark[] => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return bookmarks!.filter(getIfBookmarkMatchesQuery);
+    return possibleBookmarks!.filter(getIfBookmarkMatchesQuery);
   };
 
   const getBookmarks =
     (): BookmarksListWithLoaderProps["possibleBookmarks"] => {
-      if (!bookmarks) return null;
+      if (!possibleBookmarks) return null;
       return filterBookmarksByQuery();
     };
 

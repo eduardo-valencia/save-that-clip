@@ -7,14 +7,23 @@ import {
 import SeriesSection from "./SeriesSection";
 import BookmarkSearchResults from "../../components/BookmarkSearchResults";
 import HeaderWithBookmarkCreationButton from "../../components/HeaderWithBookmarkCreationButton";
+import {
+  BookmarksContext,
+  BookmarksContextValue,
+} from "../../components/BookmarksProvider";
 
 const BookmarksPage = () => {
   const { query }: SearchContextValue = useContext(SearchContext);
+  const { bookmarks }: BookmarksContextValue = useContext(BookmarksContext);
 
   return (
     <Layout>
       <HeaderWithBookmarkCreationButton title="Bookmarks" />
-      {query ? <BookmarkSearchResults /> : <SeriesSection />}
+      {query ? (
+        <BookmarkSearchResults possibleBookmarks={bookmarks} />
+      ) : (
+        <SeriesSection />
+      )}
     </Layout>
   );
 };
