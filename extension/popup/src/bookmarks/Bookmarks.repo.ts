@@ -1,14 +1,14 @@
-import _ from "lodash";
 import { v4 as uuidv4 } from "uuid";
 import {
   Bookmark,
   BookmarksRepoAbstraction,
   RepoFieldsToCreateBookmark,
 } from "./Bookmarks.repo-abstraction";
-import { StoredItems } from "./storageMock";
 import { getChrome } from "../../../main/common/chrome.service";
 
-type FieldsToStore = Omit<Bookmark, "id">;
+interface StoredData {
+  bookmarks?: Bookmark[];
+}
 
 /**
  * We created a repo for this just in case we decide to switch to a database in
@@ -19,46 +19,34 @@ export class BookmarksRepo extends BookmarksRepoAbstraction {
 
   private createBookmarkFields = (
     creationFields: RepoFieldsToCreateBookmark
-  ): FieldsToStore => {
-    return { ...creationFields, type: "bookmark" };
-  };
-
-  public create = async (
-    creationFields: RepoFieldsToCreateBookmark
-  ): Promise<Bookmark> => {
-    const id: string = uuidv4();
-    const bookmark: FieldsToStore = this.createBookmarkFields(creationFields);
-    await this.chrome.storage.local.set({ [id]: bookmark });
-    return { ...bookmark, id };
-  };
-
-  private getStoredItems = async (): Promise<StoredItems> => {
-    // We must assert this type because Chrome's types are wrong.
-    const storageKey = null as unknown as string;
-    return this.chrome.storage.local.get(storageKey);
-  };
-
-  private addIdToBookmark = (
-    storedValue: unknown,
-    key: keyof StoredItems
   ): Bookmark => {
-    const id = key as string;
-    const bookmarkFields = storedValue as FieldsToStore;
-    return { ...bookmarkFields, id };
+    const id: string = uuidv4();
+    return { ...creationFields, type: "bookmark", id };
   };
 
-  private createAndAddBookmarkToList = (
-    bookmarks: Bookmark[],
-    storedValue: unknown,
-    key: keyof StoredItems
-  ): Bookmark[] => {
-    const bookmark: Bookmark = this.addIdToBookmark(storedValue, key);
+  private getBookmarksWithNewOne = async (
+    bookmark: Bookmark
+  ): Promise<Bookmark[]> => {
+    const bookmarks: Bookmark[] = await this.list();
     return [...bookmarks, bookmark];
   };
 
+  public create = async (
+    fields: RepoFieldsToCreateBookmark
+  ): Promise<Bookmark> => {
+    const bookmark: Bookmark = this.createBookmarkFields(fields);
+    const bookmarks: Bookmark[] = await this.getBookmarksWithNewOne(bookmark);
+    await this.chrome.storage.local.set({ bookmarks } as StoredData);
+    return bookmark;
+  };
+
+  private getStoredItems = async (): Promise<StoredData> => {
+    return this.chrome.storage.local.get("bookmarks");
+  };
+
   public list = async (): Promise<Bookmark[]> => {
-    const storedItems: StoredItems = await this.getStoredItems();
-    return _.reduce(storedItems, this.createAndAddBookmarkToList, []);
+    const storedItems: StoredData = await this.getStoredItems();
+    return storedItems.bookmarks || [];
   };
 
   public destroy = async (id: Bookmark["id"]): Promise<void> => {
