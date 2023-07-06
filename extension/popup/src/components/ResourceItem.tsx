@@ -1,6 +1,9 @@
 import { Box, BoxProps } from "@mui/material";
 import React from "react";
 
+/**
+ * For displaying bookmarks or series.
+ */
 export default function ResourceItem({ sx = {}, ...other }: BoxProps) {
   return (
     <Box

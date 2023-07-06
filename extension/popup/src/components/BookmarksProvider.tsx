@@ -24,7 +24,6 @@ interface Props {
   children: React.ReactNode;
 }
 
-// todo: If necessary, handle possibility that a Netflix tab isn't open.
 export const BookmarksProvider = ({ children }: Props): JSX.Element => {
   const [bookmarks, setBookmarks] =
     useState<PossibleBookmarks>(defaultBookmarks);
