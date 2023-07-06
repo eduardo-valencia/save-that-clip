@@ -74,6 +74,13 @@ export default function CreationForm() {
     void trySavingBookmarkAndUpdateIsLoading();
   };
 
+  /**
+   * We don't set a progressElementId on the loading indicator here because that
+   * only enhances accessibility when the user expects a section to load and the
+   * loading indicator describes that the section is loading. Here, we might
+   * show an error once the form finishes submitting, but the user does not
+   * expect that. Therefore, a progressElementId is useless.
+   */
   return (
     <form onSubmit={handleSubmission}>
       <Box sx={{ marginBottom: "4.13rem" }}>
