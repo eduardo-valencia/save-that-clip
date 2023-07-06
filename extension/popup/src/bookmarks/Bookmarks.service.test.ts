@@ -197,8 +197,8 @@ describe("create", () => {
   });
 
   /**
-   * We might want an explicit test because we don't know whether the mocked tab
-   * has params by default.
+   * We might want an explicit test because in the future, we might never be
+   * testing this condition if the mocked tab has params by default.
    */
   it.todo("Works when the URL does not have params");
 });

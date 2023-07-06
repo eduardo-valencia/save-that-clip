@@ -16,6 +16,7 @@ import {
 } from "./Bookmarks.repo-abstraction";
 import { TabsRepo } from "../tabs/Tabs.repo";
 import { TabsRepoAbstraction } from "../tabs/Tabs.repo-abstraction";
+import { ErrorReporterService } from "../errorReporter/ErrorReporter.service";
 
 export type FieldsToCreateBookmark = Pick<Bookmark, "name">;
 
@@ -35,6 +36,8 @@ export class BookmarksService {
   private seriesInfo: SeriesInfoService;
 
   private episodeService: EpisodeService;
+
+  private errorReporterService = new ErrorReporterService();
 
   constructor(options: Options = {}) {
     this.seriesInfo = options.seriesInfoService || new SeriesInfoService();
@@ -134,10 +137,24 @@ export class BookmarksService {
     });
   };
 
+  private reportFailingToSetTime = (): void => {
+    this.errorReporterService.captureMessage(
+      "Failed to update episode's time.",
+      { level: "info" }
+    );
+  };
+
+  private handleFailingToSetTime = async (
+    bookmark: Bookmark
+  ): Promise<void> => {
+    await this.openBookmarkTabAtTime(bookmark);
+    this.reportFailingToSetTime();
+  };
+
   private setTimeOrOpenNewTab = async (bookmark: Bookmark): Promise<void> => {
     const result: ResultOfSettingTime =
       await this.episodeService.trySettingTime(bookmark.timeMs);
-    if (!result.success) await this.openBookmarkTabAtTime(bookmark);
+    if (!result.success) await this.handleFailingToSetTime(bookmark);
   };
 
   private createBookmarkTabOrUpdateIt = async (
