@@ -99,7 +99,7 @@ describe("destroy", () => {
     it("Avoids destroying bookmarks without the same ID", async () => {
       await destroy(bookmarkToDelete.id);
       const bookmarks: Bookmark[] = await list();
-      expect(bookmarks).toContain(otherBookmark);
+      expect(bookmarks).toContainEqual(otherBookmark);
     });
   });
 });

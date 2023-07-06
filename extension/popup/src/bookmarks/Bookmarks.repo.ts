@@ -32,12 +32,16 @@ export class BookmarksRepo extends BookmarksRepoAbstraction {
     return [...bookmarks, bookmark];
   };
 
+  private setBookmarks = async (bookmarks: Bookmark[]): Promise<void> => {
+    await this.chrome.storage.local.set({ bookmarks } as StoredData);
+  };
+
   public create = async (
     fields: RepoFieldsToCreateBookmark
   ): Promise<Bookmark> => {
     const bookmark: Bookmark = this.createBookmarkFields(fields);
     const bookmarks: Bookmark[] = await this.getBookmarksWithNewOne(bookmark);
-    await this.chrome.storage.local.set({ bookmarks } as StoredData);
+    await this.setBookmarks(bookmarks);
     return bookmark;
   };
 
@@ -53,6 +57,6 @@ export class BookmarksRepo extends BookmarksRepoAbstraction {
   public destroy = async (id: Bookmark["id"]): Promise<void> => {
     const bookmarks: Bookmark[] = await this.list();
     _.remove(bookmarks, { id });
-    // await this.chrome.storage.local.set({ bookmarks } as StoredData);
+    await this.setBookmarks(bookmarks);
   };
 }
