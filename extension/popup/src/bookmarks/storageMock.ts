@@ -39,8 +39,10 @@ class LocalStorageArea {
        * We make a copy in case we try to mutate the stored items. If we do not copy
        * it, some tests could falsely pass if we mutate the items, but forget to
        * update them using chrome.storage.
+       *
+       * Note that _.assign does not work.
        */
-      const itemsCopy: StoredItems = { ...items };
+      const itemsCopy: StoredItems = _.merge({}, items);
       resolve(itemsCopy);
     });
   };
