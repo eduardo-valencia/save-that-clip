@@ -54,12 +54,6 @@ const mockNoTabs = (): void => {
   mockedTabsRepo.query.mockResolvedValue([]);
 };
 
-const mockTimeResponse = (): EpisodeTime => {
-  const mockedEpisodeTime: EpisodeTime = 1000;
-  mockedTabsRepo.sendMessage.mockResolvedValue(mockedEpisodeTime);
-  return mockedEpisodeTime;
-};
-
 const createTabWithUrl = (url: string): Tab => {
   const tab: Tab = generateEpisodeTab();
   tab.url = url;
@@ -128,6 +122,12 @@ describe("getTimeOf1stEpisodeTab", () => {
 
   describe("When the content script responds with the time", () => {
     let mockedEpisodeTime: EpisodeTime;
+
+    const mockTimeResponse = (): EpisodeTime => {
+      const mockedEpisodeTime: EpisodeTime = 1000;
+      mockedTabsRepo.sendMessage.mockResolvedValue(mockedEpisodeTime);
+      return mockedEpisodeTime;
+    };
 
     beforeAll(() => {
       mockTabWithEpisode();
@@ -276,7 +276,6 @@ describe("trySettingTime", () => {
 
     beforeAll(() => {
       mockTabWithEpisode();
-      mockTimeResponse();
       mockSuccessfulStatus();
     });
 
@@ -299,7 +298,6 @@ describe("trySettingTime", () => {
 
     beforeAll(() => {
       mockTabWithEpisode();
-      mockTimeResponse();
       mockUnsuccessfulStatus();
     });
 
@@ -311,7 +309,6 @@ describe("trySettingTime", () => {
   describe("When executing the script does not return any injection results", () => {
     beforeAll(() => {
       mockTabWithEpisode();
-      mockTimeResponse();
       mockedScriptsRepo.executeScript.mockResolvedValue([]);
     });
 
