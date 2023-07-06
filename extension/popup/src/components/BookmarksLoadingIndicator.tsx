@@ -17,7 +17,7 @@ export default function BookmarksLoadingIndicator({
 }: Props) {
   return (
     <div
-      aria-describedby={`#${progressElementId}`}
+      aria-describedby={progressElementId ? `#${progressElementId}` : undefined}
       aria-busy={!possibleBookmarks}
     >
       {possibleBookmarks ? (
