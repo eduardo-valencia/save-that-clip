@@ -6,7 +6,7 @@
 
 import { getChrome } from "./common/chrome.service";
 import { Message, Messages } from "./common/messages";
-import { NetflixEpisodeMessageHandlers } from "./contentScripts/NetflixEpisodeTime.service";
+import { NetflixEpisodeMessageHandlers } from "./contentScripts/NetflixEpisodeMessageHandler.service";
 
 export type Runtime = typeof chrome.runtime;
 
@@ -28,7 +28,7 @@ type MessageHandlers = {
 
 const getMessageHandlers = (): MessageHandlers => {
   return {
-    [Messages.getEpisodeTime]: netflixMessageHandlers.sendEpisodeTime,
+    [Messages.getNetflixEpisodeInfo]: netflixMessageHandlers.getEpisodeInfo,
   };
 };
 

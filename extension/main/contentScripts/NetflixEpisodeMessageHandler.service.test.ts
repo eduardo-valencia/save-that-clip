@@ -17,7 +17,7 @@ import "../content-script";
 const { sendMessage } = new MessageListenerTestUtils();
 
 const sendMessageToGetTime = (): Promise<unknown> => {
-  const message: Message = { type: Messages.getEpisodeTime };
+  const message: Message = { type: Messages.getNetflixEpisodeInfo };
   return sendMessage({ message });
 };
 

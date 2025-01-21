@@ -5,7 +5,7 @@ export class NetflixEpisodeMessageHandlers {
     return video.currentTime * 1000;
   };
 
-  public sendEpisodeTime = (): PossibleEpisodeTime => {
+  public getEpisodeInfo = (): PossibleEpisodeTime => {
     const video: HTMLVideoElement | null = document.querySelector("video");
     return video ? this.getVideoTimeInMs(video) : null;
   };

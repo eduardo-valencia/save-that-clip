@@ -139,7 +139,7 @@ export class EpisodeService {
   private sendMessageToGetTime = async (
     episodeTab: Tab
   ): Promise<PossibleTime> => {
-    const data: Message = { type: Messages.getEpisodeTime };
+    const data: Message = { type: Messages.getNetflixEpisodeInfo };
     const { sendMessage } = this.tabsRepo;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const time: unknown = await sendMessage(episodeTab.id!, data);

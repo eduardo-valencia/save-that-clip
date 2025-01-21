@@ -3,7 +3,7 @@ export interface Message {
 }
 
 export enum Messages {
-  getEpisodeTime = "getEpisodeTime",
+  getNetflixEpisodeInfo = "getNetflixEpisodeInfo",
 }
 
 /**
