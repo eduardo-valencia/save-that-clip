@@ -6,9 +6,15 @@ import BookmarkSecondaryText from "./BookmarkSecondaryText";
 
 interface Props {
   bookmark: Bookmark;
+  showEpisode?: boolean;
 }
 
-export default function BookmarkItem({ bookmark }: Props) {
+export default function BookmarkItem({ bookmark, showEpisode }: Props) {
+  const { seriesName, episodeName } = bookmark;
+
+  type SecondaryTxt = Bookmark["seriesName" | "episodeName"];
+  const secondaryTxt: SecondaryTxt = showEpisode ? episodeName : seriesName;
+
   return (
     <ResourceItem
       sx={{
@@ -19,7 +25,9 @@ export default function BookmarkItem({ bookmark }: Props) {
     >
       <div>
         <BookmarkTitle bookmark={bookmark} />
-        <BookmarkSecondaryText secondaryTxt={bookmark.seriesName} />
+        {secondaryTxt ? (
+          <BookmarkSecondaryText secondaryTxt={secondaryTxt} />
+        ) : null}
       </div>
       <DeleteBookmarkButton bookmarkId={bookmark.id} />
     </ResourceItem>
