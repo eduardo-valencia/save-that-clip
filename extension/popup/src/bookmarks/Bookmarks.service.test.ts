@@ -54,7 +54,7 @@ const episodeService = new EpisodeService({
 
 const spiedGetTabAndTime = jest.spyOn(
   episodeService,
-  "get1stEpisodeTabAndTime"
+  "get1stEpisodeTabAndInfo"
 );
 
 // Series info
@@ -78,20 +78,23 @@ const { create, find, destroy, open } = new BookmarksService({
  */
 
 interface MockedTimeAndSeries {
-  episodeInfo: EpisodeTabAndInfo;
+  tabAndInfo: EpisodeTabAndInfo;
   seriesName: SeriesName;
 }
 
 const getMockedTimeAndSeries = (): MockedTimeAndSeries => {
   return {
-    episodeInfo: { info: 1, tab: generateEpisodeTab() },
+    tabAndInfo: {
+      info: { timeMs: 1, episodeName: null },
+      tab: generateEpisodeTab(),
+    },
     seriesName: "test",
   };
 };
 
 const mockTimeAndSeriesName = (): MockedTimeAndSeries => {
   const info: MockedTimeAndSeries = getMockedTimeAndSeries();
-  spiedGetTabAndTime.mockResolvedValue(info.episodeInfo);
+  spiedGetTabAndTime.mockResolvedValue(info.tabAndInfo);
   spiedGetSeriesName.mockResolvedValue(info.seriesName);
   return info;
 };
@@ -134,9 +137,9 @@ describe("create / find", () => {
     const getExpectedFields = (): Partial<Bookmark> => {
       return {
         ...creationFields,
-        timeMs: mockedInfo.episodeInfo.info,
+        timeMs: mockedInfo.tabAndInfo.info.timeMs,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        episodeUrl: mockedInfo.episodeInfo.tab.url!,
+        episodeUrl: mockedInfo.tabAndInfo.tab.url!,
         seriesName: mockedInfo.seriesName,
       };
     };
@@ -174,7 +177,8 @@ describe("create", () => {
     };
 
     const createEpisodeInfo = (): EpisodeTabAndInfo => {
-      const { episodeInfo }: MockedTimeAndSeries = getMockedTimeAndSeries();
+      const { tabAndInfo: episodeInfo }: MockedTimeAndSeries =
+        getMockedTimeAndSeries();
       const { tab, ...other } = episodeInfo;
       return { ...other, tab: { ...tab, url: getTabUrl() } };
     };
@@ -281,7 +285,7 @@ describe("open", () => {
     mockedInfo: MockedTimeAndSeries
   ): void => {
     const spiedFind: SpiedFindBookmarkTab = spyOnFindingBookmarkTab();
-    spiedFind.mockResolvedValue(mockedInfo.episodeInfo.tab);
+    spiedFind.mockResolvedValue(mockedInfo.tabAndInfo.tab);
   };
 
   // For testing setting the episode's time
@@ -299,9 +303,9 @@ describe("open", () => {
     let bookmark: Bookmark;
 
     const mockGettingTime = (): void => {
-      const info: MockedTimeAndSeries = getMockedTimeAndSeries();
-      info.episodeInfo.info = 101;
-      spiedGetTabAndTime.mockResolvedValue(info.episodeInfo);
+      const timeAndSeries: MockedTimeAndSeries = getMockedTimeAndSeries();
+      timeAndSeries.tabAndInfo.info.timeMs = 101;
+      spiedGetTabAndTime.mockResolvedValue(timeAndSeries.tabAndInfo);
     };
 
     const getExpectedTime = (): number => {
