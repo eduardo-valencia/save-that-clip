@@ -11,7 +11,7 @@
 import { EpisodeTime } from "../../../main/common/messages";
 import {
   EpisodeService,
-  EpisodeTabAndTime,
+  EpisodeTabAndInfo,
   PossibleTab,
   ResultOfSettingTime,
 } from "./Episode.service";
@@ -27,7 +27,7 @@ const mockedTabsRepo = new MockedTabsRepo();
 const mockedScriptsRepo = new MockedScriptsRepo();
 
 const {
-  get1stEpisodeTabAndTime: findTimeOf1stEpisodeTab,
+  get1stEpisodeTabAndInfo: findTimeOf1stEpisodeTab,
   findOneEpisodeTab,
   findOneEpisodeTabWithSamePathAsUrl: findOneEpisodeTabByUrl,
   trySettingTime: setTime,
@@ -116,7 +116,7 @@ describe("findOneEpisodeTab", () => {
 
 describe("getTimeOf1stEpisodeTab", () => {
   const callMethodAndExpectError = async (): Promise<void> => {
-    const promise: Promise<EpisodeTabAndTime> = findTimeOf1stEpisodeTab();
+    const promise: Promise<EpisodeTabAndInfo> = findTimeOf1stEpisodeTab();
     await expect(promise).rejects.toBeTruthy();
   };
 
@@ -135,7 +135,7 @@ describe("getTimeOf1stEpisodeTab", () => {
     });
 
     it("Returns the episode's time", async () => {
-      const { time }: EpisodeTabAndTime = await findTimeOf1stEpisodeTab();
+      const { info: time }: EpisodeTabAndInfo = await findTimeOf1stEpisodeTab();
       expect(time).toEqual(mockedEpisodeTime);
     });
   });

@@ -21,7 +21,7 @@ jest.mock("../../../main/common/chrome.service", () => {
 import _ from "lodash";
 import {
   EpisodeService,
-  EpisodeTabAndTime,
+  EpisodeTabAndInfo,
   ResultOfSettingTime,
 } from "../episodes/Episode.service";
 import {
@@ -78,13 +78,13 @@ const { create, find, destroy, open } = new BookmarksService({
  */
 
 interface MockedTimeAndSeries {
-  episodeInfo: EpisodeTabAndTime;
+  episodeInfo: EpisodeTabAndInfo;
   seriesName: SeriesName;
 }
 
 const getMockedTimeAndSeries = (): MockedTimeAndSeries => {
   return {
-    episodeInfo: { time: 1, tab: generateEpisodeTab() },
+    episodeInfo: { info: 1, tab: generateEpisodeTab() },
     seriesName: "test",
   };
 };
@@ -134,7 +134,7 @@ describe("create / find", () => {
     const getExpectedFields = (): Partial<Bookmark> => {
       return {
         ...creationFields,
-        timeMs: mockedInfo.episodeInfo.time,
+        timeMs: mockedInfo.episodeInfo.info,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         episodeUrl: mockedInfo.episodeInfo.tab.url!,
         seriesName: mockedInfo.seriesName,
@@ -173,14 +173,14 @@ describe("create", () => {
       return `${baseUrl}?t=300`;
     };
 
-    const createEpisodeInfo = (): EpisodeTabAndTime => {
+    const createEpisodeInfo = (): EpisodeTabAndInfo => {
       const { episodeInfo }: MockedTimeAndSeries = getMockedTimeAndSeries();
       const { tab, ...other } = episodeInfo;
       return { ...other, tab: { ...tab, url: getTabUrl() } };
     };
 
     const mockTimeAndTab = (): void => {
-      const episodeInfo: EpisodeTabAndTime = createEpisodeInfo();
+      const episodeInfo: EpisodeTabAndInfo = createEpisodeInfo();
       spiedGetTabAndTime.mockResolvedValue(episodeInfo);
     };
 
@@ -300,7 +300,7 @@ describe("open", () => {
 
     const mockGettingTime = (): void => {
       const info: MockedTimeAndSeries = getMockedTimeAndSeries();
-      info.episodeInfo.time = 101;
+      info.episodeInfo.info = 101;
       spiedGetTabAndTime.mockResolvedValue(info.episodeInfo);
     };
 

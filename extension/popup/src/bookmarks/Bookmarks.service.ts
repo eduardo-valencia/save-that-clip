@@ -1,7 +1,7 @@
 import _ from "lodash";
 import {
   EpisodeService,
-  EpisodeTabAndTime,
+  EpisodeTabAndInfo,
   PossibleTab,
   ResultOfSettingTime,
 } from "../episodes/Episode.service";
@@ -45,7 +45,7 @@ export class BookmarksService {
     this.tabsRepo = options.tabsRepo || new TabsRepo();
   }
 
-  private getTabUrl = ({ url }: EpisodeTabAndTime["tab"]): string => {
+  private getTabUrl = ({ url }: EpisodeTabAndInfo["tab"]): string => {
     if (!url)
       throw new Error("Failed to get the URL from the tab with the episode.");
     return url;
@@ -60,15 +60,15 @@ export class BookmarksService {
     return splitByParams[0];
   };
 
-  private createEpisodeUrl = (tab: EpisodeTabAndTime["tab"]): string => {
+  private createEpisodeUrl = (tab: EpisodeTabAndInfo["tab"]): string => {
     const tabUrl: string = this.getTabUrl(tab);
     return this.getUrlWithoutParams(tabUrl);
   };
 
-  private getEpisodeUrlAndTime = async (): Promise<EpisodeUrlAndTime> => {
-    const { tab, time }: EpisodeTabAndTime =
-      await this.episodeService.get1stEpisodeTabAndTime();
-    return { timeMs: time, episodeUrl: this.createEpisodeUrl(tab) };
+  private getEpisodeInfoAndUrl = async (): Promise<EpisodeUrlAndTime> => {
+    const { tab, info }: EpisodeTabAndInfo =
+      await this.episodeService.get1stEpisodeTabAndInfo();
+    return { ...info, episodeUrl: this.createEpisodeUrl(tab) };
   };
 
   private getSeriesName = (
@@ -80,9 +80,9 @@ export class BookmarksService {
   private getRepoCreationFields = async (
     fields: FieldsToCreateBookmark
   ): Promise<RepoCreationFields> => {
-    const urlAndTime: EpisodeUrlAndTime = await this.getEpisodeUrlAndTime();
-    const seriesName: PossibleSeriesName = await this.getSeriesName(urlAndTime);
-    return { ...fields, ...urlAndTime, seriesName };
+    const infoAndUrl: EpisodeUrlAndTime = await this.getEpisodeInfoAndUrl();
+    const seriesName: PossibleSeriesName = await this.getSeriesName(infoAndUrl);
+    return { ...fields, ...infoAndUrl, seriesName };
   };
 
   public create = async (fields: FieldsToCreateBookmark): Promise<Bookmark> => {

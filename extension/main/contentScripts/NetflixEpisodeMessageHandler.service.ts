@@ -3,7 +3,7 @@ import pWaitFor from "p-wait-for";
 
 type EpisodeName = string | null;
 export interface NetflixEpisodeInfo {
-  timeInMs: PossibleEpisodeTime;
+  timeMs: PossibleEpisodeTime;
   episodeName: EpisodeName;
 }
 
@@ -56,6 +56,6 @@ export class NetflixEpisodeMessageHandlers {
   public getEpisodeInfo = async (): Promise<NetflixEpisodeInfo> => {
     const timeInMs: PossibleEpisodeTime = this.getEpisodeTime();
     const episodeName: EpisodeName = await this.tryGettingEpisodeName();
-    return { timeInMs, episodeName };
+    return { timeMs: timeInMs, episodeName };
   };
 }

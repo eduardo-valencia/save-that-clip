@@ -1,9 +1,8 @@
-import {
-  EpisodeTime,
-  Message,
-  Messages,
-  PossibleEpisodeTime as PossibleTime,
-} from "../../../main/common/messages";
+/**
+ * TODO: Refactor this file. There shouldn't be so many things here
+ */
+
+import { EpisodeTime, Message, Messages } from "../../../main/common/messages";
 import { TabsRepo } from "../tabs/Tabs.repo";
 import { TabsRepoAbstraction } from "../tabs/Tabs.repo-abstraction";
 import { Bookmark } from "../bookmarks/Bookmarks.repo-abstraction";
@@ -12,6 +11,7 @@ import {
   ScriptsRepoAbstraction,
 } from "../scripts/Scripts.repo-abstraction";
 import { ScriptsRepo } from "../scripts/Scripts.repo";
+import { NetflixEpisodeInfo } from "../../../main/contentScripts/NetflixEpisodeMessageHandler.service";
 
 interface Options {
   tabsRepo?: TabsRepoAbstraction;
@@ -22,9 +22,12 @@ type Tab = chrome.tabs.Tab;
 
 export type PossibleTab = Tab | null;
 
-export interface EpisodeTabAndTime {
+interface ValidNetflixEpisodeInfo extends NetflixEpisodeInfo {
+  timeMs: EpisodeTime;
+}
+export interface EpisodeTabAndInfo {
   tab: Tab;
-  time: EpisodeTime;
+  info: ValidNetflixEpisodeInfo;
 }
 
 /**
@@ -136,22 +139,20 @@ export class EpisodeService {
     throw new Error("No tab with a Netflix episode was found.");
   };
 
-  private sendMessageToGetTime = async (
-    episodeTab: Tab
-  ): Promise<PossibleTime> => {
+  private sendMessageToGetEpisodeInfo = async (episodeTab: Tab) => {
     const data: Message = { type: Messages.getNetflixEpisodeInfo };
     const { sendMessage } = this.tabsRepo;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const time: unknown = await sendMessage(episodeTab.id!, data);
-    return time as PossibleTime;
+    return sendMessage(episodeTab.id!, data) as Promise<NetflixEpisodeInfo>;
   };
 
-  private findAndValidateEpisodeTime = async (
+  private findAndValidateEpisodeInfo = async (
     episodeTab: Tab
-  ): Promise<EpisodeTime> => {
-    const time: PossibleTime = await this.sendMessageToGetTime(episodeTab);
-    if (!time) throw new Error("Failed to get the episode's time.");
-    return time;
+  ): Promise<ValidNetflixEpisodeInfo> => {
+    const { timeMs: timeInMs, ...other }: NetflixEpisodeInfo =
+      await this.sendMessageToGetEpisodeInfo(episodeTab);
+    if (!timeInMs) throw new Error("Failed to get the episode's time.");
+    return { timeMs: timeInMs, ...other };
   };
 
   private get1stEpisodeTab = async (): Promise<Tab> => {
@@ -165,10 +166,12 @@ export class EpisodeService {
    * this method when attempting to create a bookmark, and we expect a Netflix
    * tab to be open already.
    */
-  public get1stEpisodeTabAndTime = async (): Promise<EpisodeTabAndTime> => {
+  public get1stEpisodeTabAndInfo = async (): Promise<EpisodeTabAndInfo> => {
     const episodeTab: Tab = await this.get1stEpisodeTab();
-    const time: EpisodeTime = await this.findAndValidateEpisodeTime(episodeTab);
-    return { time, tab: episodeTab };
+    const info: ValidNetflixEpisodeInfo = await this.findAndValidateEpisodeInfo(
+      episodeTab
+    );
+    return { info, tab: episodeTab };
   };
 
   /**
