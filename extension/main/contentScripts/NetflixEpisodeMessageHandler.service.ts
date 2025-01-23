@@ -35,8 +35,11 @@ export class NetflixEpisodeMessageHandlers {
   };
 
   private waitForEpisodeNameToShow = async (): Promise<void> => {
-    const { default: pWaitFor } = await import("p-wait-for");
-    await pWaitFor(this.getIfEpisodeNameFound, { interval: 50, timeout: 2000 });
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve();
+      }, 500);
+    });
   };
 
   private clickVideoAndWaitForEpisodeName = async (
