@@ -1,5 +1,4 @@
 import { EpisodeTime, PossibleEpisodeTime } from "../common/messages";
-import pWaitFor from "p-wait-for";
 
 type EpisodeName = string | null;
 export interface NetflixEpisodeInfo {
@@ -36,6 +35,7 @@ export class NetflixEpisodeMessageHandlers {
   };
 
   private waitForEpisodeNameToShow = async (): Promise<void> => {
+    const { default: pWaitFor } = await import("p-wait-for");
     await pWaitFor(this.getIfEpisodeNameFound, { interval: 50, timeout: 2000 });
   };
 
