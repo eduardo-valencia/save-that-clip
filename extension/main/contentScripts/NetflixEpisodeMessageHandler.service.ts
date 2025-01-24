@@ -59,6 +59,8 @@ export class NetflixEpisodeMessageHandlers {
   public getEpisodeInfo = async (): Promise<NetflixEpisodeInfo> => {
     const timeInMs: PossibleEpisodeTime = this.getEpisodeTime();
     const episodeName: EpisodeName = await this.tryGettingEpisodeName();
+    console.log("time", timeInMs);
+    console.log("episode name", episodeName);
     return { timeMs: timeInMs, episodeName };
   };
 }

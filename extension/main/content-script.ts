@@ -37,15 +37,28 @@ const getMessageHandlerFromType = (type: Messages): MessageHandler => {
   return handlers[type];
 };
 
+/**
+ * Note that this cannot be an async function
+ */
 const handleMessage = (
   message: Message,
   sender: Sender,
   sendResponse: SendResponse
-): undefined => {
+): true => {
   const handler: MessageHandler = getMessageHandlerFromType(message.type);
-  const response: unknown = handler(message, sender);
-  sendResponse(response);
-  return undefined;
+
+  const getResAndSendIt = async (): Promise<void> => {
+    const response: unknown = await handler(message, sender);
+    sendResponse(response);
+  };
+
+  void getResAndSendIt();
+
+  /**
+   * Because we must return true if we are asynchronously sending the response.
+   * This allows us to call sendResponse at a later time.
+   */
+  return true;
 };
 
 const listenToMessages = (): void => {

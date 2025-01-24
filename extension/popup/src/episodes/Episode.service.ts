@@ -149,10 +149,12 @@ export class EpisodeService {
   private findAndValidateEpisodeInfo = async (
     episodeTab: Tab
   ): Promise<ValidNetflixEpisodeInfo> => {
-    const { timeMs: timeInMs, ...other }: NetflixEpisodeInfo =
+    const episodeInfo: NetflixEpisodeInfo =
       await this.sendMessageToGetEpisodeInfo(episodeTab);
-    if (!timeInMs) throw new Error("Failed to get the episode's time.");
-    return { timeMs: timeInMs, ...other };
+    console.error("episode info", JSON.stringify(episodeInfo, null, 2));
+    if (!episodeInfo.timeMs)
+      throw new Error("Failed to get the episode's time.");
+    return { ...episodeInfo, timeMs: episodeInfo.timeMs };
   };
 
   private get1stEpisodeTab = async (): Promise<Tab> => {
