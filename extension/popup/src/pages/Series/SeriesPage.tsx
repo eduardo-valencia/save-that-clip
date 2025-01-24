@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { Layout } from "../../components/Layout";
 import {
   SearchContext,
@@ -55,7 +55,10 @@ const SeriesPage = () => {
       {query ? (
         <BookmarkSearchResults possibleBookmarks={possibleBookmarks} />
       ) : (
-        <BookmarksListWithLoader possibleBookmarks={possibleBookmarks} />
+        <BookmarksListWithLoader
+          possibleBookmarks={possibleBookmarks}
+          showEpisode
+        />
       )}
     </Layout>
   );

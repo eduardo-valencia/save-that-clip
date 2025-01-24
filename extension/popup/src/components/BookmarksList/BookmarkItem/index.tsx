@@ -4,12 +4,15 @@ import DeleteBookmarkButton from "./DeleteBookmarkButton";
 import BookmarkTitle from "./BookmarkTitle";
 import BookmarkSecondaryText from "./BookmarkSecondaryText";
 
-interface Props {
+export interface BookmarkItemProps {
   bookmark: Bookmark;
   showEpisode?: boolean;
 }
 
-export default function BookmarkItem({ bookmark, showEpisode }: Props) {
+export default function BookmarkItem({
+  bookmark,
+  showEpisode,
+}: BookmarkItemProps) {
   const { seriesName, episodeName } = bookmark;
 
   type SecondaryTxt = Bookmark["seriesName" | "episodeName"];

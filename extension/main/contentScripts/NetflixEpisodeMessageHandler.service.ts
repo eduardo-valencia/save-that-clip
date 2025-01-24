@@ -24,8 +24,9 @@ export class NetflixEpisodeMessageHandlers {
 
   private findEpisodeName = (): NetflixEpisodeInfo["episodeName"] => {
     const toolbar: HTMLElement | null = document.querySelector(
-      '[data-uia="video-title"] h4'
+      '[data-uia="video-title"]'
     );
+    console.log("toolbar inner text", toolbar?.innerText);
     return toolbar ? toolbar.innerText : null;
   };
 
