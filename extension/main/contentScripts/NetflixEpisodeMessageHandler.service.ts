@@ -1,4 +1,5 @@
 import { EpisodeTime, PossibleEpisodeTime } from "../common/messages";
+import { retryAndGetIfSucceeded } from "./retry.util";
 
 type EpisodeName = string | null;
 export interface NetflixEpisodeInfo {
@@ -31,14 +32,27 @@ export class NetflixEpisodeMessageHandlers {
       '[data-uia="video-title"] span:nth-of-type(2)'
     );
     console.log("toolbar inner text", toolbar?.innerText);
-    return toolbar ? toolbar.innerText : null;
+    return toolbar?.innerText || null;
+  };
+
+  private getIfEpisodeNameFound = (): boolean => {
+    const name: NetflixEpisodeInfo["episodeName"] = this.findEpisodeName();
+    return Boolean(name);
+  };
+
+  private waitForEpisodeName = async (): Promise<void> => {
+    await retryAndGetIfSucceeded({
+      getIfConditionMet: this.getIfEpisodeNameFound,
+      retries: 40,
+      delayMs: 50,
+    });
   };
 
   private clickVideoAndWaitForEpisodeName = async (
     video: HTMLVideoElement
   ): Promise<EpisodeName> => {
     video.click();
-    await this.waitForEpisodeNameToShow();
+    await this.waitForEpisodeName();
     return this.findEpisodeName();
   };
 
