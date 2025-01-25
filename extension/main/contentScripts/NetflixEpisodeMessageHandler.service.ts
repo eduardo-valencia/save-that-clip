@@ -22,9 +22,13 @@ export class NetflixEpisodeMessageHandlers {
     return video ? this.getVideoTimeInMs(video) : null;
   };
 
+  /**
+   * Note that this won't find the name of movies. However, that's okay because
+   * we don't need to show it.
+   */
   private findEpisodeName = (): NetflixEpisodeInfo["episodeName"] => {
     const toolbar: HTMLElement | null = document.querySelector(
-      '[data-uia="video-title"]'
+      '[data-uia="video-title"] span:nth-of-type(2)'
     );
     console.log("toolbar inner text", toolbar?.innerText);
     return toolbar ? toolbar.innerText : null;
