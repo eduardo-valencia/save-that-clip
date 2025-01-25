@@ -34,14 +34,6 @@ export class NetflixEpisodeMessageHandlers {
     return toolbar ? toolbar.innerText : null;
   };
 
-  private waitForEpisodeNameToShow = async (): Promise<void> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, 500);
-    });
-  };
-
   private clickVideoAndWaitForEpisodeName = async (
     video: HTMLVideoElement
   ): Promise<EpisodeName> => {
