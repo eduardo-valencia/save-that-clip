@@ -19,6 +19,7 @@ import { TabsFactory } from "../tabs/Tabs.factory";
 import { MockedTabsRepo } from "../tabs/MockedTabs.repo";
 import { InjectionResult } from "../scripts/Scripts.repo-abstraction";
 import { MockedScriptsRepo } from "../scripts/MockedScripts.repo";
+import { NetflixEpisodeInfo } from "../../../main/contentScripts/NetflixEpisodeMessageHandler.service";
 
 /**
  * Repos and services
@@ -125,7 +126,14 @@ describe("getTimeOf1stEpisodeTab", () => {
 
     const mockTimeResponse = (): EpisodeTime => {
       const mockedEpisodeTime: EpisodeTime = 1000;
-      mockedTabsRepo.sendMessage.mockResolvedValue(mockedEpisodeTime);
+      const episodeInfo: NetflixEpisodeInfo = {
+        timeMs: mockedEpisodeTime,
+        episodeName: null,
+      };
+      // TODO: Improve type for sendMessage. Maybe this mock should have types
+      // by default. Furthermore, maybe the actual sendMessage func should have
+      // a return type by default.
+      mockedTabsRepo.sendMessage.mockResolvedValue(episodeInfo);
       return mockedEpisodeTime;
     };
 
@@ -135,8 +143,8 @@ describe("getTimeOf1stEpisodeTab", () => {
     });
 
     it("Returns the episode's time", async () => {
-      const { info: time }: EpisodeTabAndInfo = await findTimeOf1stEpisodeTab();
-      expect(time).toEqual(mockedEpisodeTime);
+      const { info }: EpisodeTabAndInfo = await findTimeOf1stEpisodeTab();
+      expect(info.timeMs).toEqual(mockedEpisodeTime);
     });
   });
 
