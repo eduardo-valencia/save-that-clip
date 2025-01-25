@@ -17,7 +17,7 @@ export const retryAndGetIfSucceeded = async ({
   delayMs,
   getIfConditionMet,
 }: FieldsToRetryOperation): Promise<boolean> => {
-  for (let retryCount = 1; retryCount < retries; retryCount++) {
+  for (let retryCount = 1; retryCount <= retries; retryCount++) {
     const succeeded: boolean = getIfConditionMet();
     if (succeeded) return true;
     await waitMs(delayMs);

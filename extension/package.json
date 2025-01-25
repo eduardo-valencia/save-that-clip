@@ -32,7 +32,9 @@
     "popup-lint-ts": "npm run base-lint-ts -- --project ./popup/tsconfig.json",
     "main-test": "jest --config ./main/jest.config.ts",
     "main-test:watch": "npm run main-test -- --watch",
-    "main-lint-ts": "npm run base-lint-ts -- --project ./main/tsconfig.json"
+    "main-lint-ts": "npm run base-lint-ts -- --project ./main/tsconfig.json",
+    "test": "npm run main-test && npm run popup-test",
+    "lint": "npm run main-lint-ts && npm run popup-lint-ts"
   },
   "browserslist": {
     "production": [
