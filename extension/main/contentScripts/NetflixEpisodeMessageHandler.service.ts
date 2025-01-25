@@ -34,11 +34,6 @@ export class NetflixEpisodeMessageHandlers {
     return toolbar ? toolbar.innerText : null;
   };
 
-  private getIfEpisodeNameFound = (): boolean => {
-    const name: EpisodeName = this.findEpisodeName();
-    return typeof name === "string";
-  };
-
   private waitForEpisodeNameToShow = async (): Promise<void> => {
     return new Promise((resolve) => {
       setTimeout(() => {
