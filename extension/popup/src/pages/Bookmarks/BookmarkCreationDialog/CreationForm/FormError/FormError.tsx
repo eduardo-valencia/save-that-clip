@@ -10,16 +10,14 @@ interface Props {
 type DebugMessage = string | null;
 
 export default function FormError({ errorInfo }: Props): JSX.Element {
-  const getIfIsConnectionError = (msg: string): boolean => {
+  const getIfIsConnectionError = (): boolean => {
+    const { error } = errorInfo;
+    if (!(error instanceof Error)) return false;
     const expectedMsg = `Could not establish connection. Receiving end does not exist.`;
-    return msg === expectedMsg;
+    return error.message === expectedMsg;
   };
 
-  // TODO: Don't show this in debug info
   const createMsgFromError = ({ name, message }: Error): string => {
-    const isConnectionError: boolean = getIfIsConnectionError(message);
-    if (isConnectionError)
-      return "Sorry, there was a problem. Please try reloading the tab. If the issue persists, contact support.";
     return `${name}: ${message}`;
   };
 
@@ -36,12 +34,31 @@ export default function FormError({ errorInfo }: Props): JSX.Element {
     return debugMsg ? <DebugInfo>{debugMsg}</DebugInfo> : null;
   };
 
-  return (
-    <Box sx={{ mb: "2rem" }}>
+  const renderConnectionError = (): JSX.Element => {
+    return (
       <Typography color="error">
-        Sorry, there was a problem. Please try again later.
+        Sorry, there was a problem. Please try reloading the tab. If the issue
+        persists, contact support.
       </Typography>
-      {tryRenderingDebugInfo()}
-    </Box>
-  );
+    );
+  };
+
+  const renderGenericErrorWithDebugInfo = (): JSX.Element => {
+    return (
+      <>
+        <Typography color="error">
+          Sorry, there was a problem. Please try again later.
+        </Typography>
+        {tryRenderingDebugInfo()}
+      </>
+    );
+  };
+
+  const renderContent = (): JSX.Element => {
+    const isConnectionError: boolean = getIfIsConnectionError();
+    if (isConnectionError) return renderConnectionError();
+    return renderGenericErrorWithDebugInfo();
+  };
+
+  return <Box sx={{ mb: "2rem" }}>{renderContent()}</Box>;
 }
