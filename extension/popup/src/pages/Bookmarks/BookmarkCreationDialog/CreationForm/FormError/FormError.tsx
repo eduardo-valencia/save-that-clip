@@ -1,6 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import React from "react";
-import { FormErrorInfo } from ".";
+import { FormErrorInfo } from "..";
+import { DebugInfo } from "./DebugInfo";
 
 interface Props {
   errorInfo: FormErrorInfo;
@@ -14,6 +15,7 @@ export default function FormError({ errorInfo }: Props): JSX.Element {
     return msg === expectedMsg;
   };
 
+  // TODO: Don't show this in debug info
   const createMsgFromError = ({ name, message }: Error): string => {
     const isConnectionError: boolean = getIfIsConnectionError(message);
     if (isConnectionError)
@@ -29,24 +31,9 @@ export default function FormError({ errorInfo }: Props): JSX.Element {
 
   type DebugInfo = JSX.Element | null;
 
-  const renderDebugInfo = (message: string): DebugInfo => {
-    return (
-      <>
-        <Typography
-          variant="h3"
-          color="error"
-          sx={{ fontSize: "1rem", fontWeight: 500, mt: "1rem" }}
-        >
-          Debug Info
-        </Typography>
-        <Typography color="error">{message}</Typography>
-      </>
-    );
-  };
-
   const tryRenderingDebugInfo = (): DebugInfo => {
-    const debugMessage: DebugMessage = getDebugErrorMessage();
-    return debugMessage ? renderDebugInfo(debugMessage) : null;
+    const debugMsg: DebugMessage = getDebugErrorMessage();
+    return debugMsg ? <DebugInfo>{debugMsg}</DebugInfo> : null;
   };
 
   return (

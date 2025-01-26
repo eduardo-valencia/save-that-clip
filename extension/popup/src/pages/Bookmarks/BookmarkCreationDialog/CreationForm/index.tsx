@@ -6,7 +6,7 @@ import {
   BookmarkCreationDialogContextValue,
   BookmarkCreationDialogContext,
 } from "../BookmarkCreationDialogProvider";
-import FormError from "./FormError";
+import FormError from "./FormError/FormError";
 import { BookmarksService } from "../../../../bookmarks/Bookmarks.service";
 import {
   BookmarksContextValue,
