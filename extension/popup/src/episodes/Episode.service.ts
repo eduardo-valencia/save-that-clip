@@ -178,6 +178,8 @@ export class EpisodeService {
 
   /**
    * * This function is being injected into the Netflix episode's tab.
+   *
+   * TODO: Maybe stop assuming that any of these properties will exist
    */
   /* eslint-disable @typescript-eslint/no-unsafe-return */
   /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -244,6 +246,16 @@ export class EpisodeService {
     const unsuccessfulResult: PossibleResult =
       this.findUnsuccessfulInjectionResult(results);
     return !unsuccessfulResult;
+  };
+
+  private setScriptInjectionTimeout = (): Promise<ResultOfSettingTime> => {
+    await wai;
+  };
+
+  private injectScriptToSetTimeAndUseTimeout = (
+    timeMs: Bookmark["timeMs"]
+  ): Promise<ResultOfSettingTime> => {
+    return Promise.race([this.injectScriptToSetTime(timeMs)]);
   };
 
   public trySettingTime = async (
