@@ -1,10 +1,4 @@
-const waitMs = async (ms: number): Promise<void> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, ms);
-  });
-};
+import { waitMs } from "../common/utils";
 
 interface FieldsToRetryOperation {
   retries: number;

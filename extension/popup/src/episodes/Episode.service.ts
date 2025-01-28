@@ -12,6 +12,8 @@ import {
 } from "../scripts/Scripts.repo-abstraction";
 import { ScriptsRepo } from "../scripts/Scripts.repo";
 import { NetflixEpisodeInfo } from "../../../main/contentScripts/NetflixEpisodeMessageHandler.service";
+import { waitMs } from "../../../main/common/utils";
+import { ErrorReporterService } from "../errorReporter/ErrorReporter.service";
 
 interface Options {
   tabsRepo?: TabsRepoAbstraction;
@@ -52,6 +54,8 @@ type TabMatch = Tab | undefined;
 export class EpisodeService {
   private tabsRepo: TabsRepoAbstraction;
   private scriptsRepo: ScriptsRepoAbstraction;
+  private errorReporterService: ErrorReporterService =
+    new ErrorReporterService();
 
   constructor(options?: Options) {
     this.tabsRepo = options?.tabsRepo || new TabsRepo();
@@ -248,17 +252,16 @@ export class EpisodeService {
     return !unsuccessfulResult;
   };
 
-  private setScriptInjectionTimeout = (): Promise<ResultOfSettingTime> => {
-    await wai;
-  };
+  private setScriptInjectionTimeout =
+    async (): Promise<ResultOfSettingTime> => {
+      await waitMs(3000);
+      this.errorReporterService.captureMessage("Injecting script timed out", {
+        level: "info",
+      });
+      return { success: false };
+    };
 
-  private injectScriptToSetTimeAndUseTimeout = (
-    timeMs: Bookmark["timeMs"]
-  ): Promise<ResultOfSettingTime> => {
-    return Promise.race([this.injectScriptToSetTime(timeMs)]);
-  };
-
-  public trySettingTime = async (
+  private trySettingTimeWithoutTimeout = async (
     timeMs: Bookmark["timeMs"]
   ): Promise<ResultOfSettingTime> => {
     const results: InjectionResult[] = await this.injectScriptToSetTime(timeMs);
@@ -268,5 +271,14 @@ export class EpisodeService {
      * the time was actually set.
      **/
     return { success: this.getIfWasSuccessful(results) };
+  };
+
+  public trySettingTime = (
+    timeMs: Bookmark["timeMs"]
+  ): Promise<ResultOfSettingTime> => {
+    return Promise.race([
+      this.trySettingTimeWithoutTimeout(timeMs),
+      this.setScriptInjectionTimeout(),
+    ]);
   };
 }
