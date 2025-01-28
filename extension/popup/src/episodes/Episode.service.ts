@@ -13,7 +13,6 @@ import {
 import { ScriptsRepo } from "../scripts/Scripts.repo";
 import { NetflixEpisodeInfo } from "../../../main/contentScripts/NetflixEpisodeMessageHandler.service";
 import { waitMs } from "../../../main/common/utils";
-import { ErrorReporterService } from "../errorReporter/ErrorReporter.service";
 
 interface Options {
   tabsRepo?: TabsRepoAbstraction;
@@ -54,8 +53,6 @@ type TabMatch = Tab | undefined;
 export class EpisodeService {
   private tabsRepo: TabsRepoAbstraction;
   private scriptsRepo: ScriptsRepoAbstraction;
-  private errorReporterService: ErrorReporterService =
-    new ErrorReporterService();
 
   constructor(options?: Options) {
     this.tabsRepo = options?.tabsRepo || new TabsRepo();
@@ -181,7 +178,7 @@ export class EpisodeService {
   };
 
   /**
-   * * This function is being injected into the Netflix episode's tab.
+   * * These functions are being injected into the Netflix episode's tab.
    *
    * TODO: Maybe stop assuming that any of these properties will exist
    */
@@ -192,6 +189,15 @@ export class EpisodeService {
   private setTimeInBrowser = (
     timeMs: Bookmark["timeMs"]
   ): ResultOfSettingTime => {
+    const video: HTMLVideoElement | null = document.querySelector("video");
+    /**
+     * If the video isn't on the page, it could mean that the page is loading
+     * for too long. Regardless of the reason, it would mean that the user would
+     * think that the extension isn't opening the actual bookmark. So, we return
+     * false so we can move on to the fallback strategy.
+     */
+    if (!video) return { success: false };
+
     const { videoPlayer } = netflix.appContext.state.playerApp.getAPI();
     const [sessionId] = videoPlayer.getAllPlayerSessionIds();
     const player = videoPlayer.getVideoPlayerBySessionId(sessionId);
@@ -255,9 +261,6 @@ export class EpisodeService {
   private setScriptInjectionTimeout =
     async (): Promise<ResultOfSettingTime> => {
       await waitMs(3000);
-      this.errorReporterService.captureMessage("Injecting script timed out", {
-        level: "info",
-      });
       return { success: false };
     };
 
@@ -273,6 +276,7 @@ export class EpisodeService {
     return { success: this.getIfWasSuccessful(results) };
   };
 
+  // TODO: Maybe return a reason from here, and send the reason it timed out to Sentry
   public trySettingTime = (
     timeMs: Bookmark["timeMs"]
   ): Promise<ResultOfSettingTime> => {
