@@ -22,12 +22,12 @@ export const BookmarkDialogContents = ({ bookmark }: Props) => {
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          marginTop: "1rem",
+          marginTop: "3.4375rem",
         }}
       >
         <DeleteBookmarkButton bookmarkId={id} />
         <Button variant="contained" onClick={close}>
-          Close
+          Open
         </Button>
       </Box>
     </div>

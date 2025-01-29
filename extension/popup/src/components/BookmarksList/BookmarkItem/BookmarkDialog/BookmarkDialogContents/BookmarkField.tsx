@@ -9,7 +9,9 @@ type Props = {
 export const BookmarkField = ({ title, children }: Props) => {
   return (
     <Box sx={{ mb: "1rem" }}>
-      <Typography variant="h2">{title}</Typography>
+      <Typography variant="h3" component="h2">
+        {title}
+      </Typography>
       <Typography>{children || "None"}</Typography>
     </Box>
   );
