@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import {
   PossibleDialogInfo,
   DialogContext,
-} from "../../BookmarkCreationDialogProvider";
+} from "../../../../../components/DialogInfoProvider";
 import FormActionButton from "../FormActionButton";
 
 export default function CancelButton() {

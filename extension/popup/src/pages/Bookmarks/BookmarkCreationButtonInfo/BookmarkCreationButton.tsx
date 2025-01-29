@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import {
   DialogContext,
   PossibleDialogInfo,
-} from "../BookmarkCreationDialog/BookmarkCreationDialogProvider";
+} from "../../../components/DialogInfoProvider";
 import { IsButtonDisabled } from ".";
 
 interface Props {

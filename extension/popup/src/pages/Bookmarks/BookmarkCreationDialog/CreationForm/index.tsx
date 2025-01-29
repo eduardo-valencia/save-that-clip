@@ -5,7 +5,7 @@ import BookmarkNameField from "./BookmarkNameField";
 import {
   PossibleDialogInfo,
   DialogContext,
-} from "../BookmarkCreationDialogProvider";
+} from "../../../../components/DialogInfoProvider";
 import FormError from "./FormError/FormError";
 import { BookmarksService } from "../../../../bookmarks/Bookmarks.service";
 import {

@@ -1,7 +1,7 @@
 import React from "react";
 import BookmarkCreationButtonInfo from "../pages/Bookmarks/BookmarkCreationButtonInfo";
 import { BookmarkCreationDialog } from "../pages/Bookmarks/BookmarkCreationDialog";
-import { DialogInfoProvider } from "../pages/Bookmarks/BookmarkCreationDialog/BookmarkCreationDialogProvider";
+import { DialogInfoProvider } from "./DialogInfoProvider";
 import Header, { HeaderProps } from "./Header";
 
 type Props = Pick<HeaderProps, "title">;

@@ -1,6 +1,9 @@
 import { Dialog, Typography } from "@mui/material";
 import PageContainer from "../../../components/PageContainer";
-import { DialogInfo, useDialogInfo } from "./BookmarkCreationDialogProvider";
+import {
+  DialogInfo,
+  useDialogInfo,
+} from "../../../components/DialogInfoProvider";
 import CreationForm from "./CreationForm";
 import { DialogToolbar } from "../../../components/DialogToolbar";
 
