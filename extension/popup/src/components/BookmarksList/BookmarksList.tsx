@@ -1,6 +1,6 @@
 import ResourceList from "../ResourceList";
 import { Bookmark } from "../../bookmarks/Bookmarks.repo-abstraction";
-import BookmarkItem, { BookmarkItemProps } from "./BookmarkItem";
+import BookmarkItem, { BookmarkItemProps } from "./BookmarkItem/BookmarkItem";
 
 export interface BookmarkListProps
   extends Pick<BookmarkItemProps, "showEpisode"> {
