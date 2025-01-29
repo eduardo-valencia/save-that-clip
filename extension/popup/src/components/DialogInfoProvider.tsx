@@ -4,6 +4,8 @@ import React, {
   Dispatch,
   createContext,
   useContext,
+  useCallback,
+  useMemo,
 } from "react";
 
 type IsOpen = boolean;
@@ -16,10 +18,25 @@ export interface DialogInfo {
   open: CloseOrOpen;
 }
 
-export type PossibleDialogInfo = DialogInfo | null;
+export const useDialogInfo = (): DialogInfo => {
+  const [isOpen, setIsOpen] = useState<IsOpen>(false);
 
-const defaultIsOpen = false;
+  const close: CloseOrOpen = useCallback(() => {
+    setIsOpen(false);
+  }, []);
 
+  const open: CloseOrOpen = useCallback(() => {
+    setIsOpen(true);
+  }, []);
+
+  const dialogInfo: DialogInfo = useMemo(() => {
+    return { close, open, isOpen, setIsOpen };
+  }, [close, isOpen, open]);
+
+  return dialogInfo;
+};
+
+type PossibleDialogInfo = DialogInfo | null;
 export const DialogContext = createContext<PossibleDialogInfo>(null);
 
 export const useDialogContext = (): DialogInfo => {
@@ -33,18 +50,10 @@ interface Props {
 }
 
 export const DialogInfoProvider = ({ children }: Props): JSX.Element => {
-  const [isOpen, setIsOpen] = useState<IsOpen>(defaultIsOpen);
-
-  const close: CloseOrOpen = () => {
-    setIsOpen(false);
-  };
-
-  const open: CloseOrOpen = () => {
-    setIsOpen(true);
-  };
+  const dialogInfo: DialogInfo = useDialogInfo();
 
   return (
-    <DialogContext.Provider value={{ isOpen, setIsOpen, close, open }}>
+    <DialogContext.Provider value={dialogInfo}>
       {children}
     </DialogContext.Provider>
   );

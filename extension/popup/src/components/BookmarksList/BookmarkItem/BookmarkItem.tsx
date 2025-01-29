@@ -4,6 +4,7 @@ import BookmarkTitle from "./BookmarkTitle";
 import BookmarkSecondaryText from "./BookmarkSecondaryText";
 import { IconButton } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
+import { DialogInfo, useDialogInfo } from "../../DialogInfoProvider";
 
 export interface BookmarkItemProps {
   bookmark: Bookmark;
@@ -14,6 +15,8 @@ export default function BookmarkItem({
   bookmark,
   showEpisode,
 }: BookmarkItemProps) {
+  const dialogInfo: DialogInfo = useDialogInfo();
+
   const { seriesName, episodeName } = bookmark;
 
   type SecondaryTxt = Bookmark["seriesName" | "episodeName"];
