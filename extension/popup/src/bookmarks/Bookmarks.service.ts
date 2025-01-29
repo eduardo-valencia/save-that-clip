@@ -120,7 +120,7 @@ export class BookmarksService {
     return Math.floor(timeInSeconds);
   };
 
-  private getUrlWithTime = (bookmark: Bookmark): string => {
+  public getUrlWithTime = (bookmark: Bookmark): string => {
     const url = new URL(bookmark.episodeUrl);
     const timeInSeconds: number = this.getTimeInSeconds(bookmark);
     /**
@@ -172,3 +172,5 @@ export class BookmarksService {
     await this.createBookmarkTabOrUpdateIt(bookmark, tab);
   };
 }
+
+export const bookmarksService = new BookmarksService();

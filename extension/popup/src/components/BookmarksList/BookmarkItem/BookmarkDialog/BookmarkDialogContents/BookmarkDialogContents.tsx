@@ -4,6 +4,7 @@ import { BookmarkField } from "./BookmarkField";
 import { Box, Button } from "@mui/material";
 import DeleteBookmarkButton from "../../DeleteBookmarkButton";
 import { DialogInfo, useDialogContext } from "../../../../DialogInfoProvider";
+import { bookmarksService } from "../../../../../bookmarks/Bookmarks.service";
 
 type Props = {
   bookmark: Bookmark;
@@ -26,7 +27,12 @@ export const BookmarkDialogContents = ({ bookmark }: Props) => {
         }}
       >
         <DeleteBookmarkButton bookmarkId={id} />
-        <Button variant="contained" onClick={close}>
+        <Button
+          variant="contained"
+          onClick={close}
+          href={bookmarksService.getUrlWithTime(bookmark)}
+          target="_blank"
+        >
           Open
         </Button>
       </Box>
