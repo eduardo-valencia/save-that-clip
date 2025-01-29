@@ -4,7 +4,12 @@ import BookmarkTitle from "./BookmarkTitle";
 import BookmarkSecondaryText from "./BookmarkSecondaryText";
 import { IconButton } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
-import { DialogInfo, useDialogInfo } from "../../DialogInfoProvider";
+import {
+  DialogContext,
+  DialogInfo,
+  useDialogInfo,
+} from "../../DialogInfoProvider";
+import { BookmarkDialog } from "./BookmarkDialog/BookmarkDialog";
 
 export interface BookmarkItemProps {
   bookmark: Bookmark;
@@ -36,9 +41,12 @@ export default function BookmarkItem({
           <BookmarkSecondaryText secondaryTxt={secondaryTxt} />
         ) : null}
       </div>
-      <IconButton onClick={open} aria-label="Open bookmark info">
+      <IconButton onClick={dialogInfo.open} aria-label="Open bookmark info">
         <InfoIcon />
       </IconButton>
+      <DialogContext.Provider value={dialogInfo}>
+        <BookmarkDialog bookmark={bookmark} />
+      </DialogContext.Provider>
     </ResourceItem>
   );
 }
