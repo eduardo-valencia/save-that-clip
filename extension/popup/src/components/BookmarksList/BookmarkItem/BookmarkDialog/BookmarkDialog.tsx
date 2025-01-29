@@ -3,7 +3,7 @@ import React from "react";
 import { DialogInfo, useDialogContext } from "../../../DialogInfoProvider";
 import { DialogToolbar } from "../../../DialogToolbar";
 import PageContainer from "../../../PageContainer";
-import { BookmarkDialogContents } from "./BookmarkDialogContents";
+import { BookmarkDialogContents } from "./BookmarkDialogContents/BookmarkDialogContents";
 import { Bookmark } from "../../../../bookmarks/Bookmarks.repo-abstraction";
 
 type Props = {

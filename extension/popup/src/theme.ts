@@ -43,6 +43,18 @@ export const theme = createTheme({
       lineHeight: "2.875rem",
       letterSpacing: "-0.1rem",
     },
+    h2: {
+      fontSize: "1.5rem",
+      fontWeight: 600,
+      lineHeight: "141%",
+      letterSpacing: "-0.05rem",
+    },
+    h3: {
+      fontSize: "1.25rem",
+      fontWeight: 500,
+      lineHeight: "140%",
+      letterSpacing: "-0.025rem",
+    },
     button: {
       fontSize: "1rem",
       fontWeight: 500,
