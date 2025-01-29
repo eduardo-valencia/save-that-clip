@@ -1,14 +1,12 @@
 import React, { useContext } from "react";
 import {
-  BookmarkCreationDialogContextValue,
-  BookmarkCreationDialogContext,
+  PossibleDialogInfo,
+  DialogContext,
 } from "../../BookmarkCreationDialogProvider";
 import FormActionButton from "../FormActionButton";
 
 export default function CancelButton() {
-  const { close }: BookmarkCreationDialogContextValue = useContext(
-    BookmarkCreationDialogContext
-  );
+  const { close }: PossibleDialogInfo = useContext(DialogContext);
   return (
     <FormActionButton
       variant="outlined"

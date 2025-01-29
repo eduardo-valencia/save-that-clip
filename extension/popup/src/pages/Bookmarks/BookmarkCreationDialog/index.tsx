@@ -1,19 +1,13 @@
 import { Dialog, Typography } from "@mui/material";
 import PageContainer from "../../../components/PageContainer";
-import { useContext } from "react";
-import {
-  BookmarkCreationDialogContextValue,
-  BookmarkCreationDialogContext,
-} from "./BookmarkCreationDialogProvider";
+import { DialogInfo, useDialogInfo } from "./BookmarkCreationDialogProvider";
 import CreationForm from "./CreationForm";
 import { DialogToolbar } from "../../../components/DialogToolbar";
 
 export type CloseCreationDialog = () => void;
 
 export const BookmarkCreationDialog = (): JSX.Element => {
-  const { close, isOpen }: BookmarkCreationDialogContextValue = useContext(
-    BookmarkCreationDialogContext
-  );
+  const { close, isOpen }: DialogInfo = useDialogInfo();
 
   return (
     <Dialog onClose={close} open={isOpen} fullScreen>

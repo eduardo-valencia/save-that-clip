@@ -3,32 +3,36 @@ import React, {
   SetStateAction,
   Dispatch,
   createContext,
+  useContext,
 } from "react";
 
 type IsOpen = boolean;
 type CloseOrOpen = () => void;
 
-export interface BookmarkCreationDialogContextValue {
+export interface DialogInfo {
   isOpen: IsOpen;
-  setIsOpen?: Dispatch<SetStateAction<IsOpen>>;
-  close?: CloseOrOpen;
-  open?: CloseOrOpen;
+  setIsOpen: Dispatch<SetStateAction<IsOpen>>;
+  close: CloseOrOpen;
+  open: CloseOrOpen;
 }
+
+export type PossibleDialogInfo = DialogInfo | null;
 
 const defaultIsOpen = false;
 
-export const BookmarkCreationDialogContext =
-  createContext<BookmarkCreationDialogContextValue>({
-    isOpen: defaultIsOpen,
-  });
+export const DialogContext = createContext<PossibleDialogInfo>(null);
+
+export const useDialogInfo = (): DialogInfo => {
+  const value: PossibleDialogInfo = useContext(DialogContext);
+  if (value) return value;
+  throw new Error("Dialog context is missing");
+};
 
 interface Props {
   children: React.ReactNode;
 }
 
-export const BookmarkCreationDialogProvider = ({
-  children,
-}: Props): JSX.Element => {
+export const DialogInfoProvider = ({ children }: Props): JSX.Element => {
   const [isOpen, setIsOpen] = useState<IsOpen>(defaultIsOpen);
 
   const close: CloseOrOpen = () => {
@@ -40,10 +44,8 @@ export const BookmarkCreationDialogProvider = ({
   };
 
   return (
-    <BookmarkCreationDialogContext.Provider
-      value={{ isOpen, setIsOpen, close, open }}
-    >
+    <DialogContext.Provider value={{ isOpen, setIsOpen, close, open }}>
       {children}
-    </BookmarkCreationDialogContext.Provider>
+    </DialogContext.Provider>
   );
 };
