@@ -3,8 +3,8 @@ import { Box } from "@mui/material";
 import { Bookmark } from "../../../../bookmarks/Bookmarks.repo-abstraction";
 import BookmarkNameField from "./BookmarkNameField";
 import {
-  PossibleDialogInfo,
-  DialogContext,
+  useDialogInfo,
+  DialogInfo,
 } from "../../../../components/DialogInfoProvider";
 import FormError from "./FormError/FormError";
 import { BookmarksService } from "../../../../bookmarks/Bookmarks.service";
@@ -37,14 +37,14 @@ export default function CreationForm() {
   const { findAndSetBookmarks }: BookmarksContextValue =
     useContext(BookmarksContext);
 
-  const { close }: PossibleDialogInfo = useContext(DialogContext);
+  const { close }: DialogInfo = useDialogInfo();
 
   const saveBookmarkAndRefreshAndClose = async (): Promise<void> => {
     await bookmarksService.create({ name });
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     await findAndSetBookmarks!();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    close!();
+    close();
   };
 
   const handleError = (error: unknown): void => {

@@ -1,8 +1,7 @@
 import { Button } from "@mui/material";
-import React, { useContext } from "react";
 import {
-  DialogContext,
-  PossibleDialogInfo,
+  DialogInfo,
+  useDialogInfo,
 } from "../../../components/DialogInfoProvider";
 import { IsButtonDisabled } from ".";
 
@@ -13,7 +12,7 @@ interface Props {
 export default function BookmarkCreationButton({
   disabled,
 }: Props): JSX.Element {
-  const { open }: PossibleDialogInfo = useContext(DialogContext);
+  const { open }: DialogInfo = useDialogInfo();
 
   return (
     <Button
