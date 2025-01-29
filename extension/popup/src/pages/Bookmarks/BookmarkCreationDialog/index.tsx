@@ -14,7 +14,7 @@ export const BookmarkCreationDialog = (): JSX.Element => {
 
   return (
     <Dialog onClose={close} open={isOpen} fullScreen>
-      <DialogToolbar close={close} />
+      <DialogToolbar />
       <PageContainer>
         <Typography variant="h1" sx={{ marginBottom: "2.13rem" }}>
           Add Bookmark

@@ -1,13 +1,11 @@
 import { AppBar, Toolbar, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import PageContainer from "./PageContainer";
-import { DialogInfo } from "./DialogInfoProvider";
+import { DialogInfo, useDialogInfo } from "./DialogInfoProvider";
 
-interface Props {
-  close: DialogInfo["close"];
-}
+export function DialogToolbar() {
+  const { close }: DialogInfo = useDialogInfo();
 
-export function DialogToolbar({ close }: Props) {
   return (
     <AppBar
       sx={{

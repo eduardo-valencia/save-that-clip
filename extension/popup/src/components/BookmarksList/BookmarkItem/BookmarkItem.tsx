@@ -1,8 +1,9 @@
 import ResourceItem from "../../ResourceItem";
 import { Bookmark } from "../../../bookmarks/Bookmarks.repo-abstraction";
-import DeleteBookmarkButton from "./DeleteBookmarkButton";
 import BookmarkTitle from "./BookmarkTitle";
 import BookmarkSecondaryText from "./BookmarkSecondaryText";
+import { IconButton } from "@mui/material";
+import InfoIcon from "@mui/icons-material/Info";
 
 export interface BookmarkItemProps {
   bookmark: Bookmark;
@@ -32,7 +33,9 @@ export default function BookmarkItem({
           <BookmarkSecondaryText secondaryTxt={secondaryTxt} />
         ) : null}
       </div>
-      <DeleteBookmarkButton bookmarkId={bookmark.id} />
+      <IconButton onClick={open} aria-label="Open bookmark info">
+        <InfoIcon />
+      </IconButton>
     </ResourceItem>
   );
 }
