@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
-import { Bookmark } from "../../../bookmarks/Bookmarks.repo-abstraction";
+import { Bookmark } from "../../../../../bookmarks/Bookmarks.repo-abstraction";
 import { Button } from "@mui/material";
 import {
   BookmarksContext,
   BookmarksContextValue,
-} from "../../BookmarksProvider";
-import { BookmarksService } from "../../../bookmarks/Bookmarks.service";
+} from "../../../../BookmarksProvider";
+import { BookmarksService } from "../../../../../bookmarks/Bookmarks.service";
 
 interface Props {
   bookmarkId: Bookmark["id"];

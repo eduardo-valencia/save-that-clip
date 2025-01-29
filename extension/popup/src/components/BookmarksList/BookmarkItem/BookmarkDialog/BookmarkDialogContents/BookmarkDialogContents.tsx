@@ -2,7 +2,7 @@ import React from "react";
 import { Bookmark } from "../../../../../bookmarks/Bookmarks.repo-abstraction";
 import { BookmarkField } from "./BookmarkField";
 import { Box, Button } from "@mui/material";
-import DeleteBookmarkButton from "../../DeleteBookmarkButton";
+import DeleteBookmarkButton from "./DeleteBookmarkButton";
 import { DialogInfo, useDialogContext } from "../../../../DialogInfoProvider";
 import { bookmarksService } from "../../../../../bookmarks/Bookmarks.service";
 
