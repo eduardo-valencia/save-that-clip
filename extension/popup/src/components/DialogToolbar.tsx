@@ -1,10 +1,10 @@
 import { AppBar, Toolbar, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import PageContainer from "./PageContainer";
+import { DialogInfo } from "./DialogInfoProvider";
 
 interface Props {
-  // TODO: Refactor
-  close: () => void;
+  close: DialogInfo["close"];
 }
 
 export function DialogToolbar({ close }: Props) {
