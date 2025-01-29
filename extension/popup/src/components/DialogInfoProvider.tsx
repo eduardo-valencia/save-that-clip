@@ -22,7 +22,7 @@ const defaultIsOpen = false;
 
 export const DialogContext = createContext<PossibleDialogInfo>(null);
 
-export const useDialogInfo = (): DialogInfo => {
+export const useDialogContext = (): DialogInfo => {
   const value: PossibleDialogInfo = useContext(DialogContext);
   if (value) return value;
   throw new Error("Dialog context is missing");

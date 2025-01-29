@@ -2,7 +2,7 @@ import { Dialog, Typography } from "@mui/material";
 import PageContainer from "../../../components/PageContainer";
 import {
   DialogInfo,
-  useDialogInfo,
+  useDialogContext,
 } from "../../../components/DialogInfoProvider";
 import CreationForm from "./CreationForm";
 import { DialogToolbar } from "../../../components/DialogToolbar";
@@ -10,7 +10,7 @@ import { DialogToolbar } from "../../../components/DialogToolbar";
 export type CloseCreationDialog = () => void;
 
 export const BookmarkCreationDialog = (): JSX.Element => {
-  const { close, isOpen }: DialogInfo = useDialogInfo();
+  const { close, isOpen }: DialogInfo = useDialogContext();
 
   return (
     <Dialog onClose={close} open={isOpen} fullScreen>

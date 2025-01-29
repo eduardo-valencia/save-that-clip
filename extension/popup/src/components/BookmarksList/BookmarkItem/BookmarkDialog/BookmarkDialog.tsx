@@ -1,6 +1,6 @@
 import { Dialog, Typography } from "@mui/material";
 import React from "react";
-import { DialogInfo, useDialogInfo } from "../../../DialogInfoProvider";
+import { DialogInfo, useDialogContext } from "../../../DialogInfoProvider";
 import { DialogToolbar } from "../../../DialogToolbar";
 import PageContainer from "../../../PageContainer";
 import { BookmarkDialogContents } from "./BookmarkDialogContents";
@@ -11,7 +11,7 @@ type Props = {
 };
 
 export const BookmarkDialog = ({ bookmark }: Props) => {
-  const { isOpen, close }: DialogInfo = useDialogInfo();
+  const { isOpen, close }: DialogInfo = useDialogContext();
 
   // TODO: Refactor title
   return (

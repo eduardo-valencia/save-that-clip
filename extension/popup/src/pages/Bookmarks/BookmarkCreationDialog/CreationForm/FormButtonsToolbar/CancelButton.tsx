@@ -1,11 +1,11 @@
 import {
   DialogInfo,
-  useDialogInfo,
+  useDialogContext,
 } from "../../../../../components/DialogInfoProvider";
 import FormActionButton from "../FormActionButton";
 
 export default function CancelButton() {
-  const { close }: DialogInfo = useDialogInfo();
+  const { close }: DialogInfo = useDialogContext();
   return (
     <FormActionButton
       variant="outlined"

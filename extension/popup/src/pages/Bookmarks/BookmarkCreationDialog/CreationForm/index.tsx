@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import { Bookmark } from "../../../../bookmarks/Bookmarks.repo-abstraction";
 import BookmarkNameField from "./BookmarkNameField";
 import {
-  useDialogInfo,
+  useDialogContext,
   DialogInfo,
 } from "../../../../components/DialogInfoProvider";
 import FormError from "./FormError/FormError";
@@ -37,7 +37,7 @@ export default function CreationForm() {
   const { findAndSetBookmarks }: BookmarksContextValue =
     useContext(BookmarksContext);
 
-  const { close }: DialogInfo = useDialogInfo();
+  const { close }: DialogInfo = useDialogContext();
 
   const saveBookmarkAndRefreshAndClose = async (): Promise<void> => {
     await bookmarksService.create({ name });
