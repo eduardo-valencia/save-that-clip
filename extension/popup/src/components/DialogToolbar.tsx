@@ -1,17 +1,13 @@
 import { AppBar, Toolbar, IconButton } from "@mui/material";
-import React, { useContext } from "react";
 import CloseIcon from "@mui/icons-material/Close";
-import PageContainer from "../../../components/PageContainer";
-import {
-  BookmarkCreationDialogContextValue,
-  BookmarkCreationDialogContext,
-} from "./BookmarkCreationDialogProvider";
+import PageContainer from "./PageContainer";
 
-export default function BookmarkCreationDialogToolbar() {
-  const { close }: BookmarkCreationDialogContextValue = useContext(
-    BookmarkCreationDialogContext
-  );
+interface Props {
+  // TODO: Refactor
+  close: () => void;
+}
 
+export function DialogToolbar({ close }: Props) {
   return (
     <AppBar
       sx={{

@@ -1,12 +1,12 @@
 import { Dialog, Typography } from "@mui/material";
 import PageContainer from "../../../components/PageContainer";
-import BookmarkCreationDialogToolbar from "./BookmarkCreationDialogToolbar";
 import { useContext } from "react";
 import {
   BookmarkCreationDialogContextValue,
   BookmarkCreationDialogContext,
 } from "./BookmarkCreationDialogProvider";
 import CreationForm from "./CreationForm";
+import { DialogToolbar } from "../../../components/DialogToolbar";
 
 export type CloseCreationDialog = () => void;
 
@@ -17,7 +17,7 @@ export const BookmarkCreationDialog = (): JSX.Element => {
 
   return (
     <Dialog onClose={close} open={isOpen} fullScreen>
-      <BookmarkCreationDialogToolbar />
+      <DialogToolbar close={close} />
       <PageContainer>
         <Typography variant="h1" sx={{ marginBottom: "2.13rem" }}>
           Add Bookmark
