@@ -13,7 +13,7 @@ export interface StoredData {
 }
 
 type FieldsToPick = "id";
-type FieldsToUpdateBookmark = Pick<Bookmark, FieldsToPick> &
+type RepoFieldsToUpdateBookmark = Pick<Bookmark, FieldsToPick> &
   Omit<Partial<Bookmark>, FieldsToPick>;
 
 /**
@@ -67,7 +67,7 @@ export class BookmarksRepo extends BookmarksRepoAbstraction {
   public update = async ({
     id,
     ...updateFields
-  }: FieldsToUpdateBookmark): Promise<void> => {
+  }: RepoFieldsToUpdateBookmark): Promise<void> => {
     const clonedBookmarks: Bookmark[] = await this.listAndCloneBookmarks();
     const bookmark: Bookmark | undefined = _.find(clonedBookmarks, { id });
     if (bookmark) Object.assign(bookmark, updateFields);

@@ -2,8 +2,13 @@ import { AppBar, Toolbar, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import PageContainer from "./PageContainer";
 import { DialogInfo, useDialogContext } from "./DialogInfoProvider";
+import React from "react";
 
-export function DialogToolbar() {
+interface Props {
+  endBtn?: React.ReactNode;
+}
+
+export function DialogToolbar({ endBtn }: Props) {
   const { close }: DialogInfo = useDialogContext();
 
   return (
@@ -18,11 +23,20 @@ export function DialogToolbar() {
     >
       <Toolbar disableGutters>
         <PageContainer
-          sx={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
+          sx={{
+            width: "100%",
+            display: "flex",
+            justifyContent: endBtn ? "space-between" : "flex-end",
+          }}
         >
-          <IconButton edge="end" onClick={close} aria-label="Close">
+          <IconButton
+            edge={endBtn ? "start" : "end"}
+            onClick={close}
+            aria-label="Close"
+          >
             <CloseIcon />
           </IconButton>
+          {endBtn}
         </PageContainer>
       </Toolbar>
     </AppBar>

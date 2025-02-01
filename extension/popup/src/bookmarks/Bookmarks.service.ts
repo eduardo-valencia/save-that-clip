@@ -99,6 +99,8 @@ export class BookmarksService {
     return _.filter(bookmarks, fields);
   };
 
+  public update = this.repo.update;
+
   public destroy = async (id: Bookmark["id"]): Promise<void> => {
     await this.repo.destroy(id);
   };
