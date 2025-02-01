@@ -1,6 +1,9 @@
 import { useCallback } from "react";
 import { BookmarksService } from "../../../../bookmarks/Bookmarks.service";
-import { BookmarkForm, BookmarkFormProps } from "./BookmarkForm";
+import {
+  BookmarkForm,
+  BookmarkFormProps,
+} from "../../../../components/BookmarkForm";
 
 export default function CreationForm() {
   const handleSubmission = useCallback<BookmarkFormProps["onSubmit"]>(

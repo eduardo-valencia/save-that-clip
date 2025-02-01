@@ -1,19 +1,13 @@
 import React, { useContext, useState } from "react";
 import { Box } from "@mui/material";
-import { Bookmark } from "../../../../bookmarks/Bookmarks.repo-abstraction";
-import BookmarkNameField from "./BookmarkNameField";
-import {
-  useDialogContext,
-  DialogInfo,
-} from "../../../../components/DialogInfoProvider";
-import FormError from "./FormError/FormError";
-import {
-  BookmarksContextValue,
-  BookmarksContext,
-} from "../../../../components/BookmarksProvider";
-import FormButtonsToolbar from "./FormButtonsToolbar";
-import LoadingIndicator from "../../../../components/LoadingIndicator";
-import { ErrorReporterService } from "../../../../errorReporter/ErrorReporter.service";
+import { Bookmark } from "../bookmarks/Bookmarks.repo-abstraction";
+import BookmarkNameField from "../pages/Bookmarks/BookmarkCreationDialog/CreationForm/BookmarkNameField";
+import { useDialogContext, DialogInfo } from "./DialogInfoProvider";
+import FormError from "../pages/Bookmarks/BookmarkCreationDialog/CreationForm/FormError/FormError";
+import { BookmarksContextValue, BookmarksContext } from "./BookmarksProvider";
+import FormButtonsToolbar from "../pages/Bookmarks/BookmarkCreationDialog/CreationForm/FormButtonsToolbar";
+import LoadingIndicator from "./LoadingIndicator";
+import { ErrorReporterService } from "../errorReporter/ErrorReporter.service";
 
 export interface FormErrorInfo {
   error: unknown;
