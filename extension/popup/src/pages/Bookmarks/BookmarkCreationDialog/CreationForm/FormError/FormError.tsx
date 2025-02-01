@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import React from "react";
-import { FormErrorInfo } from "..";
 import { GenericErrorWithDebugInfo } from "./GenericErrorWithDebugInfo";
+import { FormErrorInfo } from "../../../../../components/BookmarkForm";
 
 interface Props {
   errorInfo: FormErrorInfo;

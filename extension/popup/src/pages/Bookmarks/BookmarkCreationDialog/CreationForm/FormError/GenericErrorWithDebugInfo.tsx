@@ -1,7 +1,7 @@
 import React from "react";
-import { FormErrorInfo } from "..";
 import { Typography } from "@mui/material";
 import { DebugInfo } from "./DebugInfo";
+import { FormErrorInfo } from "../../../../../components/BookmarkForm";
 
 type Props = {
   errorInfo: FormErrorInfo;
