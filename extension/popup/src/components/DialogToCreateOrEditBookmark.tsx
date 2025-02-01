@@ -1,15 +1,12 @@
 import { Dialog, Typography } from "@mui/material";
-import PageContainer from "../../../components/PageContainer";
-import {
-  DialogInfo,
-  useDialogContext,
-} from "../../../components/DialogInfoProvider";
-import CreationForm from "./CreationForm";
-import { DialogToolbar } from "../../../components/DialogToolbar";
+import PageContainer from "./PageContainer";
+import { DialogInfo, useDialogContext } from "./DialogInfoProvider";
+import CreationForm from "../pages/Bookmarks/BookmarkCreationDialog/CreationForm";
+import { DialogToolbar } from "./DialogToolbar";
 
 export type CloseCreationDialog = () => void;
 
-export const BookmarkCreationDialog = (): JSX.Element => {
+export const DialogToCreateOrEditBookmark = (): JSX.Element => {
   const { close, isOpen }: DialogInfo = useDialogContext();
 
   return (

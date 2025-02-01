@@ -1,6 +1,6 @@
 import React from "react";
 import BookmarkCreationButtonInfo from "../pages/Bookmarks/BookmarkCreationButtonInfo";
-import { BookmarkCreationDialog } from "../pages/Bookmarks/BookmarkCreationDialog";
+import { DialogToCreateOrEditBookmark } from "./DialogToCreateOrEditBookmark";
 import { DialogInfoProvider } from "./DialogInfoProvider";
 import Header, { HeaderProps } from "./Header";
 
@@ -12,7 +12,7 @@ export default function HeaderWithBookmarkCreationButton({ title }: Props) {
       <Header title={title} sx={{ marginBottom: "2.5rem" }}>
         <BookmarkCreationButtonInfo />
       </Header>
-      <BookmarkCreationDialog />
+      <DialogToCreateOrEditBookmark />
     </DialogInfoProvider>
   );
 }
