@@ -6,11 +6,14 @@ import BookmarksListWithLoader, {
 } from "./BookmarksList/BookmarksListWithLoader";
 import { Bookmark } from "../bookmarks/Bookmarks.repo-abstraction";
 
-interface Props {
+interface Props extends Pick<BookmarksListWithLoaderProps, "showEpisode"> {
   possibleBookmarks: BookmarksContextValue["bookmarks"];
 }
 
-export default function BookmarkSearchResults({ possibleBookmarks }: Props) {
+export default function BookmarkSearchResults({
+  possibleBookmarks,
+  showEpisode,
+}: Props) {
   const { query }: SearchContextValue = useContext(SearchContext);
 
   const getIfBookmarkMatchesQuery = (bookmark: Bookmark): boolean => {
@@ -29,5 +32,10 @@ export default function BookmarkSearchResults({ possibleBookmarks }: Props) {
       return filterBookmarksByQuery();
     };
 
-  return <BookmarksListWithLoader possibleBookmarks={getBookmarks()} />;
+  return (
+    <BookmarksListWithLoader
+      possibleBookmarks={getBookmarks()}
+      showEpisode={showEpisode}
+    />
+  );
 }

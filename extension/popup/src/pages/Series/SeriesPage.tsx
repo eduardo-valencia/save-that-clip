@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import { useContext } from "react";
 import { Layout } from "../../components/Layout";
 import {
   SearchContext,
@@ -53,7 +53,10 @@ const SeriesPage = () => {
       <ToolbarWithBackButton />
       <HeaderWithBookmarkCreationButton title={displayName} />
       {query ? (
-        <BookmarkSearchResults possibleBookmarks={possibleBookmarks} />
+        <BookmarkSearchResults
+          possibleBookmarks={possibleBookmarks}
+          showEpisode
+        />
       ) : (
         <BookmarksListWithLoader
           possibleBookmarks={possibleBookmarks}
