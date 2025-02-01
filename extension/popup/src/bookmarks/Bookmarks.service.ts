@@ -17,6 +17,7 @@ import {
 import { TabsRepo } from "../tabs/Tabs.repo";
 import { TabsRepoAbstraction } from "../tabs/Tabs.repo-abstraction";
 import { ErrorReporterService } from "../errorReporter/ErrorReporter.service";
+import { NotFoundError } from "../errors/NotFound.error";
 
 export type FieldsToCreateBookmark = Pick<Bookmark, "name">;
 
@@ -106,7 +107,7 @@ export class BookmarksService {
     if (bookmarks.length === 1) return;
     else if (bookmarks.length > 1)
       throw new Error("Found more than one bookmark.");
-    throw new Error("Unable to find a bookmark.");
+    throw new NotFoundError();
   };
 
   private getById = async (id: Bookmark["id"]): Promise<Bookmark> => {
