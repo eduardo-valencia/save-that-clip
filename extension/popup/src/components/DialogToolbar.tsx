@@ -17,7 +17,7 @@ export function DialogToolbar({ endBtn }: Props) {
         position: "static",
         boxShadow: "none",
         marginBottom: "2.44rem",
-        padding: 0,
+        padding: "0.5rem 0 0 0",
       }}
       color="transparent"
     >
