@@ -13,8 +13,8 @@ export interface StoredData {
 }
 
 type FieldsToPick = "id";
-type RepoFieldsToUpdateBookmark = Pick<Bookmark, FieldsToPick> &
-  Omit<Partial<Bookmark>, FieldsToPick>;
+type UpdateFields = Omit<Partial<Bookmark>, FieldsToPick>;
+type RepoFieldsToUpdateBookmark = Pick<Bookmark, FieldsToPick> & UpdateFields;
 
 /**
  * We created a repo for this just in case we decide to switch to a database in
@@ -64,14 +64,27 @@ export class BookmarksRepo extends BookmarksRepoAbstraction {
     return _.cloneDeep(bookmarks);
   };
 
+  private updateBookmarkAndSetNewOnes = async (
+    clonedBookmarks: Bookmark[],
+    bookmark: Bookmark,
+    updateFields: UpdateFields
+  ): Promise<void> => {
+    Object.assign(bookmark, updateFields);
+    await this.setBookmarks(clonedBookmarks);
+  };
+
   public update = async ({
     id,
     ...updateFields
   }: RepoFieldsToUpdateBookmark): Promise<void> => {
     const clonedBookmarks: Bookmark[] = await this.listAndCloneBookmarks();
     const bookmark: Bookmark | undefined = _.find(clonedBookmarks, { id });
-    if (bookmark) Object.assign(bookmark, updateFields);
-    else throw new NotFoundError();
+    if (!bookmark) throw new NotFoundError();
+    return this.updateBookmarkAndSetNewOnes(
+      clonedBookmarks,
+      bookmark,
+      updateFields
+    );
   };
 
   public destroy = async (id: Bookmark["id"]): Promise<void> => {
