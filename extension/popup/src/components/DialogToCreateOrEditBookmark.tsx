@@ -1,12 +1,20 @@
 import { Dialog, Typography } from "@mui/material";
 import PageContainer from "./PageContainer";
 import { DialogInfo, useDialogContext } from "./DialogInfoProvider";
-import CreationForm from "../pages/Bookmarks/BookmarkCreationDialog/CreationForm";
 import { DialogToolbar } from "./DialogToolbar";
+import React from "react";
 
 export type CloseCreationDialog = () => void;
 
-export const DialogToCreateOrEditBookmark = (): JSX.Element => {
+interface Props {
+  title: string;
+  children: React.ReactNode;
+}
+
+export const DialogToCreateOrEditBookmark = ({
+  title,
+  children,
+}: Props): JSX.Element => {
   const { close, isOpen }: DialogInfo = useDialogContext();
 
   return (
@@ -14,9 +22,9 @@ export const DialogToCreateOrEditBookmark = (): JSX.Element => {
       <DialogToolbar />
       <PageContainer>
         <Typography variant="h1" sx={{ marginBottom: "2.13rem" }}>
-          Add Bookmark
+          {title}
         </Typography>
-        <CreationForm />
+        {children}
       </PageContainer>
     </Dialog>
   );
