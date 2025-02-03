@@ -1,6 +1,6 @@
-import React, { useState, createContext, useEffect } from "react";
+import React, { useState, createContext, useEffect, useMemo } from "react";
 import { Bookmark } from "../bookmarks/Bookmarks.repo-abstraction";
-import { BookmarksService } from "../bookmarks/Bookmarks.service";
+import { bookmarksService } from "../bookmarks/Bookmarks.service";
 
 type PossibleBookmarks = Bookmark[] | null;
 
@@ -11,6 +11,7 @@ type FindAndSetBookmarks = (resetBookmarks?: boolean) => Promise<void>;
 
 export interface BookmarksContextValue {
   bookmarks: PossibleBookmarks;
+  isRefreshing: boolean;
   findAndSetBookmarks?: FindAndSetBookmarks;
 }
 
@@ -18,6 +19,7 @@ const defaultBookmarks: PossibleBookmarks = null;
 
 export const BookmarksContext = createContext<BookmarksContextValue>({
   bookmarks: defaultBookmarks,
+  isRefreshing: true,
 });
 
 interface Props {
@@ -27,23 +29,32 @@ interface Props {
 export const BookmarksProvider = ({ children }: Props): JSX.Element => {
   const [bookmarks, setBookmarks] =
     useState<PossibleBookmarks>(defaultBookmarks);
+  const [isRefreshing, setIsRefreshing] =
+    useState<BookmarksContextValue["isRefreshing"]>(false);
 
   // Note: Update corresponding JS Doc comment if we update resetBookmark's
   // default value.
   const findAndSetBookmarks = async (resetBookmarks = true): Promise<void> => {
+    setIsRefreshing(true);
+
     // To indicate that it's loading.
     if (resetBookmarks) setBookmarks(null);
-    const bookmarksService = new BookmarksService();
     const newBookmarks: Bookmark[] = await bookmarksService.find();
     setBookmarks(newBookmarks);
+
+    setIsRefreshing(false);
   };
 
   useEffect(() => {
     void findAndSetBookmarks();
   }, []);
 
+  const value: BookmarksContextValue = useMemo(() => {
+    return { bookmarks, findAndSetBookmarks, isRefreshing };
+  }, [bookmarks, isRefreshing]);
+
   return (
-    <BookmarksContext.Provider value={{ bookmarks, findAndSetBookmarks }}>
+    <BookmarksContext.Provider value={value}>
       {children}
     </BookmarksContext.Provider>
   );
