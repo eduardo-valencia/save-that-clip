@@ -17,9 +17,10 @@ export interface BookmarksContextValue {
 
 const defaultBookmarks: PossibleBookmarks = null;
 
+const DEFAULT_IS_REFRESHING = true;
 export const BookmarksContext = createContext<BookmarksContextValue>({
   bookmarks: defaultBookmarks,
-  isRefreshing: true,
+  isRefreshing: DEFAULT_IS_REFRESHING,
 });
 
 interface Props {
@@ -29,8 +30,9 @@ interface Props {
 export const BookmarksProvider = ({ children }: Props): JSX.Element => {
   const [bookmarks, setBookmarks] =
     useState<PossibleBookmarks>(defaultBookmarks);
-  const [isRefreshing, setIsRefreshing] =
-    useState<BookmarksContextValue["isRefreshing"]>(false);
+  const [isRefreshing, setIsRefreshing] = useState<
+    BookmarksContextValue["isRefreshing"]
+  >(DEFAULT_IS_REFRESHING);
 
   // Note: Update corresponding JS Doc comment if we update resetBookmark's
   // default value.
