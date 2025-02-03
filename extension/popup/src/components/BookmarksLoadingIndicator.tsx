@@ -1,10 +1,10 @@
-import React from "react";
-import { BookmarksContextValue } from "./BookmarksProvider";
+import React, { useContext } from "react";
 import LoadingIndicator, { LoadingIndicatorProps } from "./LoadingIndicator";
+import { BookmarksContext, BookmarksContextValue } from "./BookmarksProvider";
 
-interface Props extends Pick<LoadingIndicatorProps, "progressElementId"> {
+export interface BookmarksLoadingIndicatorProps
+  extends Pick<LoadingIndicatorProps, "progressElementId"> {
   children: React.ReactNode;
-  possibleBookmarks: BookmarksContextValue["bookmarks"];
 }
 
 /**
@@ -13,14 +13,15 @@ interface Props extends Pick<LoadingIndicatorProps, "progressElementId"> {
 export default function BookmarksLoadingIndicator({
   children,
   progressElementId,
-  possibleBookmarks,
-}: Props) {
+}: BookmarksLoadingIndicatorProps) {
+  const { isRefreshing }: BookmarksContextValue = useContext(BookmarksContext);
+
   return (
     <div
       aria-describedby={progressElementId ? `#${progressElementId}` : undefined}
-      aria-busy={!possibleBookmarks}
+      aria-busy={isRefreshing}
     >
-      {possibleBookmarks ? (
+      {isRefreshing ? (
         children
       ) : (
         <LoadingIndicator progressElementId={progressElementId} />

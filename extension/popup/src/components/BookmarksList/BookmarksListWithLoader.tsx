@@ -17,10 +17,7 @@ export default function BookmarksListWithLoader({
   ...other
 }: BookmarksListWithLoaderProps) {
   return (
-    <BookmarksLoadingIndicator
-      progressElementId="bookmarks-progress"
-      possibleBookmarks={possibleBookmarks}
-    >
+    <BookmarksLoadingIndicator progressElementId="bookmarks-progress">
       {possibleBookmarks ? (
         <BookmarksList bookmarks={possibleBookmarks} {...other} />
       ) : null}
