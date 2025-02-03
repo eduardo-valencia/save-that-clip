@@ -34,14 +34,10 @@ export const BookmarksProvider = ({ children }: Props): JSX.Element => {
 
   // Note: Update corresponding JS Doc comment if we update resetBookmark's
   // default value.
-  const findAndSetBookmarks = async (resetBookmarks = true): Promise<void> => {
+  const findAndSetBookmarks = async (): Promise<void> => {
     setIsRefreshing(true);
-
-    // To indicate that it's loading.
-    if (resetBookmarks) setBookmarks(null);
     const newBookmarks: Bookmark[] = await bookmarksService.find();
     setBookmarks(newBookmarks);
-
     setIsRefreshing(false);
   };
 

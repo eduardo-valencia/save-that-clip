@@ -28,10 +28,12 @@ export function BookmarkForm({ onSubmit, defaultValues }: BookmarkFormProps) {
 
   const [error, setError] = useState<PossibleErrorInfo>(null);
 
-  const [isLoading, setIsLoading] = useState<IsLoading>(false);
+  const [isSubmitting, setIsSubmitting] = useState<IsLoading>(false);
 
-  const { findAndSetBookmarks }: BookmarksContextValue =
-    useContext(BookmarksContext);
+  const {
+    findAndSetBookmarks,
+    isRefreshing: isRefreshingBookmarks,
+  }: BookmarksContextValue = useContext(BookmarksContext);
 
   const { close }: DialogInfo = useDialogContext();
 
@@ -57,9 +59,9 @@ export function BookmarkForm({ onSubmit, defaultValues }: BookmarkFormProps) {
   };
 
   const trySavingBookmarkAndUpdateIsLoading = async (): Promise<void> => {
-    setIsLoading(true);
+    setIsSubmitting(true);
     await trySavingBookmark();
-    setIsLoading(false);
+    setIsSubmitting(false);
   };
 
   const handleSubmission = (event: React.FormEvent<HTMLFormElement>): void => {
@@ -79,13 +81,13 @@ export function BookmarkForm({ onSubmit, defaultValues }: BookmarkFormProps) {
     <form onSubmit={handleSubmission}>
       <Box sx={{ marginBottom: "4.13rem" }}>
         {error ? <FormError errorInfo={error} /> : null}
-        {isLoading ? (
+        {isSubmitting || isRefreshingBookmarks ? (
           <LoadingIndicator />
         ) : (
           <BookmarkNameField setName={setName} name={name} />
         )}
       </Box>
-      {isLoading ? null : <FormButtonsToolbar />}
+      {isSubmitting ? null : <FormButtonsToolbar />}
     </form>
   );
 }
