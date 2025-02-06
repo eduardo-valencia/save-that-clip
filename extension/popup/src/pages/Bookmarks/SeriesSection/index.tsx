@@ -17,10 +17,7 @@ export default function SeriesSection() {
   */
 
   return (
-    <BookmarksLoadingIndicator
-      progressElementId="series-progress"
-      possibleBookmarks={possibleBookmarks}
-    >
+    <BookmarksLoadingIndicator progressElementId="series-progress">
       {possibleBookmarks ? <SeriesList /> : null}
     </BookmarksLoadingIndicator>
   );

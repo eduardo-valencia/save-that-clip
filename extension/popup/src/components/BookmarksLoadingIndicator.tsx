@@ -21,10 +21,10 @@ export default function BookmarksLoadingIndicator({
       aria-describedby={progressElementId ? `#${progressElementId}` : undefined}
       aria-busy={isRefreshing}
     >
-      {!isRefreshing ? (
-        children
-      ) : (
+      {isRefreshing ? (
         <LoadingIndicator progressElementId={progressElementId} />
+      ) : (
+        children
       )}
     </div>
   );
