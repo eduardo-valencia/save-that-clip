@@ -16,7 +16,7 @@ export interface DialogInfo {
   open: CloseOrOpen;
 }
 
-type EssentialDialogControls = Pick<DialogInfo, "setIsOpen" | "isOpen">;
+export type EssentialDialogControls = Pick<DialogInfo, "setIsOpen" | "isOpen">;
 type PossibleDialogControls = Partial<EssentialDialogControls>;
 export const useDialogInfo = ({
   isOpen: customIsOpen,

@@ -22,18 +22,6 @@ export default function BookmarkItem({
   const { seriesName, episodeName } = bookmark;
   const { setIdOfBookmarkToView }: BookmarkDialogInfo = useBookmarkDialogInfo();
 
-  // const dialogInfo: DialogInfo = useMemo(() => {
-  //   const open = (): void => {
-  //     setIdOfBookmarkToView(bookmark.id);
-  //   };
-
-  //   const close = (): void => {
-  //     setIdOfBookmarkToView(null);
-  //   };
-
-  //   return { open, close, isOpen: Boolean(idOfBookmarkToView) };
-  // }, [bookmark.id, idOfBookmarkToView, setIdOfBookmarkToView]);
-
   const open = useCallback((): void => {
     setIdOfBookmarkToView(bookmark.id);
   }, [bookmark.id, setIdOfBookmarkToView]);
