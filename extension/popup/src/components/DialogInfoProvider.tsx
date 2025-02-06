@@ -17,39 +17,16 @@ export interface DialogInfo {
 }
 
 type EssentialDialogControls = Pick<DialogInfo, "setIsOpen" | "isOpen">;
-
-export const useDialogInfo = (): EssentialDialogControls => {
-  const [isOpen, setIsOpen] = useState<IsOpen>(false);
-
-  const dialogInfo = useMemo((): EssentialDialogControls => {
-    return { isOpen, setIsOpen };
-  }, [isOpen]);
-
-  return dialogInfo;
-};
-
-type PossibleDialogInfo = DialogInfo | null;
-export const DialogContext = createContext<PossibleDialogInfo>(null);
-
-export const useDialogContext = (): DialogInfo => {
-  const value: PossibleDialogInfo = useContext(DialogContext);
-  if (value) return value;
-  throw new Error("Dialog context is missing");
-};
-
-interface Props extends Partial<EssentialDialogControls> {
-  children: React.ReactNode;
-}
-
-export const DialogInfoProvider = ({
-  children,
+type PossibleDialogControls = Partial<EssentialDialogControls>;
+export const useDialogInfo = ({
   isOpen: customIsOpen,
   setIsOpen: customSetIsOpen,
-}: Props): JSX.Element => {
-  const dialogInfo: EssentialDialogControls = useDialogInfo();
+}: PossibleDialogControls = {}): DialogInfo => {
+  const [isOpenFromDefaultHook, setIsOpenFromDefaultHook] =
+    useState<IsOpen>(false);
 
   const setIsOpen: DialogInfo["setIsOpen"] =
-    customSetIsOpen ?? dialogInfo.setIsOpen;
+    customSetIsOpen ?? setIsOpenFromDefaultHook;
 
   const close = useCallback(() => {
     setIsOpen(false);
@@ -61,14 +38,38 @@ export const DialogInfoProvider = ({
 
   const value = useMemo((): DialogInfo => {
     return {
-      isOpen: customIsOpen ?? dialogInfo.isOpen,
+      isOpen: customIsOpen ?? isOpenFromDefaultHook,
       setIsOpen,
       close,
       open,
     };
-  }, [close, customIsOpen, dialogInfo.isOpen, open, setIsOpen]);
+  }, [close, customIsOpen, isOpenFromDefaultHook, open, setIsOpen]);
+
+  return value;
+};
+
+type PossibleDialogInfo = DialogInfo | null;
+export const DialogContext = createContext<PossibleDialogInfo>(null);
+
+export const useDialogContext = (): DialogInfo => {
+  const value: PossibleDialogInfo = useContext(DialogContext);
+  if (value) return value;
+  throw new Error("Dialog context is missing");
+};
+
+interface Props extends PossibleDialogControls {
+  children: React.ReactNode;
+}
+
+export const DialogInfoProvider = ({
+  children,
+  ...fields
+}: Props): JSX.Element => {
+  const dialogInfo: DialogInfo = useDialogInfo(fields);
 
   return (
-    <DialogContext.Provider value={value}>{children}</DialogContext.Provider>
+    <DialogContext.Provider value={dialogInfo}>
+      {children}
+    </DialogContext.Provider>
   );
 };

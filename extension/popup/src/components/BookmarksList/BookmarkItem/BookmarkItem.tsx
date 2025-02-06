@@ -4,12 +4,11 @@ import BookmarkTitle from "./BookmarkTitle";
 import BookmarkSecondaryText from "./BookmarkSecondaryText";
 import { IconButton } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
-import { DialogInfo } from "../../DialogInfoProvider";
 import {
   BookmarkDialogInfo,
   useBookmarkDialogInfo,
 } from "../../BookmarkDialogInfoProvider";
-import { useMemo } from "react";
+import { useCallback } from "react";
 
 export interface BookmarkItemProps {
   bookmark: Bookmark;
@@ -21,20 +20,23 @@ export default function BookmarkItem({
   showEpisode,
 }: BookmarkItemProps) {
   const { seriesName, episodeName } = bookmark;
-  const { setIdOfBookmarkToView, idOfBookmarkToView }: BookmarkDialogInfo =
-    useBookmarkDialogInfo();
+  const { setIdOfBookmarkToView }: BookmarkDialogInfo = useBookmarkDialogInfo();
 
-  const dialogInfo: DialogInfo = useMemo(() => {
-    const open = (): void => {
-      setIdOfBookmarkToView(bookmark.id);
-    };
+  // const dialogInfo: DialogInfo = useMemo(() => {
+  //   const open = (): void => {
+  //     setIdOfBookmarkToView(bookmark.id);
+  //   };
 
-    const close = (): void => {
-      setIdOfBookmarkToView(null);
-    };
+  //   const close = (): void => {
+  //     setIdOfBookmarkToView(null);
+  //   };
 
-    return { open, close, isOpen: Boolean(idOfBookmarkToView) };
-  }, [bookmark.id, idOfBookmarkToView, setIdOfBookmarkToView]);
+  //   return { open, close, isOpen: Boolean(idOfBookmarkToView) };
+  // }, [bookmark.id, idOfBookmarkToView, setIdOfBookmarkToView]);
+
+  const open = useCallback((): void => {
+    setIdOfBookmarkToView(bookmark.id);
+  }, [bookmark.id, setIdOfBookmarkToView]);
 
   type SecondaryTxt = Bookmark["seriesName" | "episodeName"];
   const secondaryTxt: SecondaryTxt = showEpisode ? episodeName : seriesName;
@@ -53,7 +55,7 @@ export default function BookmarkItem({
           <BookmarkSecondaryText secondaryTxt={secondaryTxt} />
         ) : null}
       </div>
-      <IconButton onClick={dialogInfo.open} aria-label="Open bookmark info">
+      <IconButton onClick={open} aria-label="Open bookmark info">
         <InfoIcon />
       </IconButton>
     </ResourceItem>
