@@ -1,7 +1,5 @@
 import React, {
   useState,
-  SetStateAction,
-  Dispatch,
   createContext,
   useContext,
   useCallback,
@@ -13,7 +11,6 @@ type CloseOrOpen = () => void;
 
 export interface DialogInfo {
   isOpen: IsOpen;
-  setIsOpen: Dispatch<SetStateAction<IsOpen>>;
   close: CloseOrOpen;
   open: CloseOrOpen;
 }
@@ -29,8 +26,8 @@ export const useDialogInfo = (): DialogInfo => {
     setIsOpen(true);
   }, []);
 
-  const dialogInfo: DialogInfo = useMemo(() => {
-    return { close, open, isOpen, setIsOpen };
+  const dialogInfo = useMemo((): DialogInfo => {
+    return { close, open, isOpen };
   }, [close, isOpen, open]);
 
   return dialogInfo;

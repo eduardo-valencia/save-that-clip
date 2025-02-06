@@ -9,7 +9,7 @@ import { Bookmark } from "../bookmarks/Bookmarks.repo-abstraction";
 import { createContextGetterHook } from "../utils/client.utils";
 
 type PossibleBookmarkId = Bookmark["id"] | null;
-interface BookmarkDialogInfo {
+export interface BookmarkDialogInfo {
   idOfBookmarkToView: PossibleBookmarkId;
   setIdOfBookmarkToView: Dispatch<SetStateAction<PossibleBookmarkId>>;
 }

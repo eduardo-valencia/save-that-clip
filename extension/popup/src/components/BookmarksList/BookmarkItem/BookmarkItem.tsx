@@ -4,12 +4,13 @@ import BookmarkTitle from "./BookmarkTitle";
 import BookmarkSecondaryText from "./BookmarkSecondaryText";
 import { IconButton } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info";
-import {
-  DialogContext,
-  DialogInfo,
-  useDialogInfo,
-} from "../../DialogInfoProvider";
+import { DialogContext, DialogInfo } from "../../DialogInfoProvider";
 import { BookmarkDialog } from "./BookmarkDialog/BookmarkDialog";
+import {
+  BookmarkDialogInfo,
+  useBookmarkDialogInfo,
+} from "../../BookmarkDialogInfoProvider";
+import { useMemo } from "react";
 
 export interface BookmarkItemProps {
   bookmark: Bookmark;
@@ -20,9 +21,21 @@ export default function BookmarkItem({
   bookmark,
   showEpisode,
 }: BookmarkItemProps) {
-  const dialogInfo: DialogInfo = useDialogInfo();
-
   const { seriesName, episodeName } = bookmark;
+  const { setIdOfBookmarkToView, idOfBookmarkToView }: BookmarkDialogInfo =
+    useBookmarkDialogInfo();
+
+  const dialogInfo: DialogInfo = useMemo(() => {
+    const open = (): void => {
+      setIdOfBookmarkToView(bookmark.id);
+    };
+
+    const close = (): void => {
+      setIdOfBookmarkToView(null);
+    };
+
+    return { open, close, isOpen: Boolean(idOfBookmarkToView) };
+  }, [bookmark.id, idOfBookmarkToView, setIdOfBookmarkToView]);
 
   type SecondaryTxt = Bookmark["seriesName" | "episodeName"];
   const secondaryTxt: SecondaryTxt = showEpisode ? episodeName : seriesName;
