@@ -1,5 +1,5 @@
 import { Dialog, Typography } from "@mui/material";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import {
   DialogInfo,
   DialogInfoProvider,
@@ -8,20 +8,22 @@ import {
 import { DialogToolbar } from "../../../DialogToolbar";
 import PageContainer from "../../../PageContainer";
 import { BookmarkDialogContents } from "./BookmarkDialogContents/BookmarkDialogContents";
-import { Bookmark } from "../../../../bookmarks/Bookmarks.repo-abstraction";
 import { EditingBtnAndDialog } from "./EditingBtnAndDialog";
 import {
   BookmarkDialogInfo,
   useBookmarkDialogInfo,
 } from "../../../BookmarkDialogInfoProvider";
+import { Bookmark } from "../../../../bookmarks/Bookmarks.repo-abstraction";
+import _, { ListIterateeCustom } from "lodash";
+import {
+  BookmarksContextValue,
+  useBookmarksContext,
+} from "../../../BookmarksProvider";
 
-type Props = {
-  bookmark: Bookmark;
-};
-
-export const BookmarkDialog = ({ bookmark }: Props) => {
+export const BookmarkDialog = () => {
   const { setIdOfBookmarkToView, idOfBookmarkToView }: BookmarkDialogInfo =
     useBookmarkDialogInfo();
+  const { bookmarks }: BookmarksContextValue = useBookmarksContext();
 
   const setIsOpen = useCallback(
     (newIsOpen: boolean) => {
@@ -31,13 +33,23 @@ export const BookmarkDialog = ({ bookmark }: Props) => {
     [setIdOfBookmarkToView]
   );
 
+  type PossibleBookmark = Bookmark | undefined;
+
+  const possibleBookmark = useMemo((): PossibleBookmark => {
+    if (!idOfBookmarkToView) return;
+    const predicate: ListIterateeCustom<Bookmark, boolean> = {
+      id: idOfBookmarkToView,
+    };
+    return _.find<Bookmark>(bookmarks, predicate);
+  }, [bookmarks, idOfBookmarkToView]);
+
   const dialogInfo: DialogInfo = useDialogInfo({
-    isOpen: Boolean(idOfBookmarkToView),
+    isOpen: Boolean(possibleBookmark),
     setIsOpen,
   });
 
-  return (
-    <DialogInfoProvider {...dialogInfo}>
+  const renderContents = (bookmark: Bookmark): JSX.Element => {
+    return (
       <Dialog open={dialogInfo.isOpen} onClose={dialogInfo.close} fullScreen>
         <DialogToolbar endBtn={<EditingBtnAndDialog bookmark={bookmark} />} />
         <PageContainer>
@@ -47,6 +59,13 @@ export const BookmarkDialog = ({ bookmark }: Props) => {
           <BookmarkDialogContents bookmark={bookmark} />
         </PageContainer>
       </Dialog>
+    );
+  };
+
+  if (!possibleBookmark) return null;
+  return (
+    <DialogInfoProvider {...dialogInfo}>
+      {renderContents(possibleBookmark)}
     </DialogInfoProvider>
   );
 };

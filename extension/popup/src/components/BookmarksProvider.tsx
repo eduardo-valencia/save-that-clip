@@ -1,6 +1,7 @@
 import React, { useState, createContext, useEffect, useMemo } from "react";
 import { Bookmark } from "../bookmarks/Bookmarks.repo-abstraction";
 import { bookmarksService } from "../bookmarks/Bookmarks.service";
+import { createContextGetterHook } from "../utils/client.utils";
 
 type PossibleBookmarks = Bookmark[] | null;
 
@@ -26,6 +27,11 @@ export const BookmarksContext = createContext<BookmarksContextValue>({
    */
   isRefreshing: DEFAULT_IS_REFRESHING,
 });
+
+export const useBookmarksContext = createContextGetterHook(
+  BookmarksContext,
+  "Bookmarks Context"
+);
 
 interface Props {
   children: React.ReactNode;
