@@ -11,6 +11,7 @@ import {
   BookmarksContext,
   BookmarksContextValue,
 } from "../../components/BookmarksProvider";
+import { BookmarkDialogInfoProvider } from "../../components/BookmarkDialogInfoProvider";
 
 const BookmarksPage = () => {
   const { query }: SearchContextValue = useContext(SearchContext);
@@ -18,12 +19,14 @@ const BookmarksPage = () => {
 
   return (
     <Layout>
-      <HeaderWithBookmarkCreationButton title="Bookmarks" />
-      {query ? (
-        <BookmarkSearchResults possibleBookmarks={bookmarks} />
-      ) : (
-        <SeriesSection />
-      )}
+      <BookmarkDialogInfoProvider>
+        <HeaderWithBookmarkCreationButton title="Bookmarks" />
+        {query ? (
+          <BookmarkSearchResults possibleBookmarks={bookmarks} />
+        ) : (
+          <SeriesSection />
+        )}
+      </BookmarkDialogInfoProvider>
     </Layout>
   );
 };
