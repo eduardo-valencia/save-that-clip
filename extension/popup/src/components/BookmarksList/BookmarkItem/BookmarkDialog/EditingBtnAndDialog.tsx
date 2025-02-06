@@ -1,8 +1,8 @@
 import React, { useCallback } from "react";
 import { Bookmark } from "../../../../bookmarks/Bookmarks.repo-abstraction";
 import {
-  DialogContext,
   DialogInfo,
+  DialogInfoProvider,
   useDialogInfo,
 } from "../../../DialogInfoProvider";
 import { IconButton } from "@mui/material";
@@ -27,13 +27,13 @@ export const EditingBtnAndDialog = ({ bookmark }: Props) => {
   );
 
   return (
-    <DialogContext.Provider value={dialogInfo}>
+    <DialogInfoProvider {...dialogInfo}>
       <IconButton onClick={dialogInfo.open} aria-label="Edit bookmark">
         <Edit />
       </IconButton>
       <DialogToCreateOrEditBookmark title="Edit Bookmark">
         <BookmarkForm defaultValues={bookmark} onSubmit={handleSubmission} />
       </DialogToCreateOrEditBookmark>
-    </DialogContext.Provider>
+    </DialogInfoProvider>
   );
 };
