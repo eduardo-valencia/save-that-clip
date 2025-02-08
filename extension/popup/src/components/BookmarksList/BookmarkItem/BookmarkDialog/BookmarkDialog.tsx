@@ -12,7 +12,7 @@ import { EditingBtnAndDialog } from "./EditingBtnAndDialog";
 import {
   BookmarkDialogInfo,
   useBookmarkDialogInfo,
-} from "../../../BookmarkDialogInfoProvider";
+} from "../../../BookmarkDialogAndProvider";
 import { Bookmark } from "../../../../bookmarks/Bookmarks.repo-abstraction";
 import _, { ListIterateeCustom } from "lodash";
 import {

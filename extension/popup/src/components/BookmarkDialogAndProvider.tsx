@@ -7,6 +7,7 @@ import {
 } from "react";
 import { Bookmark } from "../bookmarks/Bookmarks.repo-abstraction";
 import { createContextGetterHook } from "../utils/client.utils";
+import { BookmarkDialog } from "./BookmarksList/BookmarkItem/BookmarkDialog/BookmarkDialog";
 
 type PossibleBookmarkId = Bookmark["id"] | null;
 export interface BookmarkDialogInfo {
@@ -27,7 +28,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-export const BookmarkDialogInfoProvider = ({ children }: Props) => {
+export const BookmarkDialogAndProvider = ({ children }: Props) => {
   const [bookmarkId, setIdOfBookmarkToView] =
     useState<PossibleBookmarkId>(null);
 
@@ -38,6 +39,7 @@ export const BookmarkDialogInfoProvider = ({ children }: Props) => {
   return (
     <BookmarkDialogInfoContext.Provider value={value}>
       {children}
+      <BookmarkDialog />
     </BookmarkDialogInfoContext.Provider>
   );
 };

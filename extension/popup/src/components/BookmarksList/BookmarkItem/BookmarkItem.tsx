@@ -7,7 +7,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import {
   BookmarkDialogInfo,
   useBookmarkDialogInfo,
-} from "../../BookmarkDialogInfoProvider";
+} from "../../BookmarkDialogAndProvider";
 import { useCallback } from "react";
 
 export interface BookmarkItemProps {
