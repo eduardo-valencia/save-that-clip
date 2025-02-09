@@ -30,6 +30,8 @@ export const BookmarkDialogContents = ({ bookmark }: Props) => {
         }}
       >
         <DeleteBookmarkButton bookmarkId={id} />
+        {/* Note that we need this link just in case the func that open the bookmark
+          while on the episode's tab breaks. */}
         <Button
           variant="contained"
           onClick={close}

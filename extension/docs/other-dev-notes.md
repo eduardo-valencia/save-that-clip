@@ -10,3 +10,7 @@ Note that the content scripts should not be able to import any code that isn't i
 
 - <https://developer.chrome.com/docs/extensions/get-started/tutorial/debug>
 - Some errors can be seen on Sentry
+
+## Opening the Popup
+
+You can open the popup at `chrome-extension://<my_extension_id>/popup.html`.
