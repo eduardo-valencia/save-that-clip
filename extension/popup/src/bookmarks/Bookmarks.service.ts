@@ -175,5 +175,3 @@ export class BookmarksService {
     await this.createBookmarkTabOrUpdateIt(bookmark, tab);
   };
 }
-
-export const bookmarksService = new BookmarksService();

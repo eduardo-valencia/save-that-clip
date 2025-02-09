@@ -1,6 +1,6 @@
 import React, { useState, createContext, useEffect, useMemo } from "react";
 import { Bookmark } from "../bookmarks/Bookmarks.repo-abstraction";
-import { bookmarksService } from "../bookmarks/Bookmarks.service";
+import { bookmarksService } from "../bookmarks/bookmarksService";
 import { createContextGetterHook } from "../utils/client.utils";
 
 type PossibleBookmarks = Bookmark[] | null;

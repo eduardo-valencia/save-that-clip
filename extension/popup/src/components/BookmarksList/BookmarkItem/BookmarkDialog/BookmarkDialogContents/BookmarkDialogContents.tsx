@@ -4,7 +4,7 @@ import { BookmarkField } from "./BookmarkField";
 import { Box, Button } from "@mui/material";
 import DeleteBookmarkButton from "./DeleteBookmarkButton";
 import { DialogInfo, useDialogContext } from "../../../../DialogInfoProvider";
-import { bookmarksService } from "../../../../../bookmarks/Bookmarks.service";
+import { bookmarksService } from "../../../../../bookmarks/bookmarksService";
 import _ from "lodash";
 
 type Props = {

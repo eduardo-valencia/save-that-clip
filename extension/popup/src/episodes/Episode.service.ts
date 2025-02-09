@@ -152,7 +152,6 @@ export class EpisodeService {
   ): Promise<ValidNetflixEpisodeInfo> => {
     const episodeInfo: NetflixEpisodeInfo =
       await this.sendMessageToGetEpisodeInfo(episodeTab);
-    console.error("episode info", JSON.stringify(episodeInfo, null, 2));
     if (!episodeInfo.timeMs)
       throw new Error("Failed to get the episode's time.");
     return { ...episodeInfo, timeMs: episodeInfo.timeMs };
