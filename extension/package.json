@@ -34,7 +34,8 @@
     "main-test:watch": "npm run main-test -- --watch",
     "main-lint-ts": "npm run base-lint-ts -- --project ./main/tsconfig.json",
     "test": "npm run main-test && npm run popup-test",
-    "lint": "npm run main-lint-ts && npm run popup-lint-ts"
+    "lint-ts": "npm run main-lint-ts && npm run popup-lint-ts",
+    "lint": "npm run lint"
   },
   "browserslist": {
     "production": [
