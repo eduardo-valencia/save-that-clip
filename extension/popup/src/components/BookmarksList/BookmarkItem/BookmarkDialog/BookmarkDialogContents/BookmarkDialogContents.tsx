@@ -5,6 +5,7 @@ import { Box, Button } from "@mui/material";
 import DeleteBookmarkButton from "./DeleteBookmarkButton";
 import { DialogInfo, useDialogContext } from "../../../../DialogInfoProvider";
 import { bookmarksService } from "../../../../../bookmarks/Bookmarks.service";
+import _ from "lodash";
 
 type Props = {
   bookmark: Bookmark;
@@ -16,7 +17,9 @@ export const BookmarkDialogContents = ({ bookmark }: Props) => {
   // TODO: See if any of these fields need to be formatted
   return (
     <div>
-      <BookmarkField title="Name">{name}</BookmarkField>
+      <BookmarkField title="Name">
+        {_.truncate(name, { length: 75 })}
+      </BookmarkField>
       <BookmarkField title="Series">{seriesName}</BookmarkField>
       <BookmarkField title="Episode">{episodeName}</BookmarkField>
       <Box
