@@ -33,9 +33,9 @@
     "main-test": "jest --config ./main/jest.config.ts",
     "main-test:watch": "npm run main-test -- --watch",
     "main-lint-ts": "npm run base-lint-ts -- --project ./main/tsconfig.json",
-    "test": "npm run main-test && npm run popup-test",
-    "lint-ts": "npm run main-lint-ts && npm run popup-lint-ts",
-    "lint": "npm run lint"
+    "test": "run-p main-test popup-test",
+    "lint-ts": "run-p main-lint-ts popup-lint-ts",
+    "lint": "npm run lint-ts"
   },
   "browserslist": {
     "production": [
@@ -64,6 +64,7 @@
     "gulp-cli": "^2.3.0",
     "jest": "^29.5.0",
     "jest-environment-jsdom": "^29.5.0",
+    "npm-run-all": "^4.1.5",
     "prettier": "2.8.8",
     "ts-jest": "^29.1.0",
     "ts-loader": "^9.4.2",
