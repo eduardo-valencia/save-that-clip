@@ -1,0 +1,26 @@
+{
+  "name": "Save that Clip",
+  "version": "0.0.1",
+  "manifest_version": 3,
+  "description": "Bookmark timestamps on Netflix episodes. Easily find and revisit your favorite moments on Netflix.",
+  "content_scripts": [
+    {
+      "js": ["content-script.js"],
+      "matches": ["*://*.netflix.com/*"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["tabs", "storage", "scripting", "activeTab"],
+  "icons": {
+    "16": "./icons/icon-16x16.png",
+    "32": "./icons/icon-32x32.png",
+    "48": "./icons/icon-48x48.png",
+    "128": "./icons/icon-128x128.png"
+  },
+  "host_permissions": ["https://*.netflix.com/", "http://*.netflix.com/"]
+}
