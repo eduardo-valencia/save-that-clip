@@ -12,15 +12,12 @@ export const test = base.extend<{
 }>({
   context: async ({ }, use) => {
     const pathToExtension = path.resolve(__dirname, '../../extension');
-    const userDir = 'C:\\Users\\80259\\AppData\\Local\\Google\\Chrome\\User Data';
-    const context = await chromium.launchPersistentContext(userDir, {
+    const context = await chromium.launchPersistentContext('', {
       headless: false,
-      // args: [
-      //   `--disable-extensions-except=${pathToExtension}`,
-      //   `--load-extension=${pathToExtension}`,
-      // ],
-      channel: "chrome-canary",
-      
+      args: [
+        `--disable-extensions-except=${pathToExtension}`,
+        `--load-extension=${pathToExtension}`,
+      ],
     });
     await use(context);
     await context.close();
