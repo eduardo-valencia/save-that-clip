@@ -5,9 +5,9 @@ import {
   useMemo,
   useState,
 } from "react";
-import { Bookmark } from "../bookmarks/Bookmarks.repo-abstraction";
-import { createContextGetterHook } from "../utils/client.utils";
-import { BookmarkDialog } from "./BookmarksList/BookmarkItem/BookmarkDialog/BookmarkDialog";
+import { Bookmark } from "../../bookmarks/Bookmarks.repo-abstraction";
+import { createContextGetterHook } from "../../utils/client.utils";
+import { BookmarkDialog } from "../BookmarksList/BookmarkItem/BookmarkDialog/BookmarkDialog";
 
 type PossibleBookmarkId = Bookmark["id"] | null;
 export interface BookmarkDialogInfo {

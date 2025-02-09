@@ -11,7 +11,7 @@ import {
   BookmarksContext,
   BookmarksContextValue,
 } from "../../components/BookmarksProvider";
-import { BookmarkDialogAndProvider } from "../../components/BookmarkDialogAndProvider";
+import { BookmarkDialogAndProvider } from "../../components/BookmarkDialogAndProvider/BookmarkDialogAndProvider";
 
 const BookmarksPage = () => {
   const { query }: SearchContextValue = useContext(SearchContext);

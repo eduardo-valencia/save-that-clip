@@ -17,7 +17,7 @@ import {
   BookmarksContextValue,
   BookmarksContext,
 } from "../../components/BookmarksProvider";
-import { BookmarkDialogAndProvider } from "../../components/BookmarkDialogAndProvider";
+import { BookmarkDialogAndProvider } from "../../components/BookmarkDialogAndProvider/BookmarkDialogAndProvider";
 
 type PossibleBookmarks = BookmarksContextValue["bookmarks"];
 
