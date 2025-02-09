@@ -14,7 +14,7 @@ import {
   useBookmarkDialogInfo,
 } from "../../../BookmarkDialogAndProvider/BookmarkDialogAndProvider";
 import { Bookmark } from "../../../../bookmarks/Bookmarks.repo-abstraction";
-import _, { ListIterateeCustom } from "lodash";
+import _ from "lodash";
 import {
   BookmarksContextValue,
   useBookmarksContext,
@@ -37,13 +37,14 @@ export const BookmarkDialog = () => {
 
   const possibleBookmark = useMemo((): PossibleBookmark => {
     if (!idOfBookmarkToView) return;
-    const predicate: ListIterateeCustom<Bookmark, boolean> = {
-      id: idOfBookmarkToView,
-    };
-    return _.find<Bookmark>(bookmarks, predicate);
+    return _.find<Bookmark>(bookmarks, { id: idOfBookmarkToView });
   }, [bookmarks, idOfBookmarkToView]);
 
   const dialogInfo: DialogInfo = useDialogInfo({
+    /**
+     * We don't open this when we couldn't find the bookmark because it could
+     * mean it was deleted.
+     */
     isOpen: Boolean(possibleBookmark),
     setIsOpen,
   });
