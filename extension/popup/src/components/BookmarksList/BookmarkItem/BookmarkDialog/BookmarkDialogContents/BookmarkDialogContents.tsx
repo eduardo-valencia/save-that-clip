@@ -14,7 +14,6 @@ type Props = {
 export const BookmarkDialogContents = ({ bookmark }: Props) => {
   const { close }: DialogInfo = useDialogContext();
   const { id, name, seriesName, episodeName } = bookmark;
-  // TODO: See if any of these fields need to be formatted
   return (
     <div>
       <BookmarkField title="Name">

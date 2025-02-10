@@ -176,15 +176,14 @@ describe("create", () => {
       return `${baseUrl}?t=300`;
     };
 
-    const createEpisodeInfo = (): EpisodeTabAndInfo => {
-      const { tabAndInfo: episodeInfo }: MockedTimeAndSeries =
-        getMockedTimeAndSeries();
-      const { tab, ...other } = episodeInfo;
+    const createEpisodeTabAndInfo = (): EpisodeTabAndInfo => {
+      const { tabAndInfo }: MockedTimeAndSeries = getMockedTimeAndSeries();
+      const { tab, ...other } = tabAndInfo;
       return { ...other, tab: { ...tab, url: getTabUrl() } };
     };
 
     const mockTimeAndTab = (): void => {
-      const episodeInfo: EpisodeTabAndInfo = createEpisodeInfo();
+      const episodeInfo: EpisodeTabAndInfo = createEpisodeTabAndInfo();
       spiedGetTabAndTime.mockResolvedValue(episodeInfo);
     };
 

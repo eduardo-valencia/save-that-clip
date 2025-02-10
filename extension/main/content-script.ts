@@ -38,7 +38,9 @@ const getMessageHandlerFromType = (type: Messages): MessageHandler => {
 };
 
 /**
- * Note that this cannot be an async function
+ * Note that this cannot be an async function. Otherwise, messaging won't work.
+ * See https://developer.chrome.com/docs/extensions/develop/concepts/messaging
+ * for more info.
  */
 const handleMessage = (
   message: Message,
