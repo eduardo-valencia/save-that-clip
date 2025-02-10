@@ -1,6 +1,7 @@
 import { Typography } from "@mui/material";
 import { defaultSeriesName } from "../../../seriesInfo/seriesConfig";
 import { PossibleSeriesName } from "../../../seriesInfo/SeriesInfo.service";
+import _ from "lodash";
 
 interface Props {
   secondaryTxt: PossibleSeriesName;
@@ -8,7 +9,7 @@ interface Props {
 
 export default function BookmarkSecondaryText({ secondaryTxt }: Props) {
   const shortenTxtIfNecessary = (): string => {
-    if (secondaryTxt) return secondaryTxt.substring(0, 39);
+    if (secondaryTxt) return _.truncate(secondaryTxt, { length: 39 });
     return defaultSeriesName;
   };
 
