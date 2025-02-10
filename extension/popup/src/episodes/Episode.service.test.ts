@@ -28,7 +28,7 @@ const mockedTabsRepo = new MockedTabsRepo();
 const mockedScriptsRepo = new MockedScriptsRepo();
 
 const {
-  get1stEpisodeTabAndInfo: findTimeOf1stEpisodeTab,
+  get1stEpisodeTabAndInfo,
   findOneEpisodeTab,
   findOneEpisodeTabWithSamePathAsUrl: findOneEpisodeTabByUrl,
   trySettingTime: setTime,
@@ -117,7 +117,7 @@ describe("findOneEpisodeTab", () => {
 
 describe("getTimeOf1stEpisodeTab", () => {
   const callMethodAndExpectError = async (): Promise<void> => {
-    const promise: Promise<EpisodeTabAndInfo> = findTimeOf1stEpisodeTab();
+    const promise: Promise<EpisodeTabAndInfo> = get1stEpisodeTabAndInfo();
     await expect(promise).rejects.toBeTruthy();
   };
 
@@ -143,7 +143,7 @@ describe("getTimeOf1stEpisodeTab", () => {
     });
 
     it("Returns the episode's time", async () => {
-      const { info }: EpisodeTabAndInfo = await findTimeOf1stEpisodeTab();
+      const { info }: EpisodeTabAndInfo = await get1stEpisodeTabAndInfo();
       expect(info.timeMs).toEqual(mockedEpisodeTime);
     });
   });

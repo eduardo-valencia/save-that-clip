@@ -177,7 +177,7 @@ export class EpisodeService {
   };
 
   /**
-   * * These functions are being injected into the Netflix episode's tab.
+   * * This function is being injected into the Netflix episode's tab.
    *
    * TODO: Maybe stop assuming that any of these properties will exist
    */
