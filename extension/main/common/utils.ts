@@ -1,4 +1,4 @@
-export const waitMs = async (ms: number): Promise<void> => {
+export const waitMs = (ms: number): Promise<void> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve();
