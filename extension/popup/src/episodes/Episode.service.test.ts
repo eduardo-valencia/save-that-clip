@@ -325,3 +325,11 @@ describe("trySettingTime", () => {
     });
   });
 });
+
+it.todo(
+  "Opens a new tab when clicking a bookmark when the current tab is not the bookmark's tab, even if a bookmark tab is open"
+);
+
+it.todo(
+  "Set the video's time on the current, focused tab even if there are other bookmark tabs"
+);
