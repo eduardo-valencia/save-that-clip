@@ -31,7 +31,6 @@ export class NetflixEpisodeMessageHandlers {
     const toolbar: HTMLElement | null = document.querySelector(
       '[data-uia="video-title"] span:nth-of-type(2)'
     );
-    console.log("toolbar inner text", toolbar?.innerText);
     return toolbar?.innerText || null;
   };
 
@@ -65,8 +64,6 @@ export class NetflixEpisodeMessageHandlers {
   public getEpisodeInfo = async (): Promise<NetflixEpisodeInfo> => {
     const timeInMs: PossibleEpisodeTime = this.getEpisodeTime();
     const episodeName: EpisodeName = await this.tryGettingEpisodeName();
-    console.log("time", timeInMs);
-    console.log("episode name", episodeName);
     return { timeMs: timeInMs, episodeName };
   };
 }
