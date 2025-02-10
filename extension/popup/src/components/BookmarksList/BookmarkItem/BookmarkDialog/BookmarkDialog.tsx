@@ -52,7 +52,7 @@ export const BookmarkDialog = () => {
   const renderContents = (bookmark: Bookmark): JSX.Element => {
     return (
       <Dialog open={dialogInfo.isOpen} onClose={dialogInfo.close} fullScreen>
-        <DialogToolbar endBtn={<EditingBtnAndDialog bookmark={bookmark} />} />
+        <DialogToolbar extraBtn={<EditingBtnAndDialog bookmark={bookmark} />} />
         <PageContainer>
           <Typography variant="h1" sx={{ marginBottom: "2.13rem" }}>
             Bookmark Info

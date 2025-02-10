@@ -5,10 +5,10 @@ import { DialogInfo, useDialogContext } from "./DialogInfoProvider";
 import React from "react";
 
 interface Props {
-  endBtn?: React.ReactNode;
+  extraBtn?: React.ReactNode;
 }
 
-export function DialogToolbar({ endBtn }: Props) {
+export function DialogToolbar({ extraBtn }: Props) {
   const { close }: DialogInfo = useDialogContext();
 
   return (
@@ -26,17 +26,17 @@ export function DialogToolbar({ endBtn }: Props) {
           sx={{
             width: "100%",
             display: "flex",
-            justifyContent: endBtn ? "space-between" : "flex-end",
+            justifyContent: extraBtn ? "space-between" : "flex-end",
           }}
         >
           <IconButton
-            edge={endBtn ? "start" : "end"}
+            edge={extraBtn ? "start" : "end"}
             onClick={close}
             aria-label="Close"
           >
             <CloseIcon />
           </IconButton>
-          {endBtn}
+          {extraBtn}
         </PageContainer>
       </Toolbar>
     </AppBar>
