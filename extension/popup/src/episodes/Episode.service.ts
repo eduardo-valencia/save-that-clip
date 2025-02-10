@@ -152,7 +152,7 @@ export class EpisodeService {
   ): Promise<ValidNetflixEpisodeInfo> => {
     const episodeInfo: NetflixEpisodeInfo =
       await this.sendMessageToGetEpisodeInfo(episodeTab);
-    if (!episodeInfo.timeMs)
+    if (episodeInfo.timeMs === null)
       throw new Error("Failed to get the episode's time.");
     return { ...episodeInfo, timeMs: episodeInfo.timeMs };
   };
