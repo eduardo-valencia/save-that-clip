@@ -12,6 +12,10 @@ type FindAndSetBookmarks = (resetBookmarks?: boolean) => Promise<void>;
 
 export interface BookmarksContextValue {
   bookmarks: PossibleBookmarks;
+  /**
+   * Whether it's loading for the first time, or fetching new data to replace
+   * the existing list of bookmarks.
+   */
   isRefreshing: boolean;
   findAndSetBookmarks?: FindAndSetBookmarks;
 }
@@ -21,10 +25,6 @@ const defaultBookmarks: PossibleBookmarks = null;
 const DEFAULT_IS_REFRESHING = true;
 export const BookmarksContext = createContext<BookmarksContextValue>({
   bookmarks: defaultBookmarks,
-  /**
-   * Whether it's loading for the first time, or fetching new data to replace
-   * the existing list of bookmarks.
-   */
   isRefreshing: DEFAULT_IS_REFRESHING,
 });
 

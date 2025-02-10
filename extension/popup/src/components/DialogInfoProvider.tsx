@@ -1,23 +1,17 @@
-import React, {
-  useState,
-  createContext,
-  useContext,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useState, createContext, useCallback, useMemo } from "react";
+import { createContextGetterHook } from "../utils/client.utils";
 
 type IsOpen = boolean;
 type CloseOrOpen = () => void;
-
 export interface DialogInfo {
   isOpen: IsOpen;
   setIsOpen: (newIsOpen: IsOpen) => void;
   close: CloseOrOpen;
   open: CloseOrOpen;
 }
-
 export type EssentialDialogControls = Pick<DialogInfo, "setIsOpen" | "isOpen">;
 type PossibleDialogControls = Partial<EssentialDialogControls>;
+
 export const useDialogInfo = ({
   isOpen: customIsOpen,
   setIsOpen: customSetIsOpen,
@@ -28,11 +22,11 @@ export const useDialogInfo = ({
   const setIsOpen: DialogInfo["setIsOpen"] =
     customSetIsOpen ?? setIsOpenFromDefaultHook;
 
-  const close = useCallback(() => {
+  const close: CloseOrOpen = useCallback(() => {
     setIsOpen(false);
   }, [setIsOpen]);
 
-  const open = useCallback(() => {
+  const open: CloseOrOpen = useCallback(() => {
     setIsOpen(true);
   }, [setIsOpen]);
 
@@ -51,11 +45,10 @@ export const useDialogInfo = ({
 type PossibleDialogInfo = DialogInfo | null;
 export const DialogContext = createContext<PossibleDialogInfo>(null);
 
-export const useDialogContext = (): DialogInfo => {
-  const value: PossibleDialogInfo = useContext(DialogContext);
-  if (value) return value;
-  throw new Error("Dialog context is missing");
-};
+export const useDialogContext = createContextGetterHook(
+  DialogContext,
+  "Dialog context"
+);
 
 interface Props extends PossibleDialogControls {
   children: React.ReactNode;
