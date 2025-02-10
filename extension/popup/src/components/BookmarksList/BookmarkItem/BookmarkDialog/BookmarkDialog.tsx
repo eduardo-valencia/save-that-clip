@@ -26,8 +26,8 @@ export const BookmarkDialog = () => {
   const { bookmarks }: BookmarksContextValue = useBookmarksContext();
 
   const setIsOpen = useCallback(
-    (newIsOpen: boolean) => {
-      if (newIsOpen) throw new Error("Open functionality not implemented");
+    (shouldOpen: boolean) => {
+      if (shouldOpen) throw new Error("Open functionality not implemented");
       setIdOfBookmarkToView(null);
     },
     [setIdOfBookmarkToView]
