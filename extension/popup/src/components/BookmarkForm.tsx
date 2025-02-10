@@ -70,6 +70,7 @@ export function BookmarkForm({ onSubmit, defaultValues }: BookmarkFormProps) {
     void trySavingBookmarkAndUpdateIsLoading();
   };
 
+  const isLoading: boolean = isSubmitting || isRefreshingBookmarks;
   /**
    * We don't set a progressElementId on the loading indicator here because that
    * only enhances accessibility when the user expects a section to load and the
@@ -81,13 +82,13 @@ export function BookmarkForm({ onSubmit, defaultValues }: BookmarkFormProps) {
     <form onSubmit={handleSubmission}>
       <Box sx={{ marginBottom: "4.13rem" }}>
         {error ? <FormError errorInfo={error} /> : null}
-        {isSubmitting || isRefreshingBookmarks ? (
+        {isLoading ? (
           <LoadingIndicator />
         ) : (
           <BookmarkNameField setName={setName} name={name} />
         )}
       </Box>
-      {isSubmitting ? null : <FormButtonsToolbar />}
+      {isLoading ? null : <FormButtonsToolbar />}
     </form>
   );
 }
