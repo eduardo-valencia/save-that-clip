@@ -13,12 +13,13 @@ jest.mock("../common/chrome.service", () => {
  */
 import { Message, Messages } from "../common/messages";
 import "../content-script";
+import { NetflixEpisodeInfo } from "./NetflixEpisodeMessageHandler.service";
 
 const { sendMessage } = new MessageListenerTestUtils();
 
-const sendMessageToGetTime = (): Promise<unknown> => {
-  const message: Message = { type: Messages.getEpisodeTime };
-  return sendMessage({ message });
+const sendMessageToGetInfo = () => {
+  const message: Message = { type: Messages.getNetflixEpisodeInfo };
+  return sendMessage({ message }) as Promise<NetflixEpisodeInfo>;
 };
 
 afterEach(() => {
@@ -47,13 +48,13 @@ describe("When the video element exists", () => {
   });
 
   it("Responds with the time", async () => {
-    const response: unknown = await sendMessageToGetTime();
+    const response: NetflixEpisodeInfo = await sendMessageToGetInfo();
     const timeInMs = videoTimeSeconds * 1000;
-    expect(response).toEqual(timeInMs);
+    expect(response.timeMs).toEqual(timeInMs);
   });
 });
 
-it("Responds with null when the video element does not exist", async () => {
-  const response: unknown = await sendMessageToGetTime();
-  expect(response).toBeNull();
+it("Responds with a null time when the video element does not exist", async () => {
+  const response: NetflixEpisodeInfo = await sendMessageToGetInfo();
+  expect(response.timeMs).toBeNull();
 });

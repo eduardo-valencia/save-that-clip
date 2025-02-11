@@ -137,6 +137,10 @@ const copyLicense = (): ReadWriteStream => {
 /**
  * * Other
  */
+/**
+ * Note that if we decide to set the NODE_ENV here programmatically, we should
+ * ensure it will never accidentally apply to other Gulp tasks.
+ */
 export const build = parallel(
   buildPopup,
   buildContentScript,

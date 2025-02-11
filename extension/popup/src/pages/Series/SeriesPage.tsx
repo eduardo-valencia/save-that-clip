@@ -17,6 +17,7 @@ import {
   BookmarksContextValue,
   BookmarksContext,
 } from "../../components/BookmarksProvider";
+import { BookmarkDialogAndProvider } from "../../components/BookmarkDialogAndProvider/BookmarkDialogAndProvider";
 
 type PossibleBookmarks = BookmarksContextValue["bookmarks"];
 
@@ -50,13 +51,21 @@ const SeriesPage = () => {
 
   return (
     <Layout>
-      <ToolbarWithBackButton />
-      <HeaderWithBookmarkCreationButton title={displayName} />
-      {query ? (
-        <BookmarkSearchResults possibleBookmarks={possibleBookmarks} />
-      ) : (
-        <BookmarksListWithLoader possibleBookmarks={possibleBookmarks} />
-      )}
+      <BookmarkDialogAndProvider>
+        <ToolbarWithBackButton />
+        <HeaderWithBookmarkCreationButton title={displayName} />
+        {query ? (
+          <BookmarkSearchResults
+            possibleBookmarks={possibleBookmarks}
+            showEpisode
+          />
+        ) : (
+          <BookmarksListWithLoader
+            possibleBookmarks={possibleBookmarks}
+            showEpisode
+          />
+        )}
+      </BookmarkDialogAndProvider>
     </Layout>
   );
 };

@@ -1,9 +1,10 @@
 import React from "react";
 import { BookmarksContextValue } from "../BookmarksProvider";
 import BookmarksLoadingIndicator from "../BookmarksLoadingIndicator";
-import BookmarksList from "./BookmarksList";
+import BookmarksList, { BookmarkListProps } from "./BookmarksList";
 
-export interface BookmarksListWithLoaderProps {
+export interface BookmarksListWithLoaderProps
+  extends Partial<Omit<BookmarkListProps, "bookmarks">> {
   possibleBookmarks: BookmarksContextValue["bookmarks"];
 }
 
@@ -13,14 +14,12 @@ export interface BookmarksListWithLoaderProps {
  */
 export default function BookmarksListWithLoader({
   possibleBookmarks,
+  ...other
 }: BookmarksListWithLoaderProps) {
   return (
-    <BookmarksLoadingIndicator
-      progressElementId="bookmarks-progress"
-      possibleBookmarks={possibleBookmarks}
-    >
+    <BookmarksLoadingIndicator progressElementId="bookmarks-progress">
       {possibleBookmarks ? (
-        <BookmarksList bookmarks={possibleBookmarks} />
+        <BookmarksList bookmarks={possibleBookmarks} {...other} />
       ) : null}
     </BookmarksLoadingIndicator>
   );

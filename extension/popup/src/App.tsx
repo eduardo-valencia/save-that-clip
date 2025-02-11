@@ -43,7 +43,17 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyles
-        styles={{ html: { minWidth: "320px", minHeight: "500px" } }}
+        styles={{
+          html: {
+            minWidth: "320px",
+            minHeight: "500px",
+            /**
+             * TODO: Find a way to move this into the Layout instead. What if we
+             * need to show scrollbars in some pages, but not others?
+             */
+            "::-webkit-scrollbar": { display: "none" },
+          },
+        }}
       />
       <SearchProvider>
         <BookmarksProvider>

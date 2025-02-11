@@ -2,6 +2,7 @@ import { Button } from "@mui/material";
 import { Bookmark } from "../../../bookmarks/Bookmarks.repo-abstraction";
 import ResourceItemTitle from "../../ResourceItemTitle";
 import { BookmarksService } from "../../../bookmarks/Bookmarks.service";
+import _ from "lodash";
 
 interface Props {
   bookmark: Bookmark;
@@ -31,7 +32,9 @@ export default function BookmarkTitle({ bookmark }: Props) {
         textAlign: "left",
       }}
     >
-      <ResourceItemTitle>{bookmark.name}</ResourceItemTitle>
+      <ResourceItemTitle>
+        {_.truncate(bookmark.name, { length: 45 })}
+      </ResourceItemTitle>
     </Button>
   );
 }

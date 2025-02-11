@@ -11,7 +11,7 @@
 import { EpisodeTime } from "../../../main/common/messages";
 import {
   EpisodeService,
-  EpisodeTabAndTime,
+  EpisodeTabAndInfo,
   PossibleTab,
   ResultOfSettingTime,
 } from "./Episode.service";
@@ -19,6 +19,7 @@ import { TabsFactory } from "../tabs/Tabs.factory";
 import { MockedTabsRepo } from "../tabs/MockedTabs.repo";
 import { InjectionResult } from "../scripts/Scripts.repo-abstraction";
 import { MockedScriptsRepo } from "../scripts/MockedScripts.repo";
+import { NetflixEpisodeInfo } from "../../../main/contentScripts/NetflixEpisodeMessageHandler.service";
 
 /**
  * Repos and services
@@ -27,7 +28,7 @@ const mockedTabsRepo = new MockedTabsRepo();
 const mockedScriptsRepo = new MockedScriptsRepo();
 
 const {
-  get1stEpisodeTabAndTime: findTimeOf1stEpisodeTab,
+  get1stEpisodeTabAndInfo,
   findOneEpisodeTab,
   findOneEpisodeTabWithSamePathAsUrl: findOneEpisodeTabByUrl,
   trySettingTime: setTime,
@@ -116,7 +117,7 @@ describe("findOneEpisodeTab", () => {
 
 describe("getTimeOf1stEpisodeTab", () => {
   const callMethodAndExpectError = async (): Promise<void> => {
-    const promise: Promise<EpisodeTabAndTime> = findTimeOf1stEpisodeTab();
+    const promise: Promise<EpisodeTabAndInfo> = get1stEpisodeTabAndInfo();
     await expect(promise).rejects.toBeTruthy();
   };
 
@@ -125,7 +126,14 @@ describe("getTimeOf1stEpisodeTab", () => {
 
     const mockTimeResponse = (): EpisodeTime => {
       const mockedEpisodeTime: EpisodeTime = 1000;
-      mockedTabsRepo.sendMessage.mockResolvedValue(mockedEpisodeTime);
+      const episodeInfo: NetflixEpisodeInfo = {
+        timeMs: mockedEpisodeTime,
+        episodeName: null,
+      };
+      // TODO: Improve type for sendMessage. Maybe this mock should have types
+      // by default. Furthermore, maybe the actual sendMessage func should have
+      // a return type by default.
+      mockedTabsRepo.sendMessage.mockResolvedValue(episodeInfo);
       return mockedEpisodeTime;
     };
 
@@ -135,8 +143,8 @@ describe("getTimeOf1stEpisodeTab", () => {
     });
 
     it("Returns the episode's time", async () => {
-      const { time }: EpisodeTabAndTime = await findTimeOf1stEpisodeTab();
-      expect(time).toEqual(mockedEpisodeTime);
+      const { info }: EpisodeTabAndInfo = await get1stEpisodeTabAndInfo();
+      expect(info.timeMs).toEqual(mockedEpisodeTime);
     });
   });
 
@@ -317,3 +325,11 @@ describe("trySettingTime", () => {
     });
   });
 });
+
+it.todo(
+  "Opens a new tab when clicking a bookmark when the current tab is not the bookmark's tab, even if a bookmark tab is open"
+);
+
+it.todo(
+  "Set the video's time on the current, focused tab even if there are other bookmark tabs"
+);

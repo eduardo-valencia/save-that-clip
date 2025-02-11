@@ -6,7 +6,7 @@
 
 import { getChrome } from "./common/chrome.service";
 import { Message, Messages } from "./common/messages";
-import { NetflixEpisodeMessageHandlers } from "./contentScripts/NetflixEpisodeTime.service";
+import { NetflixEpisodeMessageHandlers } from "./contentScripts/NetflixEpisodeMessageHandler.service";
 
 export type Runtime = typeof chrome.runtime;
 
@@ -28,7 +28,7 @@ type MessageHandlers = {
 
 const getMessageHandlers = (): MessageHandlers => {
   return {
-    [Messages.getEpisodeTime]: netflixMessageHandlers.sendEpisodeTime,
+    [Messages.getNetflixEpisodeInfo]: netflixMessageHandlers.getEpisodeInfo,
   };
 };
 
@@ -37,15 +37,30 @@ const getMessageHandlerFromType = (type: Messages): MessageHandler => {
   return handlers[type];
 };
 
+/**
+ * Note that this cannot be an async function. Otherwise, messaging won't work.
+ * See https://developer.chrome.com/docs/extensions/develop/concepts/messaging
+ * for more info.
+ */
 const handleMessage = (
   message: Message,
   sender: Sender,
   sendResponse: SendResponse
-): undefined => {
+): true => {
   const handler: MessageHandler = getMessageHandlerFromType(message.type);
-  const response: unknown = handler(message, sender);
-  sendResponse(response);
-  return undefined;
+
+  const getResAndSendIt = async (): Promise<void> => {
+    const response: unknown = await handler(message, sender);
+    sendResponse(response);
+  };
+
+  void getResAndSendIt();
+
+  /**
+   * Because we must return true if we are asynchronously sending the response.
+   * This allows us to call sendResponse at a later time.
+   */
+  return true;
 };
 
 const listenToMessages = (): void => {

@@ -12,6 +12,10 @@ export interface Bookmark {
   name: string;
   episodeUrl: string;
   seriesName: SeriesName | null;
+  /**
+   * This is optional because some old bookmarks don't have episode names.
+   */
+  episodeName?: string | null;
   timeMs: number;
 }
 
