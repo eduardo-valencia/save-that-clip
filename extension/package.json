@@ -35,7 +35,8 @@
     "test": "run-p main-test popup-test",
     "lint-ts": "run-p main-lint-ts popup-lint-ts",
     "lint": "npm run lint-ts",
-    "dev": "npx gulp dev"
+    "dev": "npx gulp dev",
+    "build": "npx gulp build"
   },
   "browserslist": {
     "production": [

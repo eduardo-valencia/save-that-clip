@@ -23,7 +23,7 @@ You can provide the following environment variables in the app. They are optiona
 
 ### General commands
 
-#### `npx gulp build`
+#### `npm run build`
 
 Builds the popup and the "main" folder's files and copies them into the extension's build folder, `build`, so that we can load it into Chrome. This also generates the licensing info.
 
