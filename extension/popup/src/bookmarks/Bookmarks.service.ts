@@ -135,7 +135,7 @@ export class BookmarksService {
     return url.href;
   };
 
-  private openBookmarkTabAtTime = async (bookmark: Bookmark): Promise<Tab> => {
+  public openBookmarkTabAtTime = async (bookmark: Bookmark): Promise<Tab> => {
     return this.tabsRepo.create({
       active: true,
       url: this.getUrlWithTime(bookmark),
@@ -197,7 +197,7 @@ export class BookmarksService {
    * watching multiple Netflix videos in multiple tabs. If we did not do
    * this, the new tab wouldn't be able to play the video.
    */
-  private closeExtraEpisodeTabs = async (upsertedTab: Tab): Promise<void> => {
+  public closeExtraEpisodeTabs = async (upsertedTab: Tab): Promise<void> => {
     const tabs: Tab[] = await this.tabsRepo.query({});
     const getIfMustClose = this.getAddTabToClose(upsertedTab);
     const idsToClose: TabIds = tabs.reduce(getIfMustClose, []);
