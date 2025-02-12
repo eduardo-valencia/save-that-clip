@@ -15,7 +15,7 @@ import {
   RepoFieldsToCreateBookmark as RepoCreationFields,
 } from "./Bookmarks.repo-abstraction";
 import { TabsRepo } from "../tabs/Tabs.repo";
-import { TabsRepoAbstraction } from "../tabs/Tabs.repo-abstraction";
+import { Tab, TabsRepoAbstraction } from "../tabs/Tabs.repo-abstraction";
 import { ErrorReporterService } from "../errorReporter/ErrorReporter.service";
 import { NotFoundError } from "../errors/NotFound.error";
 
@@ -28,6 +28,8 @@ interface Options {
 }
 
 type EpisodeUrlAndTime = Pick<RepoCreationFields, "episodeUrl" | "timeMs">;
+
+type TabIds = number[];
 
 export class BookmarksService {
   private repo = new BookmarksRepo();
@@ -133,8 +135,8 @@ export class BookmarksService {
     return url.href;
   };
 
-  private openBookmarkTabAtTime = async (bookmark: Bookmark): Promise<void> => {
-    await this.tabsRepo.create({
+  public openBookmarkTabAtTime = async (bookmark: Bookmark): Promise<Tab> => {
+    return this.tabsRepo.create({
       active: true,
       url: this.getUrlWithTime(bookmark),
     });
@@ -147,31 +149,63 @@ export class BookmarksService {
     );
   };
 
-  private handleFailingToSetTime = async (
-    bookmark: Bookmark
-  ): Promise<void> => {
-    await this.openBookmarkTabAtTime(bookmark);
+  private handleFailingToSetTime = async (bookmark: Bookmark): Promise<Tab> => {
+    const tab: Tab = await this.openBookmarkTabAtTime(bookmark);
     this.reportFailingToSetTime();
+    return tab;
   };
 
-  private setTimeOrOpenNewTab = async (bookmark: Bookmark): Promise<void> => {
+  private setTimeOrOpenNewTab = async (
+    bookmarkTab: Tab,
+    bookmark: Bookmark
+  ): Promise<Tab> => {
     const result: ResultOfSettingTime =
       await this.episodeService.trySettingTime(bookmark.timeMs);
-    if (!result.success) await this.handleFailingToSetTime(bookmark);
+    if (result.success) return bookmarkTab;
+    return this.handleFailingToSetTime(bookmark);
   };
 
   private createBookmarkTabOrUpdateIt = async (
     bookmark: Bookmark,
     tab: PossibleTab
-  ): Promise<void> => {
-    if (tab) await this.setTimeOrOpenNewTab(bookmark);
-    else await this.openBookmarkTabAtTime(bookmark);
+  ): Promise<Tab> => {
+    if (tab) return this.setTimeOrOpenNewTab(tab, bookmark);
+    return this.openBookmarkTabAtTime(bookmark);
   };
 
-  public open = async (id: Bookmark["id"]): Promise<void> => {
+  private findBookmarkAndUpsertItsTab = async (
+    id: Bookmark["id"]
+  ): Promise<Tab> => {
     const bookmark: Bookmark = await this.getById(id);
     const findTab = this.episodeService.findOneEpisodeTabWithSamePathAsUrl;
     const tab: PossibleTab = await findTab(bookmark.episodeUrl);
-    await this.createBookmarkTabOrUpdateIt(bookmark, tab);
+    return this.createBookmarkTabOrUpdateIt(bookmark, tab);
+  };
+
+  private getAddTabToClose = (upsertedTab: Tab) => {
+    return (tabIdsToClose: TabIds, tab: Tab): TabIds => {
+      const isEpisodeTab: boolean =
+        this.episodeService.getIfTabHasUrlLikeEpisode(tab);
+
+      const shouldClose: boolean = isEpisodeTab && tab.id !== upsertedTab.id;
+      return shouldClose && tab.id ? [...tabIdsToClose, tab.id] : tabIdsToClose;
+    };
+  };
+
+  /**
+   * We close all other episode tabs because Netflix doesn't like people
+   * watching multiple Netflix videos in multiple tabs. If we did not do
+   * this, the new tab wouldn't be able to play the video.
+   */
+  public closeExtraEpisodeTabs = async (upsertedTab: Tab): Promise<void> => {
+    const tabs: Tab[] = await this.tabsRepo.query({});
+    const getIfMustClose = this.getAddTabToClose(upsertedTab);
+    const idsToClose: TabIds = tabs.reduce(getIfMustClose, []);
+    await this.tabsRepo.remove(idsToClose);
+  };
+
+  public open = async (id: Bookmark["id"]): Promise<void> => {
+    const upsertedTab: Tab = await this.findBookmarkAndUpsertItsTab(id);
+    await this.closeExtraEpisodeTabs(upsertedTab);
   };
 }

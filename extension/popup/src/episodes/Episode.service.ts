@@ -4,7 +4,7 @@
 
 import { EpisodeTime, Message, Messages } from "../../../main/common/messages";
 import { TabsRepo } from "../tabs/Tabs.repo";
-import { TabsRepoAbstraction } from "../tabs/Tabs.repo-abstraction";
+import { Tab, TabsRepoAbstraction } from "../tabs/Tabs.repo-abstraction";
 import { Bookmark } from "../bookmarks/Bookmarks.repo-abstraction";
 import {
   InjectionResult,
@@ -18,8 +18,6 @@ interface Options {
   tabsRepo?: TabsRepoAbstraction;
   scriptsRepo?: ScriptsRepoAbstraction;
 }
-
-type Tab = chrome.tabs.Tab;
 
 export type PossibleTab = Tab | null;
 
@@ -113,7 +111,7 @@ export class EpisodeService {
     return tabWithUrl || null;
   };
 
-  private getIfTabHasUrlLikeEpisode = ({ url }: Tab): boolean => {
+  public getIfTabHasUrlLikeEpisode = ({ url }: Tab): boolean => {
     if (!url) return false;
     const episodeUrlPattern = /.+\/watch\/\d+/;
     const match: RegExpMatchArray | null = url.match(episodeUrlPattern);
