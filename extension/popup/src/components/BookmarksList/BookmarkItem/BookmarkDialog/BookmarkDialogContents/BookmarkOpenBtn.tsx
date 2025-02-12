@@ -23,8 +23,8 @@ export const BookmarkOpenBtn = ({ bookmark }: Props) => {
 
   return (
     <>
-      {/* Note that we need this link just in case the func that open the bookmark
-          while on the episode's tab breaks. */}
+      {/* Note that we need this link so the user can open the tab even if
+      the functionality to set the video's time is broken */}
       <Button variant="contained" onClick={handleClick} endIcon={<OpenInNew />}>
         Open
       </Button>
