@@ -9,7 +9,7 @@ type QueryInfo = QueryParameters["0"];
 type Create = ChromeTabs["create"];
 type CreateParameters = Parameters<Create>;
 
-type Tab = chrome.tabs.Tab;
+export type Tab = chrome.tabs.Tab;
 
 export abstract class TabsRepoAbstraction {
   abstract sendMessage: (tabId: number, message: Message) => Promise<unknown>;
@@ -20,4 +20,6 @@ export abstract class TabsRepoAbstraction {
   abstract query: (queryInfo: Omit<QueryInfo, "url">) => Promise<Tab[]>;
 
   abstract create: (creationFields: CreateParameters[0]) => Promise<Tab>;
+
+  abstract remove: (ids: number[]) => Promise<void>;
 }

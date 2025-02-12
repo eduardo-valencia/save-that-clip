@@ -6,4 +6,6 @@ export class TabsRepo extends TabsRepoAbstraction {
   public query = chrome.tabs.query;
 
   public create = chrome.tabs.create;
+
+  public remove = chrome.tabs.remove;
 }
