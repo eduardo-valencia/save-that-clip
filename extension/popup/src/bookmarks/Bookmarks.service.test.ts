@@ -122,6 +122,15 @@ const mockServicesAndGenerateUniqueBookmark = (): Promise<BookmarkInfo> => {
 };
 
 /**
+ * ! Important
+ *
+ * We mock certain things here
+ */
+beforeEach(() => {
+  mockedTabsRepo.query.mockResolvedValue([]);
+});
+
+/**
  * We must reset and clear the mocks to avoid tests interfering with each other.
  */
 afterEach(() => {
