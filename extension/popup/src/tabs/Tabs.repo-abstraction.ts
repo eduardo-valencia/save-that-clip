@@ -11,6 +11,11 @@ type CreateParameters = Parameters<Create>;
 
 export type Tab = chrome.tabs.Tab;
 
+/**
+ * Note that we might not be able to use the types from chrome.tabs to define
+ * the methods here because those have overloads, and we don't want to have to
+ * mock the overloads
+ */
 export abstract class TabsRepoAbstraction {
   abstract sendMessage: (tabId: number, message: Message) => Promise<unknown>;
 

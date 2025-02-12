@@ -29,7 +29,7 @@ interface Options {
 
 type EpisodeUrlAndTime = Pick<RepoCreationFields, "episodeUrl" | "timeMs">;
 
-type TabIds = Tab["id"][];
+type TabIds = number[];
 
 export class BookmarksService {
   private repo = new BookmarksRepo();
@@ -186,23 +186,26 @@ export class BookmarksService {
     return (tabIdsToClose: TabIds, tab: Tab): TabIds => {
       const isEpisodeTab: boolean =
         this.episodeService.getIfTabHasUrlLikeEpisode(tab);
-      /**
-       * We close all other episode tabs because Netflix doesn't like people
-       * watching multiple Netflix videos in multiple tabs. If we did not do
-       * this, the new tab wouldn't be able to play the video.
-       */
+
       const shouldClose: boolean = isEpisodeTab && tab.id !== upsertedTab.id;
-      return shouldClose ? [...tabIdsToClose, tab.id] : tabIdsToClose;
+      return shouldClose && tab.id ? [...tabIdsToClose, tab.id] : tabIdsToClose;
     };
   };
 
-  private closeTabs = async (upsertedTab: Tab, tabs: Tab[]): Promise<void> => {
+  /**
+   * We close all other episode tabs because Netflix doesn't like people
+   * watching multiple Netflix videos in multiple tabs. If we did not do
+   * this, the new tab wouldn't be able to play the video.
+   */
+  private closeExtraEpisodeTabs = async (upsertedTab: Tab): Promise<void> => {
+    const tabs: Tab[] = await this.tabsRepo.query({});
     const getIfMustClose = this.getAddTabToClose(upsertedTab);
     const idsToClose: TabIds = tabs.reduce(getIfMustClose, []);
     await this.tabsRepo.remove(idsToClose);
   };
 
   public open = async (id: Bookmark["id"]): Promise<void> => {
-    await this.findBookmarkAndUpsertItsTab(id);
+    const upsertedTab: Tab = await this.findBookmarkAndUpsertItsTab(id);
+    await this.closeExtraEpisodeTabs(upsertedTab);
   };
 }
