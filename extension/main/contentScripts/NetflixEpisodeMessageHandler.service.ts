@@ -55,9 +55,21 @@ export class NetflixEpisodeMessageHandlers {
     return this.findEpisodeName();
   };
 
+  private getOrFindEpisodeName = async (
+    video: HTMLVideoElement
+  ): Promise<EpisodeName> => {
+    /**
+     * We check if the ep name is already there because we don't want to click
+     * on the video if the toolbar is already showing. Otherwise, it will cause
+     * the video to play.
+     */
+    const epName: EpisodeName = this.findEpisodeName();
+    return epName ? epName : this.clickVideoAndWaitForEpisodeName(video);
+  };
+
   private tryGettingEpisodeName = async (): Promise<EpisodeName> => {
     const video: PossibleVideo = this.queryVideo();
-    if (video) return this.clickVideoAndWaitForEpisodeName(video);
+    if (video) return this.getOrFindEpisodeName(video);
     return null;
   };
 
