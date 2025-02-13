@@ -39,6 +39,10 @@ export class NetflixEpisodeMessageHandlers {
     return Boolean(name);
   };
 
+  /**
+   * Note that we shouldn't set the delay too long here because there might not
+   * be an episode name in the first place. Ex: If the user is watching a movie.
+   */
   private waitForEpisodeName = async (): Promise<void> => {
     await retryAndGetIfSucceeded({
       getIfConditionMet: this.getIfEpisodeNameFound,
