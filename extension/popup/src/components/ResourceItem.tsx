@@ -13,6 +13,9 @@ export default function ResourceItem({ sx = {}, ...other }: BoxProps) {
         paddingBottom: "0.88rem",
         borderBottom: "0.0625rem solid #A9ABBD",
         listStyle: "none",
+        ":last-of-type": {
+          borderBottom: "none",
+        },
         ...sx,
       }}
       {...other}
