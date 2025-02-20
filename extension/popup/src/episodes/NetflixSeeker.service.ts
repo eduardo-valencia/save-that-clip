@@ -11,7 +11,7 @@ declare const netflix: any;
 /**
  * This class's methods are being injected into the Netflix episode's tab.
  */
-class NetflixSeekerService {
+export class NetflixSeekerService {
   private getIfAdIsShowing = (): boolean => {
     const adsInfoContainer = document.querySelector(
       '[data-uia="ads-info-container"]'
@@ -52,5 +52,3 @@ class NetflixSeekerService {
     return { success: true };
   };
 }
-
-export const netflixSeekerService = new NetflixSeekerService();

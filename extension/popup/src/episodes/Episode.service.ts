@@ -13,7 +13,7 @@ import {
 import { ScriptsRepo } from "../scripts/Scripts.repo";
 import { NetflixEpisodeInfo } from "../../../main/contentScripts/NetflixEpisodeMessageHandler.service";
 import { waitMs } from "../../../main/common/utils";
-import { netflixSeekerService } from "./NetflixSeeker.service";
+import { NetflixSeekerService } from "./NetflixSeeker.service";
 
 interface Options {
   tabsRepo?: TabsRepoAbstraction;
@@ -177,6 +177,11 @@ export class EpisodeService {
     return tab.id!;
   };
 
+  private seek = (timeMs: Bookmark["timeMs"]): ResultOfSettingTime => {
+    const netflixSeekerService = new NetflixSeekerService();
+    return netflixSeekerService.seek(timeMs);
+  };
+
   private injectScriptToSetTime = async (
     timeMs: Bookmark["timeMs"]
   ): Promise<InjectionResult[]> => {
@@ -185,7 +190,7 @@ export class EpisodeService {
       /**
        * We overwrite the type because Chrome's types are wrong.
        */
-      func: netflixSeekerService.seek as unknown as InjectedFunc,
+      func: this.seek as unknown as InjectedFunc,
       args: [timeMs],
       world: "MAIN",
     });
