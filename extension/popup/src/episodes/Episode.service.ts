@@ -174,6 +174,25 @@ export class EpisodeService {
     return { info, tab: episodeTab };
   };
 
+  private getIfAdIsShowing = (): boolean => {
+    const adsInfoContainer = document.querySelector(
+      '[data-uia="ads-info-container"]'
+    );
+    return Boolean(adsInfoContainer);
+  };
+
+  private getIfCanSeekTime = (): boolean => {
+    const isAdShowing: boolean = this.getIfAdIsShowing();
+    /**
+     * If the video isn't on the page, it could mean that the page is loading
+     * for too long. Regardless of the reason, it would mean that the user would
+     * think that the extension isn't opening the actual bookmark. So, we return
+     * false so we can move on to the fallback strategy.
+     */
+    const video: HTMLVideoElement | null = document.querySelector("video");
+    return isAdShowing && Boolean(video);
+  };
+
   /**
    * * This function is being injected into the Netflix episode's tab.
    *
@@ -186,14 +205,8 @@ export class EpisodeService {
   private setTimeInBrowser = (
     timeMs: Bookmark["timeMs"]
   ): ResultOfSettingTime => {
-    const video: HTMLVideoElement | null = document.querySelector("video");
-    /**
-     * If the video isn't on the page, it could mean that the page is loading
-     * for too long. Regardless of the reason, it would mean that the user would
-     * think that the extension isn't opening the actual bookmark. So, we return
-     * false so we can move on to the fallback strategy.
-     */
-    if (!video) return { success: false };
+    const canSeekTime: boolean = this.getIfCanSeekTime();
+    if (!canSeekTime) return { success: false };
 
     const { videoPlayer } = netflix.appContext.state.playerApp.getAPI();
     const [sessionId] = videoPlayer.getAllPlayerSessionIds();
