@@ -31,10 +31,7 @@ export class NetflixSeekerService {
     return !isAdShowing && Boolean(video);
   };
 
-  public seek = (timeMs: Bookmark["timeMs"]): ResultOfSettingTime => {
-    const canSeekTime: boolean = this.getIfCanSeekTime();
-    if (!canSeekTime) return { success: false };
-
+  private seekWithNetflixApi = (timeMs: Bookmark["timeMs"]): void => {
     /* eslint-disable @typescript-eslint/no-unsafe-return */
     /* eslint-disable @typescript-eslint/no-unsafe-member-access */
     /* eslint-disable @typescript-eslint/no-unsafe-call */
@@ -48,7 +45,12 @@ export class NetflixSeekerService {
     /* eslint-enable @typescript-eslint/no-unsafe-member-access */
     /* eslint-enable @typescript-eslint/no-unsafe-call */
     /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+  };
 
+  public seekIfPossible = (timeMs: Bookmark["timeMs"]): ResultOfSettingTime => {
+    const canSeekTime: boolean = this.getIfCanSeekTime();
+    if (!canSeekTime) return { success: false };
+    this.seekWithNetflixApi(timeMs);
     return { success: true };
   };
 }

@@ -179,7 +179,7 @@ export class EpisodeService {
 
   private seek = (timeMs: Bookmark["timeMs"]): ResultOfSettingTime => {
     const netflixSeekerService = new NetflixSeekerService();
-    return netflixSeekerService.seek(timeMs);
+    return netflixSeekerService.seekIfPossible(timeMs);
   };
 
   private injectScriptToSetTime = async (
