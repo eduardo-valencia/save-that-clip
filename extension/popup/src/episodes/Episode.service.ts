@@ -174,27 +174,15 @@ export class EpisodeService {
     return { info, tab: episodeTab };
   };
 
-  private getIfAdIsShowing = (): boolean => {
-    const adsInfoContainer = document.querySelector(
-      '[data-uia="ads-info-container"]'
-    );
-    return Boolean(adsInfoContainer);
-  };
-
-  private getIfCanSeekTime = (): boolean => {
-    const isAdShowing: boolean = this.getIfAdIsShowing();
-    /**
-     * If the video isn't on the page, it could mean that the page is loading
-     * for too long. Regardless of the reason, it would mean that the user would
-     * think that the extension isn't opening the actual bookmark. So, we return
-     * false so we can move on to the fallback strategy.
-     */
-    const video: HTMLVideoElement | null = document.querySelector("video");
-    return isAdShowing && Boolean(video);
-  };
-
   /**
-   * * This function is being injected into the Netflix episode's tab.
+   * This function is being injected into the Netflix episode's tab.
+   *
+   *
+   * * Please note the following when making changes
+   *
+   * This function cannot access any other methods because they will be out of
+   * scope when the function is injected. It might still be able to access
+   * imports, though.
    *
    * TODO: Maybe stop assuming that any of these properties will exist
    */
@@ -205,7 +193,26 @@ export class EpisodeService {
   private setTimeInBrowser = (
     timeMs: Bookmark["timeMs"]
   ): ResultOfSettingTime => {
-    const canSeekTime: boolean = this.getIfCanSeekTime();
+    const getIfAdIsShowing = (): boolean => {
+      const adsInfoContainer = document.querySelector(
+        '[data-uia="ads-info-container"]'
+      );
+      return Boolean(adsInfoContainer);
+    };
+
+    const getIfCanSeekTime = (): boolean => {
+      const isAdShowing: boolean = getIfAdIsShowing();
+      /**
+       * If the video isn't on the page, it could mean that the page is loading
+       * for too long. Regardless of the reason, it would mean that the user would
+       * think that the extension isn't opening the actual bookmark. So, we return
+       * false so we can move on to the fallback strategy.
+       */
+      const video: HTMLVideoElement | null = document.querySelector("video");
+      return !isAdShowing && Boolean(video);
+    };
+
+    const canSeekTime: boolean = getIfCanSeekTime();
     if (!canSeekTime) return { success: false };
 
     const { videoPlayer } = netflix.appContext.state.playerApp.getAPI();
@@ -286,7 +293,8 @@ export class EpisodeService {
     return { success: this.getIfWasSuccessful(results) };
   };
 
-  // TODO: Maybe return a reason from here, and send the reason it timed out to Sentry
+  // TODO: Maybe return a reason from here, and send the reason it timed out to
+  // Sentry Alternatively, log it some other way
   public trySettingTime = (
     timeMs: Bookmark["timeMs"]
   ): Promise<ResultOfSettingTime> => {
