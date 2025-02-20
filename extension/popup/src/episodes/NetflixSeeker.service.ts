@@ -12,27 +12,27 @@ declare const netflix: any;
  * This class's methods are being injected into the Netflix episode's tab.
  */
 export class NetflixSeekerService {
+  private getIfAdIsShowing = (): boolean => {
+    const adsInfoContainer = document.querySelector(
+      '[data-uia="ads-info-container"]'
+    );
+    return Boolean(adsInfoContainer);
+  };
+
+  private getIfCanSeekTime = (): boolean => {
+    const isAdShowing: boolean = this.getIfAdIsShowing();
+    /**
+     * If the video isn't on the page, it could mean that the page is loading
+     * for too long. Regardless of the reason, it would mean that the user would
+     * think that the extension isn't opening the actual bookmark. So, we return
+     * false so we can move on to the fallback strategy.
+     */
+    const video: HTMLVideoElement | null = document.querySelector("video");
+    return !isAdShowing && Boolean(video);
+  };
+
   public seek = (timeMs: Bookmark["timeMs"]): ResultOfSettingTime => {
-    const getIfAdIsShowing = (): boolean => {
-      const adsInfoContainer = document.querySelector(
-        '[data-uia="ads-info-container"]'
-      );
-      return Boolean(adsInfoContainer);
-    };
-
-    const getIfCanSeekTime = (): boolean => {
-      const isAdShowing: boolean = getIfAdIsShowing();
-      /**
-       * If the video isn't on the page, it could mean that the page is loading
-       * for too long. Regardless of the reason, it would mean that the user would
-       * think that the extension isn't opening the actual bookmark. So, we return
-       * false so we can move on to the fallback strategy.
-       */
-      const video: HTMLVideoElement | null = document.querySelector("video");
-      return !isAdShowing && Boolean(video);
-    };
-
-    const canSeekTime: boolean = getIfCanSeekTime();
+    const canSeekTime: boolean = this.getIfCanSeekTime();
     if (!canSeekTime) return { success: false };
 
     /* eslint-disable @typescript-eslint/no-unsafe-return */
