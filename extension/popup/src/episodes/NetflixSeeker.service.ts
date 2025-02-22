@@ -25,7 +25,7 @@ export const trySeekingForNetflix = (
 
   const getReasonWeCannotSeekTime = (): PossibleReason => {
     const isAdShowing: boolean = getIfAdIsShowing();
-    if (isAdShowing) return "Ad is showing";
+    if (isAdShowing) return "ad is showing";
     /**
      * If the video isn't on the page, it could mean that the page is loading
      * for too long. Regardless of the reason, it would mean that the user would
@@ -33,7 +33,7 @@ export const trySeekingForNetflix = (
      * false so we can move on to the fallback strategy.
      */
     const video: HTMLVideoElement | null = document.querySelector("video");
-    if (!video) return "Video is missing";
+    if (video) return "video is missing";
     return null;
   };
 
@@ -53,10 +53,20 @@ export const trySeekingForNetflix = (
     /* eslint-enable @typescript-eslint/no-unsafe-assignment */
   };
 
+  /**
+   * We return the reason instead of simply logging it so it can be sent to
+   * Sentry. Note that Sentry doesn't capture logs in injected scripts.
+   */
+  const handleInabilityToSeek = (
+    reason: string
+  ): ResultOfSettingNetflixTime => {
+    console.error("Failed to seek time because", reason);
+    return { success: false, reason };
+  };
+
   const reasonWeCannotSeekTime: PossibleReason = getReasonWeCannotSeekTime();
-  console.error("reason we cannot seek time", reasonWeCannotSeekTime);
   if (reasonWeCannotSeekTime)
-    return { success: false, reason: reasonWeCannotSeekTime };
+    return handleInabilityToSeek(reasonWeCannotSeekTime);
   seek(timeMs);
   return { success: true };
 };

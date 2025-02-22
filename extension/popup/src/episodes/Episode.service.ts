@@ -227,6 +227,9 @@ export class EpisodeService {
   ): Promise<ResultOfSettingNetflixTime> => {
     const results: InjectionResult[] = await this.injectScriptToSetTime(timeMs);
     const wasSuccessful = this.getIfWasSuccessful(results);
+    /**
+     * This also logs the err to Sentry
+     */
     if (!wasSuccessful) console.error(JSON.stringify(results, null, 2));
     /**
      * When we execute a script against the Netflix tab, it returns an injection
