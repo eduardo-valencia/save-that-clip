@@ -45,6 +45,7 @@ type TabMatch = Tab | undefined;
 export class EpisodeService {
   private tabsRepo: TabsRepoAbstraction;
   private scriptsRepo: ScriptsRepoAbstraction;
+  private netflixSeekerService = new NetflixSeekerService();
 
   constructor(options?: Options) {
     this.tabsRepo = options?.tabsRepo || new TabsRepo();
@@ -177,11 +178,6 @@ export class EpisodeService {
     return tab.id!;
   };
 
-  private seek = (timeMs: Bookmark["timeMs"]): ResultOfSettingTime => {
-    const netflixSeekerService = new NetflixSeekerService();
-    return netflixSeekerService.seekIfPossible(timeMs);
-  };
-
   private injectScriptToSetTime = async (
     timeMs: Bookmark["timeMs"]
   ): Promise<InjectionResult[]> => {
@@ -190,7 +186,7 @@ export class EpisodeService {
       /**
        * We overwrite the type because Chrome's types are wrong.
        */
-      func: this.seek as unknown as InjectedFunc,
+      func: this.netflixSeekerService.seekIfPossible as unknown as InjectedFunc,
       args: [timeMs],
       world: "MAIN",
     });
@@ -232,12 +228,14 @@ export class EpisodeService {
     timeMs: Bookmark["timeMs"]
   ): Promise<ResultOfSettingTime> => {
     const results: InjectionResult[] = await this.injectScriptToSetTime(timeMs);
+    const wasSuccessful = this.getIfWasSuccessful(results);
+    if (!wasSuccessful) console.error(JSON.stringify(results, null, 2));
     /**
      * When we execute a script against the Netflix tab, it returns an injection
      * result with some information. We must analyze these results to determine if
      * the time was actually set.
      **/
-    return { success: this.getIfWasSuccessful(results) };
+    return { success: wasSuccessful };
   };
 
   // TODO: Maybe return a reason from here, and send the reason it timed out to
