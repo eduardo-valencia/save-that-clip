@@ -13,7 +13,7 @@ import {
 import { ScriptsRepo } from "../scripts/Scripts.repo";
 import { NetflixEpisodeInfo } from "../../../main/contentScripts/NetflixEpisodeMessageHandler.service";
 import { waitMs } from "../../../main/common/utils";
-import { NetflixSeekerService } from "./NetflixSeeker.service";
+import { trySeekingForNetflix } from "./NetflixSeeker.service";
 
 interface Options {
   tabsRepo?: TabsRepoAbstraction;
@@ -45,7 +45,6 @@ type TabMatch = Tab | undefined;
 export class EpisodeService {
   private tabsRepo: TabsRepoAbstraction;
   private scriptsRepo: ScriptsRepoAbstraction;
-  private netflixSeekerService = new NetflixSeekerService();
 
   constructor(options?: Options) {
     this.tabsRepo = options?.tabsRepo || new TabsRepo();
@@ -186,7 +185,7 @@ export class EpisodeService {
       /**
        * We overwrite the type because Chrome's types are wrong.
        */
-      func: this.netflixSeekerService.seek as unknown as InjectedFunc,
+      func: trySeekingForNetflix as unknown as InjectedFunc,
       args: [timeMs],
       world: "MAIN",
     });
