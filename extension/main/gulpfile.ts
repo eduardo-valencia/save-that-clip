@@ -5,6 +5,7 @@ import { Configuration as Config } from "webpack";
 import { ChildProcess } from "child_process";
 import path from "path";
 import { FSWatcher } from "fs";
+import debounce from "debounce";
 
 import popupWebpackConfig from "../popup/webpack.config";
 import commonWebpackConfig from "./common/common-webpack-config";
@@ -18,7 +19,15 @@ const mainFolder = "main";
  * for this to work.
  */
 const reloadExtension = (): Promise<ChildProcess> => {
+  console.info("Extension reloaded.");
   return open("http://reload.extensions");
+};
+
+const debouncedReloader = debounce(reloadExtension, 5_000);
+
+const beginReloadingExtension = async (): Promise<void> => {
+  console.info("Reloading extension...");
+  await debouncedReloader();
 };
 
 type ReadWriteStream = NodeJS.ReadWriteStream;
@@ -49,7 +58,7 @@ const buildPopupFromConfig = getWebpackBuilder("./popup/src/index.tsx");
 export const buildAndWatchPopup = (): ReadWriteStream => {
   return buildPopupFromConfig({
     config: { ...(popupWebpackConfig as Config), watch: true },
-    buildCallback: reloadExtension,
+    buildCallback: beginReloadingExtension,
   });
 };
 
@@ -89,7 +98,7 @@ const buildContentScript = (): ReadWriteStream => {
 const buildAndWatchContentScript = (): ReadWriteStream => {
   return buildContentScriptFromConfig({
     config: createContentScriptWebpackConfig({ watch: true }),
-    buildCallback: reloadExtension,
+    buildCallback: beginReloadingExtension,
   });
 };
 
@@ -120,7 +129,10 @@ const copyOtherMainFiles = (): ReadWriteStream => {
     .pipe(gulp.dest(buildFolder));
 };
 
-const copyFilesAndReload = gulp.series(copyOtherMainFiles, reloadExtension);
+const copyFilesAndReload = gulp.series(
+  copyOtherMainFiles,
+  beginReloadingExtension
+);
 
 const watchOtherMainFiles = (): FSWatcher => {
   const filesToCopy: Globs = getMainFilesToCopy();

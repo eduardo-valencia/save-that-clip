@@ -3,8 +3,12 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
+console.log("NODE_ENV", process.env.NODE_ENV);
+
+const env = process.env.NODE_ENV || "development";
+
 module.exports = {
-  mode: process.env.NODE_ENV || "production",
+  mode: env,
   module: {
     rules: [
       {
@@ -21,5 +25,8 @@ module.exports = {
   },
   resolve: {
     extensions: [".ts"],
+  },
+  optimization: {
+    minimize: env === "production",
   },
 };
