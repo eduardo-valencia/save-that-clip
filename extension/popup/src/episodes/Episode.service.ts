@@ -13,7 +13,10 @@ import {
 import { ScriptsRepo } from "../scripts/Scripts.repo";
 import { NetflixEpisodeInfo } from "../../../main/contentScripts/NetflixEpisodeMessageHandler.service";
 import { waitMs } from "../../../main/common/utils";
-import { trySeekingForNetflix } from "./NetflixSeeker.service";
+import {
+  ResultOfSettingTime,
+  trySeekingForNetflix,
+} from "./NetflixSeeker.service";
 
 interface Options {
   tabsRepo?: TabsRepoAbstraction;
@@ -31,10 +34,6 @@ export interface EpisodeTabAndInfo {
 }
 
 type InjectedFunc = chrome.scripting.ScriptInjection["func"];
-
-export interface ResultOfSettingTime {
-  success: boolean;
-}
 
 type PossibleResult = InjectionResult | undefined;
 type TabMatch = Tab | undefined;

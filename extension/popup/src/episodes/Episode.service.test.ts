@@ -13,8 +13,8 @@ import {
   EpisodeService,
   EpisodeTabAndInfo,
   PossibleTab,
-  ResultOfSettingTime,
 } from "./Episode.service";
+import { ResultOfSettingTime } from "./NetflixSeeker.service";
 import { TabsFactory } from "../tabs/Tabs.factory";
 import { MockedTabsRepo } from "../tabs/MockedTabs.repo";
 import { InjectionResult } from "../scripts/Scripts.repo-abstraction";

@@ -1,5 +1,4 @@
 import { Bookmark } from "../bookmarks/Bookmarks.repo-abstraction";
-import { ResultOfSettingTime } from "./Episode.service";
 
 /**
  * This is used in an injected script, but it is not actually accessible
@@ -7,6 +6,10 @@ import { ResultOfSettingTime } from "./Episode.service";
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
 declare const netflix: any;
+
+export interface ResultOfSettingTime {
+  success: boolean;
+}
 
 /**
  * This function is being injected into the Netflix episode's tab. Consequently,

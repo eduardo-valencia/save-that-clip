@@ -3,8 +3,8 @@ import {
   EpisodeService,
   EpisodeTabAndInfo,
   PossibleTab,
-  ResultOfSettingTime,
 } from "../episodes/Episode.service";
+import { ResultOfSettingTime } from "../episodes/NetflixSeeker.service";
 import {
   PossibleSeriesName,
   SeriesInfoService,

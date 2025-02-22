@@ -19,11 +19,7 @@ jest.mock("../../../main/common/chrome.service", () => {
 
 /* eslint-disable import/first */
 import _ from "lodash";
-import {
-  EpisodeService,
-  EpisodeTabAndInfo,
-  ResultOfSettingTime,
-} from "../episodes/Episode.service";
+import { EpisodeService, EpisodeTabAndInfo } from "../episodes/Episode.service";
 import {
   SeriesInfoService,
   SeriesName,
@@ -36,6 +32,7 @@ import {
   FieldsToCreateBookmark as CreationFields,
 } from "./Bookmarks.service";
 import { MockedScriptsRepo } from "../scripts/MockedScripts.repo";
+import { ResultOfSettingTime } from "../episodes/NetflixSeeker.service";
 
 /**
  * * Services & their mocks
