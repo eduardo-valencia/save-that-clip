@@ -30,8 +30,9 @@ const initSentry = (): void => {
     dsn: "https://a22d5586c674427c97ec220e784e23c2@o4505468162015232.ingest.sentry.io/4505468164112384",
     integrations: getIntegrations(),
     tracesSampleRate: 1,
-    replaysSessionSampleRate: 0.1,
+    replaysSessionSampleRate: 0,
     replaysOnErrorSampleRate: 1,
+    environment: process.env.NODE_ENV ?? "development",
   });
 };
 
