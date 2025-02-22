@@ -5,7 +5,6 @@ import { Configuration as Config } from "webpack";
 import { ChildProcess } from "child_process";
 import path from "path";
 import { FSWatcher } from "fs";
-import debounce from "debounce";
 
 import popupWebpackConfig from "../popup/webpack.config";
 import commonWebpackConfig from "./common/common-webpack-config";
@@ -17,17 +16,21 @@ const mainFolder = "main";
  * Must install
  * https://chrome.google.com/webstore/detail/extensions-reloader/fimgfedafeadlieiabdeeaodndnlbhid
  * for this to work.
+ *
+ * Note that this func shouldn't be debounced because there is only a high risk
+ * of this being called frequently the first time we run the dev cmd. So,
+ * debouncing likely won't help us prevent excessive calls after the watcher
+ * already started. If you want to prevent this being called multiple times at
+ * startup, find another way. Otherwise, it will slow down the watcher.
  */
 const reloadExtension = (): Promise<ChildProcess> => {
   console.info("Extension reloaded.");
   return open("http://reload.extensions");
 };
 
-const debouncedReloader = debounce(reloadExtension, 5_000);
-
 const beginReloadingExtension = async (): Promise<void> => {
   console.info("Reloading extension...");
-  await debouncedReloader();
+  await reloadExtension();
 };
 
 type ReadWriteStream = NodeJS.ReadWriteStream;
