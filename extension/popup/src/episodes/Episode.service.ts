@@ -186,7 +186,7 @@ export class EpisodeService {
       /**
        * We overwrite the type because Chrome's types are wrong.
        */
-      func: this.netflixSeekerService.seekIfPossible as unknown as InjectedFunc,
+      func: this.netflixSeekerService.seek as unknown as InjectedFunc,
       args: [timeMs],
       world: "MAIN",
     });
