@@ -36,7 +36,7 @@
     "lint-ts": "run-p main-lint-ts popup-lint-ts",
     "lint": "npm run lint-ts",
     "dev": "npx gulp dev",
-    "build": "npx gulp build"
+    "build": "npx cross-env NODE_ENV=production npx gulp build"
   },
   "browserslist": {
     "production": [
@@ -60,6 +60,7 @@
     "@typescript-eslint/eslint-plugin": "^5.60.0",
     "@typescript-eslint/parser": "^5.60.0",
     "chrome-types": "^0.1.209",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.3.1",
     "gulp": "^4.0.2",
     "gulp-cli": "^2.3.0",
