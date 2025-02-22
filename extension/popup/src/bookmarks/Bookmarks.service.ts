@@ -4,7 +4,7 @@ import {
   EpisodeTabAndInfo,
   PossibleTab,
 } from "../episodes/Episode.service";
-import { ResultOfSettingTime } from "../episodes/NetflixSeeker.service";
+import { ResultOfSettingNetflixTime } from "../episodes/NetflixSeeker.service";
 import {
   PossibleSeriesName,
   SeriesInfoService,
@@ -159,7 +159,7 @@ export class BookmarksService {
     bookmarkTab: Tab,
     bookmark: Bookmark
   ): Promise<Tab> => {
-    const result: ResultOfSettingTime =
+    const result: ResultOfSettingNetflixTime =
       await this.episodeService.trySettingTime(bookmark.timeMs);
     if (result.success) return bookmarkTab;
     return this.handleFailingToSetTime(bookmark);

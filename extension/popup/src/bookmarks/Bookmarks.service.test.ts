@@ -32,7 +32,7 @@ import {
   FieldsToCreateBookmark as CreationFields,
 } from "./Bookmarks.service";
 import { MockedScriptsRepo } from "../scripts/MockedScripts.repo";
-import { ResultOfSettingTime } from "../episodes/NetflixSeeker.service";
+import { ResultOfSettingNetflixTime } from "../episodes/NetflixSeeker.service";
 
 /**
  * * Services & their mocks
@@ -271,7 +271,7 @@ describe("open", () => {
   type SpiedSetTime = jest.SpiedFunction<EpisodeService["trySettingTime"]>;
 
   const mockSettingTime = (
-    success: ResultOfSettingTime["success"]
+    success: ResultOfSettingNetflixTime["success"]
   ): SpiedSetTime => {
     const spiedSetTime = jest.spyOn(episodeService, "trySettingTime");
     spiedSetTime.mockResolvedValue({ success });

@@ -7,7 +7,7 @@ import { Bookmark } from "../bookmarks/Bookmarks.repo-abstraction";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
 declare const netflix: any;
 
-export interface ResultOfSettingTime {
+export interface ResultOfSettingNetflixTime {
   success: boolean;
 }
 
@@ -18,7 +18,7 @@ export interface ResultOfSettingTime {
  */
 export const trySeekingForNetflix = (
   timeMs: Bookmark["timeMs"]
-): ResultOfSettingTime => {
+): ResultOfSettingNetflixTime => {
   const getIfAdIsShowing = (): boolean => {
     const adsInfoContainer = document.querySelector(
       '[data-uia="ads-info-container"]'

@@ -14,7 +14,7 @@ import {
   EpisodeTabAndInfo,
   PossibleTab,
 } from "./Episode.service";
-import { ResultOfSettingTime } from "./NetflixSeeker.service";
+import { ResultOfSettingNetflixTime } from "./NetflixSeeker.service";
 import { TabsFactory } from "../tabs/Tabs.factory";
 import { MockedTabsRepo } from "../tabs/MockedTabs.repo";
 import { InjectionResult } from "../scripts/Scripts.repo-abstraction";
@@ -246,9 +246,9 @@ describe("trySettingTime", () => {
    */
 
   const callMethodAndExpectSuccessStatus = async (
-    isSuccessful: ResultOfSettingTime["success"]
+    isSuccessful: ResultOfSettingNetflixTime["success"]
   ): Promise<void> => {
-    const { success }: ResultOfSettingTime = await setTime(1);
+    const { success }: ResultOfSettingNetflixTime = await setTime(1);
     expect(success).toEqual(isSuccessful);
   };
 
@@ -257,9 +257,9 @@ describe("trySettingTime", () => {
   };
 
   const createInjectionResult = (
-    success: ResultOfSettingTime["success"]
+    success: ResultOfSettingNetflixTime["success"]
   ): InjectionResult => {
-    const result: ResultOfSettingTime = { success };
+    const result: ResultOfSettingNetflixTime = { success };
     return { frameId: 1, documentId: "", result };
   };
 

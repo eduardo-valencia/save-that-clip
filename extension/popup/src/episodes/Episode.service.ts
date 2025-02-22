@@ -14,7 +14,7 @@ import { ScriptsRepo } from "../scripts/Scripts.repo";
 import { NetflixEpisodeInfo } from "../../../main/contentScripts/NetflixEpisodeMessageHandler.service";
 import { waitMs } from "../../../main/common/utils";
 import {
-  ResultOfSettingTime,
+  ResultOfSettingNetflixTime,
   trySeekingForNetflix,
 } from "./NetflixSeeker.service";
 
@@ -193,7 +193,7 @@ export class EpisodeService {
   private getIfIsUnsuccessfulInjectionResult = ({
     result,
   }: InjectionResult): boolean => {
-    const resultWithType = result as ResultOfSettingTime | undefined;
+    const resultWithType = result as ResultOfSettingNetflixTime | undefined;
     /**
      * If there's an error, it might not return a "success" status of false. So,
      * we should check if it is not true.
@@ -209,7 +209,7 @@ export class EpisodeService {
 
   private getIfWasSuccessful = (
     results: InjectionResult[]
-  ): ResultOfSettingTime["success"] => {
+  ): ResultOfSettingNetflixTime["success"] => {
     if (!results.length) return false;
     const unsuccessfulResult: PossibleResult =
       this.findUnsuccessfulInjectionResult(results);
@@ -217,14 +217,14 @@ export class EpisodeService {
   };
 
   private setScriptInjectionTimeout =
-    async (): Promise<ResultOfSettingTime> => {
+    async (): Promise<ResultOfSettingNetflixTime> => {
       await waitMs(3000);
       return { success: false };
     };
 
   private trySettingTimeWithoutTimeout = async (
     timeMs: Bookmark["timeMs"]
-  ): Promise<ResultOfSettingTime> => {
+  ): Promise<ResultOfSettingNetflixTime> => {
     const results: InjectionResult[] = await this.injectScriptToSetTime(timeMs);
     const wasSuccessful = this.getIfWasSuccessful(results);
     if (!wasSuccessful) console.error(JSON.stringify(results, null, 2));
@@ -240,7 +240,7 @@ export class EpisodeService {
   // Sentry Alternatively, log it some other way
   public trySettingTime = (
     timeMs: Bookmark["timeMs"]
-  ): Promise<ResultOfSettingTime> => {
+  ): Promise<ResultOfSettingNetflixTime> => {
     return Promise.race([
       this.trySettingTimeWithoutTimeout(timeMs),
       this.setScriptInjectionTimeout(),
