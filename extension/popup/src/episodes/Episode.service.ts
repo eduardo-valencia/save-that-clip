@@ -228,7 +228,8 @@ export class EpisodeService {
     const results: InjectionResult[] = await this.injectScriptToSetTime(timeMs);
     const wasSuccessful = this.getIfWasSuccessful(results);
     /**
-     * This also logs the err to Sentry
+     * This also logs the err to Sentry. If available, it will log the "reason"
+     * field for debugging purposes, too. So, don't delete this.
      */
     if (!wasSuccessful) console.error(JSON.stringify(results, null, 2));
     /**
