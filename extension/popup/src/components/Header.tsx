@@ -17,9 +17,7 @@ export default function Header({
   return (
     <Box sx={{ marginBottom: "2.5rem", ...sx }} {...other}>
       {before}
-      <Typography variant="h1" sx={{ marginBottom: "2.69rem" }}>
-        {title}
-      </Typography>
+      <Typography variant="h1">{title}</Typography>
       {children}
     </Box>
   );
