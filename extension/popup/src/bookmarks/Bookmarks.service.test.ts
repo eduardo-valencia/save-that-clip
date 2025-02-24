@@ -417,3 +417,10 @@ describe("open", () => {
     it.todo("Does not crash");
   });
 });
+
+/**
+ * Otherwise, it will look like it didn't open
+ */
+it.todo("Opens the bookmark in a new tab when an ad is playing");
+
+it.todo("Saves the correct video time even when an ad plays");
