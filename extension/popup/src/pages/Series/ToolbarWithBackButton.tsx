@@ -29,7 +29,7 @@ export default function ToolbarWithBackButton() {
         startIcon={<LeftArrowIcon />}
         onClick={handleClick}
       >
-        Back
+        Home
       </Button>
     </Box>
   );

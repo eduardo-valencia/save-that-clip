@@ -4,7 +4,7 @@ import {
   SearchContext,
   SearchContextValue,
 } from "../../components/SearchProvider";
-import HeaderWithBookmarkCreationButton from "../../components/HeaderWithBookmarkCreationButton";
+import HeaderWithBookmarkCreationButton from "../../components/HeaderWithBookmarkCreationButton/HeaderWithBookmarkCreationButton";
 import BookmarkSearchResults from "../../components/BookmarkSearchResults";
 import { Params, useParams } from "react-router-dom";
 import { PossibleSeriesName } from "../../seriesInfo/SeriesInfo.service";
