@@ -9,6 +9,8 @@ export default function DisabledReason() {
         fontSize: "0.875rem",
         letterSpacing: "-0.01875rem",
         mb: "0.81rem",
+        // TODO: Maybe refactor this color (code duplication)
+        color: "#65676E",
       }}
     >
       To add a bookmark, start watching an episode on Netflix and click on the
