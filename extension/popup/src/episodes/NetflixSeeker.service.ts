@@ -33,7 +33,7 @@ export const trySeekingForNetflix = (
      * false so we can move on to the fallback strategy.
      */
     const video: HTMLVideoElement | null = document.querySelector("video");
-    if (video) return "video is missing";
+    if (!video) return "video is missing";
     return null;
   };
 
