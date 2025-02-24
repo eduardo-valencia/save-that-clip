@@ -36,9 +36,7 @@ export default function BookmarkCreationButtonInfo() {
   return (
     <Box sx={{ marginTop: "2.69rem" }}>
       {isDisabled ? <DisabledReason /> : null}
-      <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-        <BookmarkCreationButton disabled={isDisabled} />
-      </Box>
+      <BookmarkCreationButton disabled={isDisabled} />
     </Box>
   );
 }
