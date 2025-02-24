@@ -12,7 +12,6 @@ import {
   BookmarksContextValue,
 } from "../../components/BookmarksProvider";
 import { BookmarkDialogAndProvider } from "../../components/BookmarkDialogAndProvider/BookmarkDialogAndProvider";
-import { Typography } from "@mui/material";
 
 const BookmarksPage = () => {
   const { query }: SearchContextValue = useContext(SearchContext);
@@ -21,14 +20,7 @@ const BookmarksPage = () => {
   return (
     <Layout>
       <BookmarkDialogAndProvider>
-        <HeaderWithBookmarkCreationButton
-          title="Bookmarks"
-          subtitle={
-            <Typography variant="body1" sx={{ marginTop: "0.25rem" }}>
-              Your bookmarks, by series.
-            </Typography>
-          }
-        />
+        <HeaderWithBookmarkCreationButton title="Bookmarks" />
         {query ? (
           <BookmarkSearchResults possibleBookmarks={bookmarks} />
         ) : (
