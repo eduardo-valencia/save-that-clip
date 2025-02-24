@@ -24,8 +24,7 @@ const BookmarksPage = () => {
         <HeaderWithBookmarkCreationButton
           title="Bookmarks"
           subtitle={
-            // TODO: Dont' use btn variant
-            <Typography variant="button" sx={{ marginTop: "0.25rem" }}>
+            <Typography variant="body1" sx={{ marginTop: "0.25rem" }}>
               Your bookmarks, by series.
             </Typography>
           }
