@@ -1,10 +1,11 @@
 import React from "react";
 import ResourceItem from "../../../components/ResourceItem";
 import { Pages } from "../../pages";
-import ResourceItemTitle from "../../../components/ResourceItemTitle";
 import { defaultSeriesName } from "../../../seriesInfo/seriesConfig";
 import { PossibleSeriesName } from "../../../seriesInfo/SeriesInfo.service";
 import LinkWithoutStyles from "../../../components/LinkWithoutStyles";
+import { Typography } from "@mui/material";
+import Folder from "@mui/icons-material/Folder";
 
 interface Props {
   possibleName: PossibleSeriesName;
@@ -21,10 +22,14 @@ export default function SeriesItem({ possibleName }: Props) {
   const link: string = getLink();
   return (
     <ResourceItem>
-      <LinkWithoutStyles to={link}>
-        <ResourceItemTitle>
+      <LinkWithoutStyles
+        to={link}
+        style={{ display: "flex", alignItems: "center" }}
+      >
+        <Folder sx={{ marginRight: "0.75rem", color: "#65676E" }} />
+        <Typography component="h2" variant="button" color="textPrimary">
           {possibleName || defaultSeriesName}
-        </ResourceItemTitle>
+        </Typography>
       </LinkWithoutStyles>
     </ResourceItem>
   );
