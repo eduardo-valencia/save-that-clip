@@ -4,6 +4,7 @@ import {
   useDialogContext,
 } from "../../../components/DialogInfoProvider";
 import { IsButtonDisabled } from ".";
+import Add from "@mui/icons-material/Add";
 
 interface Props {
   disabled: IsButtonDisabled;
@@ -19,13 +20,13 @@ export default function BookmarkCreationButton({
       variant="contained"
       color="primary"
       sx={{
-        width: "9.0625rem",
-        px: "0.56rem",
+        px: "0.75rem",
         py: "0.75rem",
         boxShadow: 0,
       }}
       onClick={open}
       disabled={disabled}
+      startIcon={<Add />}
     >
       Add Bookmark
     </Button>
