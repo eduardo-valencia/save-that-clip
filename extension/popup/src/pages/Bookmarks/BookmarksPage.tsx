@@ -6,7 +6,7 @@ import {
 } from "../../components/SearchProvider";
 import SeriesSection from "./SeriesSection";
 import BookmarkSearchResults from "../../components/BookmarkSearchResults";
-import HeaderWithBookmarkCreationButton from "../../components/HeaderWithBookmarkCreationButton";
+import { HeaderWithBookmarkCreationButton } from "./HeaderWithBookmarkCreationButton";
 import {
   BookmarksContext,
   BookmarksContextValue,
