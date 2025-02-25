@@ -4,7 +4,7 @@ import React from "react";
 export interface HeaderProps extends BoxProps {
   title: string;
   before: React.ReactNode;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export default function Header({
