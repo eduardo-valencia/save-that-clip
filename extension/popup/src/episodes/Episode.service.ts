@@ -17,6 +17,7 @@ import {
   ResultOfSettingNetflixTime,
   trySeekingForNetflix,
 } from "./NetflixSeeker.service";
+import { getEpisodeInfo } from "./NetflixEpisodeInfo.service";
 
 interface Options {
   tabsRepo?: TabsRepoAbstraction;
@@ -138,11 +139,62 @@ export class EpisodeService {
     return sendMessage(episodeTab.id!, data) as Promise<NetflixEpisodeInfo>;
   };
 
+  private getIfIsUnsuccessfulInjectionResult = ({
+    result,
+  }: InjectionResult): boolean => {
+    const resultWithType = result as ResultOfSettingNetflixTime | undefined;
+    /**
+     * If there's an error, it might not return a "success" status of false. So,
+     * we should check if it is not true.
+     */
+    return resultWithType?.success !== true;
+  };
+
+  private findUnsuccessfulInjectionResult = (
+    results: InjectionResult[]
+  ): PossibleResult => {
+    return results.find(this.getIfIsUnsuccessfulInjectionResult);
+  };
+
+  private getIfWasSuccessful = (
+    results: InjectionResult[]
+  ): ResultOfSettingNetflixTime["success"] => {
+    if (!results.length) return false;
+    const unsuccessfulResult: PossibleResult =
+      this.findUnsuccessfulInjectionResult(results);
+    return !unsuccessfulResult;
+  };
+
+  private injectScriptToGetEpisodeInfo = async (): Promise<
+    InjectionResult[]
+  > => {
+    return this.scriptsRepo.executeScript({
+      target: { tabId: await this.getEpisodeTabId() },
+      /**
+       * We overwrite the type because Chrome's types are wrong.
+       */
+      func: getEpisodeInfo as unknown as InjectedFunc,
+      world: "MAIN",
+    });
+  };
+
+  private getEpisodeInfo = async (): Promise<NetflixEpisodeInfo> => {
+    const results: InjectionResult[] =
+      await this.injectScriptToGetEpisodeInfo();
+
+    const wasSuccessful: boolean = this.getIfWasSuccessful(results);
+
+    const { result } = results[0];
+    if (wasSuccessful && result) return result as NetflixEpisodeInfo;
+
+    console.error(JSON.stringify(results, null, 2));
+    throw new Error("Failed to get the episode's info.");
+  };
+
   private findAndValidateEpisodeInfo = async (
     episodeTab: Tab
   ): Promise<ValidNetflixEpisodeInfo> => {
-    const episodeInfo: NetflixEpisodeInfo =
-      await this.sendMessageToGetEpisodeInfo(episodeTab);
+    const episodeInfo: NetflixEpisodeInfo = await this.getEpisodeInfo();
     if (episodeInfo.timeMs === null)
       throw new Error("Failed to get the episode's time.");
     return { ...episodeInfo, timeMs: episodeInfo.timeMs };
@@ -190,32 +242,6 @@ export class EpisodeService {
     });
   };
 
-  private getIfIsUnsuccessfulInjectionResult = ({
-    result,
-  }: InjectionResult): boolean => {
-    const resultWithType = result as ResultOfSettingNetflixTime | undefined;
-    /**
-     * If there's an error, it might not return a "success" status of false. So,
-     * we should check if it is not true.
-     */
-    return resultWithType?.success !== true;
-  };
-
-  private findUnsuccessfulInjectionResult = (
-    results: InjectionResult[]
-  ): PossibleResult => {
-    return results.find(this.getIfIsUnsuccessfulInjectionResult);
-  };
-
-  private getIfWasSuccessful = (
-    results: InjectionResult[]
-  ): ResultOfSettingNetflixTime["success"] => {
-    if (!results.length) return false;
-    const unsuccessfulResult: PossibleResult =
-      this.findUnsuccessfulInjectionResult(results);
-    return !unsuccessfulResult;
-  };
-
   private setScriptInjectionTimeout =
     async (): Promise<ResultOfSettingNetflixTime> => {
       await waitMs(3000);
@@ -226,7 +252,7 @@ export class EpisodeService {
     timeMs: Bookmark["timeMs"]
   ): Promise<ResultOfSettingNetflixTime> => {
     const results: InjectionResult[] = await this.injectScriptToSetTime(timeMs);
-    const wasSuccessful = this.getIfWasSuccessful(results);
+    const wasSuccessful: boolean = this.getIfWasSuccessful(results);
     /**
      * This also logs the err to Sentry. If available, it will log the "reason"
      * field for debugging purposes, too. So, don't delete this.
