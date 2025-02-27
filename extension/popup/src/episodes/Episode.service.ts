@@ -17,7 +17,6 @@ import {
   ResultOfSettingNetflixTime,
   trySeekingForNetflix,
 } from "./NetflixSeeker.service";
-import { getEpisodeInfo } from "./NetflixEpisodeInfo.service";
 
 interface Options {
   tabsRepo?: TabsRepoAbstraction;
