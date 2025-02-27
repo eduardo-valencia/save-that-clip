@@ -165,36 +165,19 @@ export class EpisodeService {
     return !unsuccessfulResult;
   };
 
-  private injectScriptToGetEpisodeInfo = async (): Promise<
-    InjectionResult[]
-  > => {
+  private injectContentScript = async (): Promise<InjectionResult[]> => {
     return this.scriptsRepo.executeScript({
       target: { tabId: await this.getEpisodeTabId() },
-      /**
-       * We overwrite the type because Chrome's types are wrong.
-       */
-      func: getEpisodeInfo as unknown as InjectedFunc,
-      world: "MAIN",
+      files: ["content-script.js"],
     });
-  };
-
-  private getEpisodeInfo = async (): Promise<NetflixEpisodeInfo> => {
-    const results: InjectionResult[] =
-      await this.injectScriptToGetEpisodeInfo();
-
-    const wasSuccessful: boolean = this.getIfWasSuccessful(results);
-
-    const { result } = results[0];
-    if (wasSuccessful && result) return result as NetflixEpisodeInfo;
-
-    console.error(JSON.stringify(results, null, 2));
-    throw new Error("Failed to get the episode's info.");
   };
 
   private findAndValidateEpisodeInfo = async (
     episodeTab: Tab
   ): Promise<ValidNetflixEpisodeInfo> => {
-    const episodeInfo: NetflixEpisodeInfo = await this.getEpisodeInfo();
+    await this.injectContentScript();
+    const episodeInfo: NetflixEpisodeInfo =
+      await this.sendMessageToGetEpisodeInfo(episodeTab);
     if (episodeInfo.timeMs === null)
       throw new Error("Failed to get the episode's time.");
     return { ...episodeInfo, timeMs: episodeInfo.timeMs };
