@@ -51,10 +51,20 @@ export class NetflixEpisodeMessageHandlers {
     });
   };
 
+  private getIfVideoIsPlaying = (video: HTMLVideoElement): boolean => {
+    return !video.paused && !video.ended;
+  };
+
+  private showToolbar = async (video: HTMLVideoElement): Promise<void> => {
+    const wasPlaying: boolean = this.getIfVideoIsPlaying(video);
+    video.click();
+    return wasPlaying ? video.play() : video.pause();
+  };
+
   private clickVideoAndWaitForEpisodeName = async (
     video: HTMLVideoElement
   ): Promise<EpisodeName> => {
-    video.click();
+    await this.showToolbar(video);
     await this.waitForEpisodeName();
     return this.findEpisodeName();
   };
