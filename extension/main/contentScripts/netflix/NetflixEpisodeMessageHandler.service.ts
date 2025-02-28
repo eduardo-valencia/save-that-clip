@@ -1,4 +1,4 @@
-import { EpisodeTime, PossibleEpisodeTime } from "../common/messages";
+import { EpisodeTime, PossibleEpisodeTime } from "../../common/messages";
 import { retryAndGetIfSucceeded } from "./retry.util";
 
 type EpisodeName = string | null;
