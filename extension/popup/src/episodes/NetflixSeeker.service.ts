@@ -32,19 +32,11 @@ export const trySeekingForNetflix = (
   };
 
   const seek = (timeMs: Bookmark["timeMs"]): void => {
-    /* eslint-disable @typescript-eslint/no-unsafe-return */
-    /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-    /* eslint-disable @typescript-eslint/no-unsafe-call */
-    /* eslint-disable @typescript-eslint/no-unsafe-assignment */
     // TODO: Maybe stop assuming that any of these properties will exist
     const { videoPlayer } = netflix.appContext.state.playerApp.getAPI();
     const [sessionId] = videoPlayer.getAllPlayerSessionIds();
     const player = videoPlayer.getVideoPlayerBySessionId(sessionId);
     player.seek(timeMs);
-    /* eslint-enable @typescript-eslint/no-unsafe-return */
-    /* eslint-enable @typescript-eslint/no-unsafe-member-access */
-    /* eslint-enable @typescript-eslint/no-unsafe-call */
-    /* eslint-enable @typescript-eslint/no-unsafe-assignment */
   };
 
   /**

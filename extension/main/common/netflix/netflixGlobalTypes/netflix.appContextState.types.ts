@@ -1,5 +1,10 @@
+interface Player {
+  seek: (timeMs: number) => void;
+}
+
 interface VideoPlayerInAppContext {
-  getAllPlayerSessionIds: () => unknown;
+  getAllPlayerSessionIds: () => string[];
+  getVideoPlayerBySessionId: (id: string) => Player;
 }
 
 interface PlayerAppApi {
