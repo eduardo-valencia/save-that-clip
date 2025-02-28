@@ -17,7 +17,7 @@ import {
   ResultOfSettingNetflixTime,
   trySeekingForNetflix,
 } from "./NetflixSeeker.service";
-import { EPISODE_URL_PATTERN } from "../../../main/common/netflix.constants";
+import { EPISODE_URL_PATTERN } from "../../../main/common/netflix/netflix.constants";
 
 interface Options {
   tabsRepo?: TabsRepoAbstraction;

@@ -1,12 +1,18 @@
 import { EpisodeTime, PossibleEpisodeTime } from "../../common/messages";
-import { EPISODE_URL_PATTERN } from "../../common/netflix.constants";
-import { retryAndGetIfSucceeded } from "./retry.util";
+import { EPISODE_URL_PATTERN } from "../../common/netflix/netflix.constants";
+import {
+  NetflixEpisode,
+  PlayerApp,
+  PlayerAppState,
+  Season,
+  VideoMetadataForEpisode,
+} from "../../common/netflix/netflix.globalTypeDeclaration";
 import _ from "lodash";
 
-type EpisodeName = string | null;
+type PossibleEpisodeName = string | null;
 export interface NetflixEpisodeInfo {
   timeMs: PossibleEpisodeTime;
-  episodeName: EpisodeName;
+  episodeName: PossibleEpisodeName;
 }
 
 type PossibleVideo = HTMLVideoElement | null;
@@ -33,6 +39,12 @@ export class NetflixEpisodeMessageHandlers {
   /**
    * Note that this won't find the name of movies. However, that's okay because
    * we don't need to show it.
+   *
+   * * Implementation Notes
+   *
+   * Although we can get the episode's ID from the appContext, I prefer to get
+   * it this way just in case the API changes in the future, which it probably
+   * will. The URL's syntax, however, likely won't change anytime soon.
    */
   private findEpisodeId = (): PossibleEpisodeId => {
     const match: RegExpMatchArray | null =
@@ -41,21 +53,46 @@ export class NetflixEpisodeMessageHandlers {
     return null;
   };
 
-  private findEpisodeNameUsingApi = async (): Promise<EpisodeName> => {
+  private getEpisodes = (season: Season): Season["episodes"] => {
+    return season.episodes;
+  };
+
+  private findEpisodeNameInSeasons = (
+    episodeId: NetflixEpisode["id"],
+    seasons: Season[]
+  ): PossibleEpisodeName => {
+    const episodes: NetflixEpisode[] = _.flatMap(seasons, this.getEpisodes);
+    const episode: NetflixEpisode | undefined = _.find(episodes, {
+      id: episodeId,
+    });
+    return episode?.title || null;
+  };
+
+  private findEpisodeName = (
+    episodeId: NetflixEpisode["id"]
+  ): PossibleEpisodeName => {
+    const player: PlayerApp = netflix.appContext.getPlayerApp();
+    const state: PlayerAppState = player.getState();
+    const metaForEpisode: VideoMetadataForEpisode =
+      state.videoPlayer.videoMetadata[episodeId];
+    return this.findEpisodeNameInSeasons(
+      episodeId,
+      metaForEpisode._metadataObject.video.seasons
+    );
+  };
+
+  private findEpisodeIdAndGetName = (): PossibleEpisodeName => {
     const episodeId: PossibleEpisodeId = this.findEpisodeId();
-    const player = netflix.appContext.getPlayerApp();
-    const state = player.getState();
-    if (episodeId) return videoPlayer.videoMetadata[episodeId]._seasons;
-    return null;
+    return episodeId ? this.findEpisodeName(episodeId) : null;
   };
 
   /*
    * Other
    */
 
-  public getEpisodeInfo = async (): Promise<NetflixEpisodeInfo> => {
+  public getEpisodeInfo = (): NetflixEpisodeInfo => {
     const timeInMs: PossibleEpisodeTime = this.getEpisodeTime();
-    const episodeName: EpisodeName = await this.tryGettingEpisodeName();
+    const episodeName: PossibleEpisodeName = this.findEpisodeIdAndGetName();
     return { timeMs: timeInMs, episodeName };
   };
 }

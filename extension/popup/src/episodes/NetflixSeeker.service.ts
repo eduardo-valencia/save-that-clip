@@ -1,11 +1,5 @@
 import { Bookmark } from "../bookmarks/Bookmarks.repo-abstraction";
-
-/**
- * This is used in an injected script, but it is not actually accessible
- * anywhere besides the injected script. In other words, don't use this.
- */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-declare const netflix: any;
+import "../../../main/common/netflix/netflix.globalTypeDeclaration";
 
 type SuccessInfo<WasSuccessful> = { success: WasSuccessful };
 type FailureInfo = SuccessInfo<false> & { reason?: string };
