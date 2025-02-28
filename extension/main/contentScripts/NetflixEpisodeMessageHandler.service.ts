@@ -27,7 +27,7 @@ export class NetflixEpisodeMessageHandlers {
    * Note that this won't find the name of movies. However, that's okay because
    * we don't need to show it.
    */
-  private findEpisodeName = (): NetflixEpisodeInfo["episodeName"] => {
+  private findEpisodeNameInToolbar = (): NetflixEpisodeInfo["episodeName"] => {
     const toolbar: HTMLElement | null = document.querySelector(
       '[data-uia="video-title"] span:nth-of-type(2)'
     );
@@ -35,7 +35,8 @@ export class NetflixEpisodeMessageHandlers {
   };
 
   private getIfEpisodeNameFound = (): boolean => {
-    const name: NetflixEpisodeInfo["episodeName"] = this.findEpisodeName();
+    const name: NetflixEpisodeInfo["episodeName"] =
+      this.findEpisodeNameInToolbar();
     return Boolean(name);
   };
 
@@ -66,7 +67,7 @@ export class NetflixEpisodeMessageHandlers {
   ): Promise<EpisodeName> => {
     await this.showToolbar(video);
     await this.waitForEpisodeName();
-    return this.findEpisodeName();
+    return this.findEpisodeNameInToolbar();
   };
 
   private getOrFindEpisodeName = async (
@@ -77,7 +78,7 @@ export class NetflixEpisodeMessageHandlers {
      * on the video if the toolbar is already showing. Otherwise, it will cause
      * the video to play.
      */
-    const epName: EpisodeName = this.findEpisodeName();
+    const epName: EpisodeName = this.findEpisodeNameInToolbar();
     return epName ? epName : this.clickVideoAndWaitForEpisodeName(video);
   };
 
