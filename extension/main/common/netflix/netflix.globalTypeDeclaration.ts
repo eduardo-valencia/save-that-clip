@@ -36,8 +36,25 @@ export interface PlayerApp {
   getState: () => PlayerAppState;
 }
 
+interface VideoPlayerInAppContext {
+  getAllPlayerSessionIds: () => unknown;
+}
+
+interface PlayerAppApi {
+  videoPlayer: VideoPlayerInAppContext;
+}
+
+interface PlayerAppInAppContext {
+  getAPI: () => PlayerAppApi;
+}
+
+interface AppContextState {
+  playerApp: PlayerAppInAppContext;
+}
+
 interface AppContext {
   getPlayerApp: () => PlayerApp;
+  state: AppContextState;
 }
 
 interface Netflix {
