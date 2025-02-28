@@ -11,7 +11,7 @@ import {
   ScriptsRepoAbstraction,
 } from "../scripts/Scripts.repo-abstraction";
 import { ScriptsRepo } from "../scripts/Scripts.repo";
-import { NetflixEpisodeInfo } from "../../../main/contentScripts/NetflixEpisodeMessageHandler.service";
+import { NetflixEpisodeInfo } from "../../../main/contentScripts/netflix/NetflixEpisodeMessageHandler.service";
 import { waitMs } from "../../../main/common/utils";
 import {
   ResultOfSettingNetflixTime,

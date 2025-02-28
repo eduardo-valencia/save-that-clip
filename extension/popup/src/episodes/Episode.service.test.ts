@@ -19,7 +19,7 @@ import { TabsFactory } from "../tabs/Tabs.factory";
 import { MockedTabsRepo } from "../tabs/MockedTabs.repo";
 import { InjectionResult } from "../scripts/Scripts.repo-abstraction";
 import { MockedScriptsRepo } from "../scripts/MockedScripts.repo";
-import { NetflixEpisodeInfo } from "../../../main/contentScripts/NetflixEpisodeMessageHandler.service";
+import { NetflixEpisodeInfo } from "../../../main/contentScripts/netflix/NetflixEpisodeMessageHandler.service";
 
 /**
  * Repos and services
