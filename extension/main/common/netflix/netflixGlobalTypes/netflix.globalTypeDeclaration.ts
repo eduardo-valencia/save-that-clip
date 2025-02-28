@@ -2,6 +2,8 @@
  * TODO: Maybe separate the declaration from the types
  */
 
+import { AppContextState } from "./netflix.appContextState.types";
+
 export interface NetflixEpisode {
   id: number;
   title: string;
@@ -34,22 +36,6 @@ export interface PlayerAppState {
 
 export interface PlayerApp {
   getState: () => PlayerAppState;
-}
-
-interface VideoPlayerInAppContext {
-  getAllPlayerSessionIds: () => unknown;
-}
-
-interface PlayerAppApi {
-  videoPlayer: VideoPlayerInAppContext;
-}
-
-interface PlayerAppInAppContext {
-  getAPI: () => PlayerAppApi;
-}
-
-interface AppContextState {
-  playerApp: PlayerAppInAppContext;
 }
 
 interface AppContext {

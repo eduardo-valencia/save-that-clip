@@ -6,7 +6,7 @@ import {
   PlayerAppState,
   Season,
   VideoMetadataForEpisode,
-} from "../../common/netflix/netflix.globalTypeDeclaration";
+} from "../../common/netflix/netflixGlobalTypes/netflix.globalTypeDeclaration";
 import _ from "lodash";
 
 type PossibleEpisodeName = string | null;
