@@ -1,14 +1,4 @@
-import { AppContextState } from "./netflix.appContextState.types";
-import { PlayerApp } from "./netflix.playerApp.types";
-
-interface AppContext {
-  getPlayerApp: () => PlayerApp;
-  state: AppContextState;
-}
-
-interface Netflix {
-  appContext: AppContext;
-}
+import { Netflix } from "./netflix.globalType";
 
 /**
  * TODO: Check if this is accidentally available outside of the file
