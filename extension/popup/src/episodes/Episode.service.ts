@@ -213,6 +213,10 @@ export class EpisodeService {
   private injectScriptToSetTime = async (
     timeMs: Bookmark["timeMs"]
   ): Promise<InjectionResult[]> => {
+    /**
+     * Note that this cannot be converted to a content script because it uses
+     * the Netflix API, which is inaccessible in content scripts.
+     */
     return this.scriptsRepo.executeScript({
       target: { tabId: await this.getEpisodeTabId() },
       /**
