@@ -1,23 +1,13 @@
 import { EpisodeTime, PossibleEpisodeTime } from "../../common/messages";
-import { EPISODE_URL_PATTERN } from "../../common/netflix/netflix.constants";
-import {
-  NetflixEpisode,
-  PlayerApp,
-  PlayerAppState,
-  Season,
-  VideoMetadataForEpisode,
-} from "../../common/netflix/netflixGlobalTypes/netflix.playerApp.types";
-import _ from "lodash";
+import { retryAndGetIfSucceeded } from "./retry.util";
 
-type PossibleEpisodeName = string | null;
+type EpisodeName = string | null;
 export interface NetflixEpisodeInfo {
   timeMs: PossibleEpisodeTime;
-  episodeName: PossibleEpisodeName;
+  episodeName: EpisodeName;
 }
 
 type PossibleVideo = HTMLVideoElement | null;
-
-type PossibleEpisodeId = number | null;
 
 export class NetflixEpisodeMessageHandlers {
   private getVideoTimeInMs = (video: HTMLVideoElement): EpisodeTime => {
@@ -33,81 +23,74 @@ export class NetflixEpisodeMessageHandlers {
     return video ? this.getVideoTimeInMs(video) : null;
   };
 
-  /*
-   * Toolbar
-   */
   /**
    * Note that this won't find the name of movies. However, that's okay because
    * we don't need to show it.
-   *
-   * * Implementation Notes
-   *
-   * Although we can get the episode's ID from the appContext, I prefer to get
-   * it this way just in case the API changes in the future, which it probably
-   * will. The URL's syntax, however, likely won't change anytime soon.
    */
-  private findEpisodeId = (): PossibleEpisodeId => {
-    const match: RegExpMatchArray | null =
-      window.location.href.match(EPISODE_URL_PATTERN);
-    if (match) return parseInt(match[1]);
+  private findEpisodeNameInToolbar = (): NetflixEpisodeInfo["episodeName"] => {
+    const toolbar: HTMLElement | null = document.querySelector(
+      '[data-uia="video-title"] span:nth-of-type(2)'
+    );
+    return toolbar?.innerText || null;
+  };
+
+  private getIfEpisodeNameFound = (): boolean => {
+    const name: NetflixEpisodeInfo["episodeName"] =
+      this.findEpisodeNameInToolbar();
+    return Boolean(name);
+  };
+
+  /**
+   * Note that we shouldn't set the delay too long here because there might not
+   * be an episode name in the first place. Ex: If the user is watching a movie.
+   */
+  private waitForEpisodeName = async (): Promise<void> => {
+    await retryAndGetIfSucceeded({
+      getIfConditionMet: this.getIfEpisodeNameFound,
+      retries: 40,
+      delayMs: 50,
+    });
+  };
+
+  private getIfVideoIsPlaying = (video: HTMLVideoElement): boolean => {
+    return !video.paused && !video.ended;
+  };
+
+  private showToolbar = async (video: HTMLVideoElement): Promise<void> => {
+    const wasPlaying: boolean = this.getIfVideoIsPlaying(video);
+    video.click();
+    return wasPlaying ? video.play() : video.pause();
+  };
+
+  private clickVideoAndWaitForEpisodeName = async (
+    video: HTMLVideoElement
+  ): Promise<EpisodeName> => {
+    await this.showToolbar(video);
+    await this.waitForEpisodeName();
+    return this.findEpisodeNameInToolbar();
+  };
+
+  private getOrFindEpisodeName = async (
+    video: HTMLVideoElement
+  ): Promise<EpisodeName> => {
+    /**
+     * We check if the ep name is already there because we don't want to click
+     * on the video if the toolbar is already showing. Otherwise, it will cause
+     * the video to play.
+     */
+    const epName: EpisodeName = this.findEpisodeNameInToolbar();
+    return epName ? epName : this.clickVideoAndWaitForEpisodeName(video);
+  };
+
+  private tryGettingEpisodeName = async (): Promise<EpisodeName> => {
+    const video: PossibleVideo = this.queryVideo();
+    if (video) return this.getOrFindEpisodeName(video);
     return null;
   };
 
-  private getEpisodes = (season: Season): Season["episodes"] => {
-    return season.episodes;
-  };
-
-  private findEpisodeNameInSeasons = (
-    episodeId: NetflixEpisode["id"],
-    seasons: Season[]
-  ): PossibleEpisodeName => {
-    const episodes: NetflixEpisode[] = _.flatMap(seasons, this.getEpisodes);
-    const episode: NetflixEpisode | undefined = _.find(episodes, {
-      id: episodeId,
-    });
-    console.log("episode", episode);
-    return episode?.title || null;
-  };
-
-  private findEpisodeName = (
-    episodeId: NetflixEpisode["id"]
-  ): PossibleEpisodeName => {
-    const player: PlayerApp = netflix.appContext.getPlayerApp();
-    const state: PlayerAppState = player.getState();
-    const metaForEpisode: VideoMetadataForEpisode =
-      state.videoPlayer.videoMetadata[episodeId];
-    console.log("meta", metaForEpisode);
-    return this.findEpisodeNameInSeasons(
-      episodeId,
-      metaForEpisode._metadataObject.video.seasons
-    );
-  };
-
-  private findEpisodeIdAndGetName = (): PossibleEpisodeName => {
-    const episodeId: PossibleEpisodeId = this.findEpisodeId();
-    console.log("episode id", episodeId);
-    return episodeId ? this.findEpisodeName(episodeId) : null;
-  };
-
-  private tryFindingEpisodeIdAndGettingName = (): PossibleEpisodeName => {
-    try {
-      return this.findEpisodeIdAndGetName();
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
-  };
-
-  /*
-   * Other
-   */
-
-  public getEpisodeInfo = (): NetflixEpisodeInfo => {
-    console.log("processing!");
+  public getEpisodeInfo = async (): Promise<NetflixEpisodeInfo> => {
     const timeInMs: PossibleEpisodeTime = this.getEpisodeTime();
-    console.log("time", timeInMs);
-    const episodeName: PossibleEpisodeName =
-      this.tryFindingEpisodeIdAndGettingName();
+    const episodeName: EpisodeName = await this.tryGettingEpisodeName();
     return { timeMs: timeInMs, episodeName };
   };
 }
