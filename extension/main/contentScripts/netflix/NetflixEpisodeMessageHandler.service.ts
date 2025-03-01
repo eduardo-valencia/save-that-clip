@@ -48,7 +48,7 @@ export class NetflixEpisodeMessageHandlers {
    */
   private findEpisodeId = (): PossibleEpisodeId => {
     const match: RegExpMatchArray | null =
-      window.location.pathname.match(EPISODE_URL_PATTERN);
+      window.location.href.match(EPISODE_URL_PATTERN);
     if (match) return parseInt(match[1]);
     return null;
   };
@@ -65,16 +65,18 @@ export class NetflixEpisodeMessageHandlers {
     const episode: NetflixEpisode | undefined = _.find(episodes, {
       id: episodeId,
     });
+    console.log("episode", episode);
     return episode?.title || null;
   };
 
   private findEpisodeName = (
     episodeId: NetflixEpisode["id"]
   ): PossibleEpisodeName => {
-    const player: PlayerApp = netflix.appContext.getPlayerApp();
+    const player: PlayerApp = window.netflix.appContext.getPlayerApp();
     const state: PlayerAppState = player.getState();
     const metaForEpisode: VideoMetadataForEpisode =
       state.videoPlayer.videoMetadata[episodeId];
+    console.log("meta", metaForEpisode);
     return this.findEpisodeNameInSeasons(
       episodeId,
       metaForEpisode._metadataObject.video.seasons
@@ -83,16 +85,29 @@ export class NetflixEpisodeMessageHandlers {
 
   private findEpisodeIdAndGetName = (): PossibleEpisodeName => {
     const episodeId: PossibleEpisodeId = this.findEpisodeId();
+    console.log("episode id", episodeId);
     return episodeId ? this.findEpisodeName(episodeId) : null;
+  };
+
+  private tryFindingEpisodeIdAndGettingName = (): PossibleEpisodeName => {
+    try {
+      return this.findEpisodeIdAndGetName();
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
   };
 
   /*
    * Other
    */
 
-  public getEpisodeInfo = (): NetflixEpisodeInfo => {
+  public getEpisodeInfo = async (): Promise<NetflixEpisodeInfo> => {
+    console.log("processing!");
     const timeInMs: PossibleEpisodeTime = this.getEpisodeTime();
-    const episodeName: PossibleEpisodeName = this.findEpisodeIdAndGetName();
+    console.log("time", timeInMs);
+    const episodeName: PossibleEpisodeName =
+      this.tryFindingEpisodeIdAndGettingName();
     return { timeMs: timeInMs, episodeName };
   };
 }
