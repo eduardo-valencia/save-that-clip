@@ -72,7 +72,7 @@ export class NetflixEpisodeMessageHandlers {
   private findEpisodeName = (
     episodeId: NetflixEpisode["id"]
   ): PossibleEpisodeName => {
-    const player: PlayerApp = window.netflix.appContext.getPlayerApp();
+    const player: PlayerApp = netflix.appContext.getPlayerApp();
     const state: PlayerAppState = player.getState();
     const metaForEpisode: VideoMetadataForEpisode =
       state.videoPlayer.videoMetadata[episodeId];
