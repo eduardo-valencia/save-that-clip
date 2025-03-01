@@ -1,4 +1,5 @@
 import { EpisodeTime, PossibleEpisodeTime } from "../../common/messages";
+import { waitMs } from "../../common/utils";
 import { retryAndGetIfSucceeded } from "./retry.util";
 
 type EpisodeName = string | null;
@@ -57,6 +58,11 @@ export class NetflixEpisodeMessageHandlers {
   };
 
   private showToolbar = async (video: HTMLVideoElement): Promise<void> => {
+    /**
+     * This prevents us from accidentally double-clicking on the video, which
+     * could make it go into full screen.
+     */
+    await waitMs(500);
     const wasPlaying: boolean = this.getIfVideoIsPlaying(video);
     video.click();
     return wasPlaying ? video.play() : video.pause();
