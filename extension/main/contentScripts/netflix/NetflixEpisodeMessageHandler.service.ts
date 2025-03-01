@@ -1,5 +1,4 @@
 import { EpisodeTime, PossibleEpisodeTime } from "../../common/messages";
-import { waitMs } from "../../common/utils";
 import { retryAndGetIfSucceeded } from "./retry.util";
 
 type EpisodeName = string | null;
@@ -53,25 +52,15 @@ export class NetflixEpisodeMessageHandlers {
     });
   };
 
-  private getIfVideoIsPlaying = (video: HTMLVideoElement): boolean => {
-    return !video.paused && !video.ended;
-  };
-
-  private showToolbar = async (video: HTMLVideoElement): Promise<void> => {
-    /**
-     * This prevents us from accidentally double-clicking on the video, which
-     * could make it go into full screen.
-     */
-    await waitMs(500);
-    const wasPlaying: boolean = this.getIfVideoIsPlaying(video);
-    video.click();
-    return wasPlaying ? video.play() : video.pause();
+  private showToolbar = (video: HTMLVideoElement): void => {
+    const event = new KeyboardEvent("keydown", { key: "tab" });
+    video.dispatchEvent(event);
   };
 
   private clickVideoAndWaitForEpisodeName = async (
     video: HTMLVideoElement
   ): Promise<EpisodeName> => {
-    await this.showToolbar(video);
+    this.showToolbar(video);
     await this.waitForEpisodeName();
     return this.findEpisodeNameInToolbar();
   };
