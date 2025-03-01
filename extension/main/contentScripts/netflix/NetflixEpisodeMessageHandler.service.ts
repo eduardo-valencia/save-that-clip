@@ -102,7 +102,7 @@ export class NetflixEpisodeMessageHandlers {
    * Other
    */
 
-  public getEpisodeInfo = async (): Promise<NetflixEpisodeInfo> => {
+  public getEpisodeInfo = (): NetflixEpisodeInfo => {
     console.log("processing!");
     const timeInMs: PossibleEpisodeTime = this.getEpisodeTime();
     console.log("time", timeInMs);
