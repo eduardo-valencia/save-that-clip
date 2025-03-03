@@ -6,6 +6,10 @@ interface AppContext {
   state: AppContextState;
 }
 
+/**
+ * This is used in injected scripts, but it is not actually accessible
+ * anywhere besides injected scripts (not even content scripts).
+ */
 export interface Netflix {
   appContext: AppContext;
 }

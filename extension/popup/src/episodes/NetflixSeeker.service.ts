@@ -1,9 +1,12 @@
 import { Bookmark } from "../bookmarks/Bookmarks.repo-abstraction";
 import "../../../main/common/netflix/netflixGlobalTypes/netflix.globalTypeDeclaration";
+import { Netflix } from "../../../main/common/netflix/netflixGlobalTypes/netflix.globalType";
 
 type SuccessInfo<WasSuccessful> = { success: WasSuccessful };
 type FailureInfo = SuccessInfo<false> & { reason?: string };
 export type ResultOfSettingNetflixTime = SuccessInfo<true> | FailureInfo;
+
+declare const netflix: Netflix;
 
 export const trySeekingForNetflix = (
   timeMs: Bookmark["timeMs"]
