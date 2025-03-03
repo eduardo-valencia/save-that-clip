@@ -12,25 +12,30 @@ import { useBookmarkDialogInfo } from "../../../../components/BookmarkDialogAndP
 export default function CreationForm() {
   const { setIdOfBookmarkToView } = useBookmarkDialogInfo();
 
-  const showSuccessMsg = (id: Bookmark["id"]): void => {
-    const btn = <BtnToViewBookmark onClick={() => setIdOfBookmarkToView(id)} />;
-    toast.success("Bookmark saved", {
-      duration: Infinity,
-      action: btn,
-    });
-  };
-
-  useEffect(() => {
-    showSuccessMsg("1");
-  }, [showSuccessMsg]);
-
   const handleSubmission = useCallback<BookmarkFormProps["onSubmit"]>(
     async (fields) => {
+      const getClickHandler = (bookmarkId: Bookmark["id"], toastId: string) => {
+        return (): void => {
+          setIdOfBookmarkToView(bookmarkId);
+          toast.dismiss(toastId);
+        };
+      };
+
+      const showSuccessMsg = (id: Bookmark["id"]): void => {
+        const toastId = `bookmark-${id}`;
+        const handleClick = getClickHandler(id, toastId);
+        toast.success("Bookmark saved", {
+          duration: 5000,
+          id: toastId,
+          action: <BtnToViewBookmark onClick={handleClick} />,
+        });
+      };
+
       const bookmarksService = new BookmarksService();
       const bookmark: Bookmark = await bookmarksService.create(fields);
       showSuccessMsg(bookmark.id);
     },
-    []
+    [setIdOfBookmarkToView]
   );
 
   return <BookmarkForm onSubmit={handleSubmission} />;
