@@ -10,6 +10,7 @@ import Edit from "@mui/icons-material/Edit";
 import { DialogToCreateOrEditBookmark } from "../../../DialogToCreateOrEditBookmark";
 import { BookmarkForm, BookmarkFormProps } from "../../../BookmarkForm";
 import { BookmarksService } from "../../../../bookmarks/Bookmarks.service";
+import { toast } from "sonner";
 
 type Props = {
   bookmark: Bookmark;
@@ -19,9 +20,10 @@ export const EditingBtnAndDialog = ({ bookmark }: Props) => {
   const dialogInfo: DialogInfo = useDialogInfo();
 
   const handleSubmission: BookmarkFormProps["onSubmit"] = useCallback(
-    (fields) => {
+    async (fields) => {
       const bookmarkService = new BookmarksService();
-      return bookmarkService.update({ id: bookmark.id, ...fields });
+      await bookmarkService.update({ id: bookmark.id, ...fields });
+      toast.success("Bookmark updated");
     },
     [bookmark.id]
   );
