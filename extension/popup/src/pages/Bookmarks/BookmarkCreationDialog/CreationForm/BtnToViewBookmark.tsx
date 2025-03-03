@@ -7,6 +7,7 @@ export const BtnToViewBookmark = (props: ButtonProps) => {
       size="small"
       variant="contained"
       sx={{ padding: 1, ml: "auto" }}
+      color="success"
     >
       View
     </Button>
