@@ -6,7 +6,7 @@ export default function DisabledReason() {
     <Typography
       sx={{
         fontWeight: 500,
-        fontSize: "0.875rem",
+        fontSize: "0.8125rem",
         letterSpacing: "-0.01875rem",
         mb: "0.81rem",
         // TODO: Maybe refactor this color (code duplication)
