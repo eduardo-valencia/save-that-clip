@@ -23,7 +23,7 @@ export const EditingBtnAndDialog = ({ bookmark }: Props) => {
     async (fields) => {
       const bookmarkService = new BookmarksService();
       await bookmarkService.update({ id: bookmark.id, ...fields });
-      toast.success("Bookmark updated");
+      toast.success("Bookmark updated", { duration: 5000 });
     },
     [bookmark.id]
   );

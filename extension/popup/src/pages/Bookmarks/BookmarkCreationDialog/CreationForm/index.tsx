@@ -11,7 +11,7 @@ export default function CreationForm() {
     async (fields) => {
       const bookmarksService = new BookmarksService();
       await bookmarksService.create(fields);
-      toast.success("Bookmark saved");
+      toast.success("Bookmark saved", { duration: 5000 });
     },
     []
   );
