@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import { toast } from "sonner";
 import { BookmarksService } from "../../../../bookmarks/Bookmarks.service";
 import {
