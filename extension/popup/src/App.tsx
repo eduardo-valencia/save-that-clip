@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 
+import { Toaster } from "sonner";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import BookmarksPage from "./pages/Bookmarks/BookmarksPage";
 import ErrorPage from "./pages/ErrorPage";
@@ -48,6 +49,7 @@ function App() {
           <RouterProvider router={router}></RouterProvider>
         </BookmarksProvider>
       </SearchProvider>
+      <Toaster richColors closeButton />
     </ThemeProvider>
   );
 }

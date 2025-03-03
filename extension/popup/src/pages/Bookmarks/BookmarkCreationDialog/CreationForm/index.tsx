@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { toast } from "sonner";
 import { BookmarksService } from "../../../../bookmarks/Bookmarks.service";
 import {
   BookmarkForm,
@@ -10,6 +11,7 @@ export default function CreationForm() {
     async (fields) => {
       const bookmarksService = new BookmarksService();
       await bookmarksService.create(fields);
+      toast.success("Bookmark saved");
     },
     []
   );
