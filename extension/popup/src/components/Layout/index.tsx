@@ -1,10 +1,22 @@
-import { AppBar, BoxProps, Toolbar } from "@mui/material";
+import { AppBar, Box, Toolbar } from "@mui/material";
 import PageContainer from "../PageContainer";
 import Search from "./Search";
+import React from "react";
 
-export function Layout({ sx, ...other }: BoxProps): JSX.Element {
+interface Props {
+  children: React.ReactNode;
+}
+
+export function Layout({ children }: Props): JSX.Element {
   return (
-    <>
+    <Box
+      sx={{
+        minWidth: "20rem",
+        height: "32.8125rem",
+        overflowY: "auto",
+        "::-webkit-scrollbar": { display: "none" },
+      }}
+    >
       <AppBar
         color="transparent"
         sx={{
@@ -19,7 +31,7 @@ export function Layout({ sx, ...other }: BoxProps): JSX.Element {
           <Search />
         </Toolbar>
       </AppBar>
-      <PageContainer {...other}></PageContainer>
-    </>
+      <PageContainer>{children}</PageContainer>
+    </Box>
   );
 }

@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
+
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import BookmarksPage from "./pages/Bookmarks/BookmarksPage";
 import ErrorPage from "./pages/ErrorPage";
 import { SearchProvider } from "./components/SearchProvider";
-import { CssBaseline, GlobalStyles, ThemeProvider } from "@mui/material";
+import { ThemeProvider } from "@mui/material";
 import { theme } from "./theme";
 import { BookmarksProvider } from "./components/BookmarksProvider";
 import SeriesPage from "./pages/Series/SeriesPage";
@@ -42,20 +43,6 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <GlobalStyles
-        styles={{
-          html: {
-            minWidth: "320px",
-            height: "525px",
-            /**
-             * TODO: Find a way to move this into the Layout instead. What if we
-             * need to show scrollbars in some pages, but not others?
-             */
-            "::-webkit-scrollbar": { display: "none" },
-          },
-        }}
-      />
       <SearchProvider>
         <BookmarksProvider>
           <RouterProvider router={router}></RouterProvider>
