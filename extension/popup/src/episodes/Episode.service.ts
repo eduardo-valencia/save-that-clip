@@ -17,7 +17,6 @@ import {
   ResultOfSettingNetflixTime,
   trySeekingForNetflix,
 } from "./NetflixSeeker.service";
-import { EPISODE_URL_PATTERN } from "../../../main/common/netflix/netflix.constants";
 
 interface Options {
   tabsRepo?: TabsRepoAbstraction;
@@ -107,7 +106,8 @@ export class EpisodeService {
 
   public getIfTabHasUrlLikeEpisode = ({ url }: Tab): boolean => {
     if (!url) return false;
-    const match: RegExpMatchArray | null = url.match(EPISODE_URL_PATTERN);
+    const episodeUrlPattern = /.+\/watch\/\d+/;
+    const match: RegExpMatchArray | null = url.match(episodeUrlPattern);
     return !!match;
   };
 
