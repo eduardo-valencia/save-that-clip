@@ -11,8 +11,12 @@ import {
   ScriptsRepoAbstraction,
 } from "../scripts/Scripts.repo-abstraction";
 import { ScriptsRepo } from "../scripts/Scripts.repo";
-import { NetflixEpisodeInfo } from "../../../main/contentScripts/NetflixEpisodeMessageHandler.service";
+import { NetflixEpisodeInfo } from "../../../main/contentScripts/netflix/NetflixEpisodeMessageHandler.service";
 import { waitMs } from "../../../main/common/utils";
+import {
+  ResultOfSettingNetflixTime,
+  trySeekingForNetflix,
+} from "./NetflixSeeker.service";
 
 interface Options {
   tabsRepo?: TabsRepoAbstraction;
@@ -29,18 +33,7 @@ export interface EpisodeTabAndInfo {
   info: ValidNetflixEpisodeInfo;
 }
 
-/**
- * This is used in an injected script, but it is not actually accessible
- * anywhere besides the injected script. In other words, don't use this.
- */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-declare const netflix: any;
-
 type InjectedFunc = chrome.scripting.ScriptInjection["func"];
-
-export interface ResultOfSettingTime {
-  success: boolean;
-}
 
 type PossibleResult = InjectionResult | undefined;
 type TabMatch = Tab | undefined;
@@ -145,9 +138,20 @@ export class EpisodeService {
     return sendMessage(episodeTab.id!, data) as Promise<NetflixEpisodeInfo>;
   };
 
+  /**
+   * This handles listening to the message for getting the episode info.
+   */
+  private injectContentScript = async (): Promise<InjectionResult[]> => {
+    return this.scriptsRepo.executeScript({
+      target: { tabId: await this.getEpisodeTabId() },
+      files: ["content-script.js"],
+    });
+  };
+
   private findAndValidateEpisodeInfo = async (
     episodeTab: Tab
   ): Promise<ValidNetflixEpisodeInfo> => {
+    await this.injectContentScript();
     const episodeInfo: NetflixEpisodeInfo =
       await this.sendMessageToGetEpisodeInfo(episodeTab);
     if (episodeInfo.timeMs === null)
@@ -174,38 +178,6 @@ export class EpisodeService {
     return { info, tab: episodeTab };
   };
 
-  /**
-   * * This function is being injected into the Netflix episode's tab.
-   *
-   * TODO: Maybe stop assuming that any of these properties will exist
-   */
-  /* eslint-disable @typescript-eslint/no-unsafe-return */
-  /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-  /* eslint-disable @typescript-eslint/no-unsafe-call */
-  /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-  private setTimeInBrowser = (
-    timeMs: Bookmark["timeMs"]
-  ): ResultOfSettingTime => {
-    const video: HTMLVideoElement | null = document.querySelector("video");
-    /**
-     * If the video isn't on the page, it could mean that the page is loading
-     * for too long. Regardless of the reason, it would mean that the user would
-     * think that the extension isn't opening the actual bookmark. So, we return
-     * false so we can move on to the fallback strategy.
-     */
-    if (!video) return { success: false };
-
-    const { videoPlayer } = netflix.appContext.state.playerApp.getAPI();
-    const [sessionId] = videoPlayer.getAllPlayerSessionIds();
-    const player = videoPlayer.getVideoPlayerBySessionId(sessionId);
-    player.seek(timeMs);
-    return { success: true };
-  };
-  /* eslint-enable @typescript-eslint/no-unsafe-return */
-  /* eslint-enable @typescript-eslint/no-unsafe-member-access */
-  /* eslint-enable @typescript-eslint/no-unsafe-call */
-  /* eslint-enable @typescript-eslint/no-unsafe-assignment */
-
   private getEpisodeTabId = async (): Promise<number> => {
     const tab: Tab = await this.get1stEpisodeTab();
     /**
@@ -218,12 +190,16 @@ export class EpisodeService {
   private injectScriptToSetTime = async (
     timeMs: Bookmark["timeMs"]
   ): Promise<InjectionResult[]> => {
+    /**
+     * Note that this cannot be converted to a content script because it uses
+     * the Netflix API, which is inaccessible in content scripts.
+     */
     return this.scriptsRepo.executeScript({
       target: { tabId: await this.getEpisodeTabId() },
       /**
        * We overwrite the type because Chrome's types are wrong.
        */
-      func: this.setTimeInBrowser as unknown as InjectedFunc,
+      func: trySeekingForNetflix as unknown as InjectedFunc,
       args: [timeMs],
       world: "MAIN",
     });
@@ -232,7 +208,7 @@ export class EpisodeService {
   private getIfIsUnsuccessfulInjectionResult = ({
     result,
   }: InjectionResult): boolean => {
-    const resultWithType = result as ResultOfSettingTime | undefined;
+    const resultWithType = result as ResultOfSettingNetflixTime | undefined;
     /**
      * If there's an error, it might not return a "success" status of false. So,
      * we should check if it is not true.
@@ -248,7 +224,7 @@ export class EpisodeService {
 
   private getIfWasSuccessful = (
     results: InjectionResult[]
-  ): ResultOfSettingTime["success"] => {
+  ): ResultOfSettingNetflixTime["success"] => {
     if (!results.length) return false;
     const unsuccessfulResult: PossibleResult =
       this.findUnsuccessfulInjectionResult(results);
@@ -256,27 +232,32 @@ export class EpisodeService {
   };
 
   private setScriptInjectionTimeout =
-    async (): Promise<ResultOfSettingTime> => {
+    async (): Promise<ResultOfSettingNetflixTime> => {
       await waitMs(3000);
       return { success: false };
     };
 
   private trySettingTimeWithoutTimeout = async (
     timeMs: Bookmark["timeMs"]
-  ): Promise<ResultOfSettingTime> => {
+  ): Promise<ResultOfSettingNetflixTime> => {
     const results: InjectionResult[] = await this.injectScriptToSetTime(timeMs);
+    const wasSuccessful: boolean = this.getIfWasSuccessful(results);
+    /**
+     * This also logs the err to Sentry. If available, it will log the "reason"
+     * field for debugging purposes, too. So, don't delete this.
+     */
+    if (!wasSuccessful) console.error(JSON.stringify(results, null, 2));
     /**
      * When we execute a script against the Netflix tab, it returns an injection
      * result with some information. We must analyze these results to determine if
      * the time was actually set.
      **/
-    return { success: this.getIfWasSuccessful(results) };
+    return { success: wasSuccessful };
   };
 
-  // TODO: Maybe return a reason from here, and send the reason it timed out to Sentry
   public trySettingTime = (
     timeMs: Bookmark["timeMs"]
-  ): Promise<ResultOfSettingTime> => {
+  ): Promise<ResultOfSettingNetflixTime> => {
     return Promise.race([
       this.trySettingTimeWithoutTimeout(timeMs),
       this.setScriptInjectionTimeout(),

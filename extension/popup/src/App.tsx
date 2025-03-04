@@ -1,12 +1,15 @@
 import React, { useEffect } from "react";
+
+import { Toaster } from "sonner";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import BookmarksPage from "./pages/Bookmarks/BookmarksPage";
 import ErrorPage from "./pages/ErrorPage";
 import { SearchProvider } from "./components/SearchProvider";
-import { GlobalStyles, ThemeProvider } from "@mui/material";
+import { ThemeProvider } from "@mui/material";
 import { theme } from "./theme";
 import { BookmarksProvider } from "./components/BookmarksProvider";
 import SeriesPage from "./pages/Series/SeriesPage";
+import { BookmarkDialogAndProvider } from "./components/BookmarkDialogAndProvider/BookmarkDialogAndProvider";
 
 /**
  * We must use a memory router because Chrome extensions don't support browser
@@ -42,22 +45,14 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <GlobalStyles
-        styles={{
-          html: {
-            minWidth: "320px",
-            minHeight: "500px",
-            /**
-             * TODO: Find a way to move this into the Layout instead. What if we
-             * need to show scrollbars in some pages, but not others?
-             */
-            "::-webkit-scrollbar": { display: "none" },
-          },
-        }}
-      />
       <SearchProvider>
         <BookmarksProvider>
-          <RouterProvider router={router}></RouterProvider>
+          <BookmarkDialogAndProvider>
+            <RouterProvider router={router}></RouterProvider>
+            {/* This must be here so that the creation notification's button
+            can access the dialog provider */}
+            <Toaster richColors closeButton />
+          </BookmarkDialogAndProvider>
         </BookmarksProvider>
       </SearchProvider>
     </ThemeProvider>

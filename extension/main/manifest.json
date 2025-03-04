@@ -3,12 +3,6 @@
   "version": "1.0.0",
   "manifest_version": 3,
   "description": "Bookmark timestamps on Netflix episodes. Easily find and revisit your favorite moments on Netflix.",
-  "content_scripts": [
-    {
-      "js": ["content-script.js"],
-      "matches": ["*://*.netflix.com/*"]
-    }
-  ],
   "action": {
     "default_popup": "popup.html"
   },

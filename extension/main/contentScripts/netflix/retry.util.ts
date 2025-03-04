@@ -1,4 +1,4 @@
-import { waitMs } from "../common/utils";
+import { waitMs } from "../../common/utils";
 
 interface FieldsToRetryOperation {
   retries: number;

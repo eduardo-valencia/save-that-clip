@@ -14,3 +14,7 @@ Note that the content scripts should not be able to import any code that isn't i
 ## Opening the Popup
 
 You can open the popup at `chrome-extension://<my_extension_id>/popup.html`.
+
+## Sentry
+
+- Note that at the time of this writing, Sentry does not capture logs/exceptions from content scripts or injected scripts.

@@ -1,6 +1,5 @@
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { Bookmark } from "../../../bookmarks/Bookmarks.repo-abstraction";
-import ResourceItemTitle from "../../ResourceItemTitle";
 import { BookmarksService } from "../../../bookmarks/Bookmarks.service";
 import _ from "lodash";
 
@@ -32,9 +31,18 @@ export default function BookmarkTitle({ bookmark }: Props) {
         textAlign: "left",
       }}
     >
-      <ResourceItemTitle>
+      <Typography
+        variant="h2"
+        sx={{
+          fontSize: "1.25rem",
+          fontWeight: 500,
+          lineHeight: "1.75rem",
+          letterSpacing: "-0.025rem",
+          color: "black",
+        }}
+      >
         {_.truncate(bookmark.name, { length: 45 })}
-      </ResourceItemTitle>
+      </Typography>
     </Button>
   );
 }

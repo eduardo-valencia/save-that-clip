@@ -62,6 +62,10 @@ export const theme = createTheme({
       textTransform: "none",
       letterSpacing: "-0.02225rem",
     },
+    body1: {
+      fontSize: "1rem",
+      lineHeight: "150%",
+    },
   },
   components: {
     MuiInput: getComponentOverridesForPlaceholder(),

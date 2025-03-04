@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import DisabledReason from "./DisabledReason";
 import BookmarkCreationButton from "./BookmarkCreationButton";
 import { EpisodeService, PossibleTab } from "../../../episodes/Episode.service";
+import { Box } from "@mui/material";
 
 export type IsButtonDisabled = boolean;
 
@@ -33,9 +34,9 @@ export default function BookmarkCreationButtonInfo() {
   }, []);
 
   return (
-    <div>
+    <Box sx={{ marginTop: "2.69rem" }}>
       {isDisabled ? <DisabledReason /> : null}
       <BookmarkCreationButton disabled={isDisabled} />
-    </div>
+    </Box>
   );
 }

@@ -12,7 +12,7 @@ export const BookmarkField = ({ title, children }: Props) => {
       <Typography variant="h3" component="h2">
         {title}
       </Typography>
-      <Typography>{children || "None"}</Typography>
+      <Typography>{children || "Unknown"}</Typography>
     </Box>
   );
 };

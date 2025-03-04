@@ -1,9 +1,9 @@
 /**
  * Imports to create mocks.
  */
-import { MessageListenerTestUtils } from "./MessageListener.test-utils";
+import { MessageListenerTestUtils } from "../MessageListener.test-utils";
 
-jest.mock("../common/chrome.service", () => {
+jest.mock("../../common/chrome.service", () => {
   const testUtils = new MessageListenerTestUtils();
   return testUtils.getMockedChromeService();
 });
@@ -11,8 +11,8 @@ jest.mock("../common/chrome.service", () => {
 /**
  * Other imports
  */
-import { Message, Messages } from "../common/messages";
-import "../content-script";
+import { Message, Messages } from "../../common/messages";
+import "../../content-script";
 import { NetflixEpisodeInfo } from "./NetflixEpisodeMessageHandler.service";
 
 const { sendMessage } = new MessageListenerTestUtils();

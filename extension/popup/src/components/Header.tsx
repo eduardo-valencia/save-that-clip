@@ -3,20 +3,21 @@ import React from "react";
 
 export interface HeaderProps extends BoxProps {
   title: string;
-  children: React.ReactNode;
+  before: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export default function Header({
   title,
+  before,
   children,
   sx = {},
   ...other
 }: HeaderProps) {
   return (
     <Box sx={{ marginBottom: "2.5rem", ...sx }} {...other}>
-      <Typography variant="h1" sx={{ marginBottom: "2.69rem" }}>
-        {title}
-      </Typography>
+      {before}
+      <Typography variant="h1">{title}</Typography>
       {children}
     </Box>
   );

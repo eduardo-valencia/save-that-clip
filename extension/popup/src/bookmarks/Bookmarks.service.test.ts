@@ -19,11 +19,7 @@ jest.mock("../../../main/common/chrome.service", () => {
 
 /* eslint-disable import/first */
 import _ from "lodash";
-import {
-  EpisodeService,
-  EpisodeTabAndInfo,
-  ResultOfSettingTime,
-} from "../episodes/Episode.service";
+import { EpisodeService, EpisodeTabAndInfo } from "../episodes/Episode.service";
 import {
   SeriesInfoService,
   SeriesName,
@@ -36,6 +32,7 @@ import {
   FieldsToCreateBookmark as CreationFields,
 } from "./Bookmarks.service";
 import { MockedScriptsRepo } from "../scripts/MockedScripts.repo";
+import { ResultOfSettingNetflixTime } from "../episodes/NetflixSeeker.service";
 
 /**
  * * Services & their mocks
@@ -274,7 +271,7 @@ describe("open", () => {
   type SpiedSetTime = jest.SpiedFunction<EpisodeService["trySettingTime"]>;
 
   const mockSettingTime = (
-    success: ResultOfSettingTime["success"]
+    success: ResultOfSettingNetflixTime["success"]
   ): SpiedSetTime => {
     const spiedSetTime = jest.spyOn(episodeService, "trySettingTime");
     spiedSetTime.mockResolvedValue({ success });
@@ -420,3 +417,10 @@ describe("open", () => {
     it.todo("Does not crash");
   });
 });
+
+/**
+ * Otherwise, it will look like it didn't open
+ */
+it.todo("Opens the bookmark in a new tab when an ad is playing");
+
+it.todo("Saves the correct video time even when an ad plays");

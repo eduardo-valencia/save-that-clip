@@ -4,7 +4,6 @@ import {
   SearchContext,
   SearchContextValue,
 } from "../../components/SearchProvider";
-import HeaderWithBookmarkCreationButton from "../../components/HeaderWithBookmarkCreationButton";
 import BookmarkSearchResults from "../../components/BookmarkSearchResults";
 import { Params, useParams } from "react-router-dom";
 import { PossibleSeriesName } from "../../seriesInfo/SeriesInfo.service";
@@ -17,7 +16,8 @@ import {
   BookmarksContextValue,
   BookmarksContext,
 } from "../../components/BookmarksProvider";
-import { BookmarkDialogAndProvider } from "../../components/BookmarkDialogAndProvider/BookmarkDialogAndProvider";
+import { SeriesSubtitle } from "./SeriesSubtitle";
+import Header from "../../components/Header";
 
 type PossibleBookmarks = BookmarksContextValue["bookmarks"];
 
@@ -51,21 +51,19 @@ const SeriesPage = () => {
 
   return (
     <Layout>
-      <BookmarkDialogAndProvider>
-        <ToolbarWithBackButton />
-        <HeaderWithBookmarkCreationButton title={displayName} />
-        {query ? (
-          <BookmarkSearchResults
-            possibleBookmarks={possibleBookmarks}
-            showEpisode
-          />
-        ) : (
-          <BookmarksListWithLoader
-            possibleBookmarks={possibleBookmarks}
-            showEpisode
-          />
-        )}
-      </BookmarkDialogAndProvider>
+      <ToolbarWithBackButton />
+      <Header before={<SeriesSubtitle />} title={displayName} />
+      {query ? (
+        <BookmarkSearchResults
+          possibleBookmarks={possibleBookmarks}
+          showEpisode
+        />
+      ) : (
+        <BookmarksListWithLoader
+          possibleBookmarks={possibleBookmarks}
+          showEpisode
+        />
+      )}
     </Layout>
   );
 };

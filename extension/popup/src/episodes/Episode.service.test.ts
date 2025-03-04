@@ -13,13 +13,13 @@ import {
   EpisodeService,
   EpisodeTabAndInfo,
   PossibleTab,
-  ResultOfSettingTime,
 } from "./Episode.service";
+import { ResultOfSettingNetflixTime } from "./NetflixSeeker.service";
 import { TabsFactory } from "../tabs/Tabs.factory";
 import { MockedTabsRepo } from "../tabs/MockedTabs.repo";
 import { InjectionResult } from "../scripts/Scripts.repo-abstraction";
 import { MockedScriptsRepo } from "../scripts/MockedScripts.repo";
-import { NetflixEpisodeInfo } from "../../../main/contentScripts/NetflixEpisodeMessageHandler.service";
+import { NetflixEpisodeInfo } from "../../../main/contentScripts/netflix/NetflixEpisodeMessageHandler.service";
 
 /**
  * Repos and services
@@ -246,9 +246,9 @@ describe("trySettingTime", () => {
    */
 
   const callMethodAndExpectSuccessStatus = async (
-    isSuccessful: ResultOfSettingTime["success"]
+    isSuccessful: ResultOfSettingNetflixTime["success"]
   ): Promise<void> => {
-    const { success }: ResultOfSettingTime = await setTime(1);
+    const { success }: ResultOfSettingNetflixTime = await setTime(1);
     expect(success).toEqual(isSuccessful);
   };
 
@@ -257,9 +257,9 @@ describe("trySettingTime", () => {
   };
 
   const createInjectionResult = (
-    success: ResultOfSettingTime["success"]
+    success: ResultOfSettingNetflixTime["success"]
   ): InjectionResult => {
-    const result: ResultOfSettingTime = { success };
+    const result: ResultOfSettingNetflixTime = { success };
     return { frameId: 1, documentId: "", result };
   };
 

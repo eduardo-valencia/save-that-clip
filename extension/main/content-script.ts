@@ -6,7 +6,7 @@
 
 import { getChrome } from "./common/chrome.service";
 import { Message, Messages } from "./common/messages";
-import { NetflixEpisodeMessageHandlers } from "./contentScripts/NetflixEpisodeMessageHandler.service";
+import { NetflixEpisodeMessageHandlers } from "./contentScripts/netflix/NetflixEpisodeMessageHandler.service";
 
 export type Runtime = typeof chrome.runtime;
 
