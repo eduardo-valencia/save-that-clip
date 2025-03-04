@@ -16,7 +16,6 @@ import {
   BookmarksContextValue,
   BookmarksContext,
 } from "../../components/BookmarksProvider";
-import { BookmarkDialogAndProvider } from "../../components/BookmarkDialogAndProvider/BookmarkDialogAndProvider";
 import { SeriesSubtitle } from "./SeriesSubtitle";
 import Header from "../../components/Header";
 
@@ -52,21 +51,19 @@ const SeriesPage = () => {
 
   return (
     <Layout>
-      <BookmarkDialogAndProvider>
-        <ToolbarWithBackButton />
-        <Header before={<SeriesSubtitle />} title={displayName} />
-        {query ? (
-          <BookmarkSearchResults
-            possibleBookmarks={possibleBookmarks}
-            showEpisode
-          />
-        ) : (
-          <BookmarksListWithLoader
-            possibleBookmarks={possibleBookmarks}
-            showEpisode
-          />
-        )}
-      </BookmarkDialogAndProvider>
+      <ToolbarWithBackButton />
+      <Header before={<SeriesSubtitle />} title={displayName} />
+      {query ? (
+        <BookmarkSearchResults
+          possibleBookmarks={possibleBookmarks}
+          showEpisode
+        />
+      ) : (
+        <BookmarksListWithLoader
+          possibleBookmarks={possibleBookmarks}
+          showEpisode
+        />
+      )}
     </Layout>
   );
 };

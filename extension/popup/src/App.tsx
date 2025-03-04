@@ -9,6 +9,7 @@ import { ThemeProvider } from "@mui/material";
 import { theme } from "./theme";
 import { BookmarksProvider } from "./components/BookmarksProvider";
 import SeriesPage from "./pages/Series/SeriesPage";
+import { BookmarkDialogAndProvider } from "./components/BookmarkDialogAndProvider/BookmarkDialogAndProvider";
 
 /**
  * We must use a memory router because Chrome extensions don't support browser
@@ -46,10 +47,14 @@ function App() {
     <ThemeProvider theme={theme}>
       <SearchProvider>
         <BookmarksProvider>
-          <RouterProvider router={router}></RouterProvider>
+          <BookmarkDialogAndProvider>
+            <RouterProvider router={router}></RouterProvider>
+            {/* This must be here so that the creation notification's button
+            can access the dialog provider */}
+            <Toaster richColors closeButton />
+          </BookmarkDialogAndProvider>
         </BookmarksProvider>
       </SearchProvider>
-      <Toaster richColors closeButton />
     </ThemeProvider>
   );
 }
