@@ -1,6 +1,6 @@
 {
   "name": "Save that Clip",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "manifest_version": 3,
   "description": "Bookmark timestamps on Netflix episodes. Easily find and revisit your favorite moments on Netflix.",
   "action": {
