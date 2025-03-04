@@ -12,7 +12,7 @@ jest.mock("../../common/chrome.service", () => {
  * Other imports
  */
 import { Message, Messages } from "../../common/messages";
-import "../content-script";
+import "../../content-script";
 import { NetflixEpisodeInfo } from "./NetflixEpisodeMessageHandler.service";
 
 const { sendMessage } = new MessageListenerTestUtils();
