@@ -15,7 +15,8 @@ export const trySeekingForNetflix = (
     const adsInfoContainer = document.querySelector(
       '[data-uia="ads-info-container"]'
     );
-    return Boolean(adsInfoContainer);
+    const pauseAd = document.querySelector('[data-uia="pause-ad"]');
+    return Boolean(adsInfoContainer || pauseAd);
   };
 
   type PossibleReason = string | null;
