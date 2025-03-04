@@ -4,21 +4,14 @@ module.exports = {
     "react-app/jest",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
-    "plugin:import/recommended",
   ],
   parser: "@typescript-eslint/parser",
-  plugins: ["@typescript-eslint", "eslint-plugin-import"],
+  plugins: ["@typescript-eslint"],
   parserOptions: {
     project: true,
     tsconfigRootDir: __dirname,
   },
   rules: {
     "@typescript-eslint/no-unsafe-assignment": "warn",
-  },
-  settings: {
-    "import/resolver": {
-      typescript: true,
-      node: true,
-    },
   },
 };
