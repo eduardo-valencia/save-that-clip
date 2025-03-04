@@ -1,5 +1,4 @@
 import { Bookmark } from "../bookmarks/Bookmarks.repo-abstraction";
-import "../../../main/common/netflix/netflixGlobalTypes/netflix.globalTypeDeclaration";
 import { Netflix } from "../../../main/common/netflix/netflixGlobalTypes/netflix.globalType";
 
 type SuccessInfo<WasSuccessful> = { success: WasSuccessful };
