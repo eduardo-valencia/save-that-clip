@@ -36,6 +36,8 @@ export const trySeekingForNetflix = (
 
   const seek = (timeMs: Bookmark["timeMs"]): void => {
     // TODO: Maybe stop assuming that any of these properties will exist
+    // because they sometimes don't if the page hasn't been fully loaded
+    // and because the API could change in the future. At least wrap it with a tr/catch
     const { videoPlayer } = netflix.appContext.state.playerApp.getAPI();
     const [sessionId] = videoPlayer.getAllPlayerSessionIds();
     const player = videoPlayer.getVideoPlayerBySessionId(sessionId);

@@ -138,32 +138,9 @@ export class EpisodeService {
     return sendMessage(episodeTab.id!, data) as Promise<NetflixEpisodeInfo>;
   };
 
-  private getIfIsUnsuccessfulInjectionResult = ({
-    result,
-  }: InjectionResult): boolean => {
-    const resultWithType = result as ResultOfSettingNetflixTime | undefined;
-    /**
-     * If there's an error, it might not return a "success" status of false. So,
-     * we should check if it is not true.
-     */
-    return resultWithType?.success !== true;
-  };
-
-  private findUnsuccessfulInjectionResult = (
-    results: InjectionResult[]
-  ): PossibleResult => {
-    return results.find(this.getIfIsUnsuccessfulInjectionResult);
-  };
-
-  private getIfWasSuccessful = (
-    results: InjectionResult[]
-  ): ResultOfSettingNetflixTime["success"] => {
-    if (!results.length) return false;
-    const unsuccessfulResult: PossibleResult =
-      this.findUnsuccessfulInjectionResult(results);
-    return !unsuccessfulResult;
-  };
-
+  /**
+   * This handles listening to the message for getting the episode info.
+   */
   private injectContentScript = async (): Promise<InjectionResult[]> => {
     return this.scriptsRepo.executeScript({
       target: { tabId: await this.getEpisodeTabId() },
@@ -228,6 +205,32 @@ export class EpisodeService {
     });
   };
 
+  private getIfIsUnsuccessfulInjectionResult = ({
+    result,
+  }: InjectionResult): boolean => {
+    const resultWithType = result as ResultOfSettingNetflixTime | undefined;
+    /**
+     * If there's an error, it might not return a "success" status of false. So,
+     * we should check if it is not true.
+     */
+    return resultWithType?.success !== true;
+  };
+
+  private findUnsuccessfulInjectionResult = (
+    results: InjectionResult[]
+  ): PossibleResult => {
+    return results.find(this.getIfIsUnsuccessfulInjectionResult);
+  };
+
+  private getIfWasSuccessful = (
+    results: InjectionResult[]
+  ): ResultOfSettingNetflixTime["success"] => {
+    if (!results.length) return false;
+    const unsuccessfulResult: PossibleResult =
+      this.findUnsuccessfulInjectionResult(results);
+    return !unsuccessfulResult;
+  };
+
   private setScriptInjectionTimeout =
     async (): Promise<ResultOfSettingNetflixTime> => {
       await waitMs(3000);
@@ -252,8 +255,6 @@ export class EpisodeService {
     return { success: wasSuccessful };
   };
 
-  // TODO: Maybe return a reason from here, and send the reason it timed out to
-  // Sentry Alternatively, log it some other way
   public trySettingTime = (
     timeMs: Bookmark["timeMs"]
   ): Promise<ResultOfSettingNetflixTime> => {
